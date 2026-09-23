@@ -251,20 +251,36 @@
         </div>
     </div>
 
-    <script>
-        function switchScreen(screenId) {
+    <!-- ПОДКЛЮЧЕНИЕ LOGIC СКРИПТА FIREBASE -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+        import { getAuth, signInWithPopup, GoogleAuthProvider } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+        import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyBRkzOUhINImQi69kBdElZhyOmMCUlDNnQ",
+            authDomain: "kaganat-5c070.firebaseapp.com",
+            projectId: "kaganat-5c070",
+            storageBucket: "kaganat-5c070.appspot.com",
+            messagingSenderId: "601843425761",
+            appId: "1:601843425761:web:429cd2775df0661543f2a0"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        window.switchScreen = function(screenId) {
             document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
             document.getElementById(screenId).classList.add('active');
             clearErrors();
         }
 
-        // Очистка подсветки ошибок
-        function clearErrors() {
+        window.clearErrors = function() {
             document.querySelectorAll('input').forEach(input => input.classList.remove('error-input'));
         }
 
-        // Показ кастомного окна ошибки
-        function showError(msg, fieldsToHighlight = []) {
+        window.showError = function(msg, fieldsToHighlight = []) {
             document.getElementById('error-message').innerText = msg;
             document.getElementById('error-modal').style.display = 'flex';
             
@@ -274,7 +290,7 @@
             });
         }
 
-        function closeErrorModal() {
+        window.closeErrorModal = function() {
             document.getElementById('error-modal').style.display = 'none';
         }
 
@@ -296,45 +312,72 @@
             loadStatus.innerText = `Жүктөлүүдө... ${progress}%`;
         }, 30);
 
-        // Кнопка входа
-        document.getElementById('loginBtn').addEventListener('click', () => {
+        // Кнопка Входа (проверка никнейма и пароля в Firestore)
+        document.getElementById('loginBtn').addEventListener('click', async () => {
             clearErrors();
             const nick = document.getElementById('loginNickname').value.trim();
             const pass = document.getElementById('loginPassword').value.trim();
 
-            let missingFields = [];
-            if(!nick) missingFields.push('loginNickname');
-            if(!pass) missingFields.push('loginPassword');
+            let missing = [];
+            if(!nick) missing.push('loginNickname');
+            if(!pass) missing.push('loginPassword');
 
-            if(missingFields.length > 0) {
-                showError('Сураныч, бош калган талааларды толтуруңуз!', missingFields);
+            if(missing.length > 0) {
+                showError('Сураныч, бардык талааларды толтуруңуз!', missing);
                 return;
             }
 
-            // Пример проверки (в будущем заменим на сверку с базой Firebase)
-            // Если введены неверные данные — подсвечиваем оба поля и выводим ошибку игры
-            showError('Ысым же сыр сөз ката жазылды!', ['loginNickname', 'loginPassword']);
+            try {
+                const nicknameKey = nick.toLowerCase();
+                const userDocRef = doc(db, "nicknames", nicknameKey);
+                const userSnap = await getDoc(userDocRef);
+
+                if(!userSnap.exists()) {
+                    // Если такого никнейма нет в базе
+                    showError('Мындай ысым катталган эмес!', ['loginNickname']);
+                    return;
+                }
+
+                const userData = userSnap.data();
+                if(userData.password !== pass) {
+                    // Если пароль не совпал
+                    showError('Сыр сөз ката жазылды!', ['loginPassword']);
+                    return;
+                }
+
+                alert('Ийгиликтүү кирдиңиз!');
+            } catch (e) {
+                console.error(e);
+                showError('Туура эмес маалыматтарды жаздыңыз!', ['loginNickname', 'loginPassword']);
+            }
         });
 
         // Кнопка привязки Google
-        document.getElementById('googleBindBtn').addEventListener('click', () => {
-            alert('Google аккаунтту байлоо ишке ашууда...');
+        document.getElementById('googleBindBtn').addEventListener('click', async () => {
+            const provider = new GoogleAuthProvider();
+            try {
+                const result = await signInWithPopup(auth, provider);
+                alert('Google аккаунт ийгиликтүү байланды: ' + result.user.email);
+            } catch (error) {
+                console.error(error);
+                showError('Google аркылуу кирүү ката кетти!');
+            }
         });
 
         // Кнопка завершения регистрации
-        document.getElementById('registerSubmitBtn').addEventListener('click', () => {
+        document.getElementById('registerSubmitBtn').addEventListener('click', async () => {
             clearErrors();
             const nick = document.getElementById('regNickname').value.trim();
             const pass1 = document.getElementById('regPassword').value;
             const pass2 = document.getElementById('regPasswordConfirm').value;
 
-            let missingFields = [];
-            if(!nick) missingFields.push('regNickname');
-            if(!pass1) missingFields.push('regPassword');
-            if(!pass2) missingFields.push('regPasswordConfirm');
+            let missing = [];
+            if(!nick) missing.push('regNickname');
+            if(!pass1) missing.push('regPassword');
+            if(!pass2) missing.push('regPasswordConfirm');
 
-            if(missingFields.length > 0) {
-                showError('Бардык талааларды толтуруу зарыл!', missingFields);
+            if(missing.length > 0) {
+                showError('Бардык талааларды толтуруу зарыл!', missing);
                 return;
             }
 
@@ -343,8 +386,34 @@
                 return;
             }
 
-            // Успешная регистрация заглушка
-            alert('Катталуу ийгиликтүү аяктады!');
+            if(nick.length < 3) {
+                showError('Ысым эң аз 3 символдон турушу керек!', ['regNickname']);
+                return;
+            }
+
+            try {
+                const nicknameKey = nick.toLowerCase();
+                const nickRef = doc(db, "nicknames", nicknameKey);
+                const nickSnap = await getDoc(nickRef);
+
+                if (nickSnap.exists()) {
+                    showError('Бул ысым буга чейин алынган!', ['regNickname']);
+                    return;
+                }
+
+                // Сохраняем в базу
+                await setDoc(nickRef, { 
+                    nickname: nick,
+                    password: pass1 
+                });
+
+                alert('Катталуу ийгиликтүү аяктады! Эми кире аласыз.');
+                switchScreen('login-screen');
+
+            } catch (error) {
+                console.error(error);
+                showError('Каттоо учурунда ката кетти!');
+            }
         });
     </script>
 </body>
