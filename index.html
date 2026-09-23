@@ -11,34 +11,25 @@
             -webkit-tap-highlight-color: transparent;
         }
         body {
-    margin: 0;
-    /* Наш глубокий оранжево-терракотовый цвет */
-    background-color: #a84b0d; 
-    
-    /* Затемнение по краям (виньетка) + твоя картинка */
-    background-image: 
-        radial-gradient(circle at center, rgba(168, 75, 13, 0.2) 0%, rgba(10, 4, 1, 0.95) 100%),
-        url('pattern.png'); /* ВНИМАНИЕ: Если твоя картинка в формате JPG, напиши тут pattern.jpg */
-        
-    background-repeat: no-repeat, repeat;
-    background-position: center, top left;
-    
-    /* 250px 250px — это размер одного квадрата узора. Можешь менять, если узор слишком крупный/мелкий */
-    background-size: cover, 250px 250px; 
-    
-    /* Магическое смешивание (убирает белый фон у картинки, оставляя только темный узор) */
-    background-blend-mode: normal, multiply; 
-    
-    color: #ffffff;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 100vh;
-    min-height: 100dvh;
-    overflow-x: hidden;
-    overflow-y: auto;
-    padding: 15px;
-}
+            margin: 0;
+            background-color: #a84b0d; 
+            background-image: 
+                radial-gradient(circle at center, rgba(168, 75, 13, 0.2) 0%, rgba(10, 4, 1, 0.95) 100%),
+                url('pattern.png'); 
+            background-repeat: no-repeat, repeat;
+            background-position: center, top left;
+            background-size: cover, 250px 250px; 
+            background-blend-mode: normal, multiply; 
+            color: #ffffff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            min-height: 100dvh;
+            overflow-x: hidden;
+            overflow-y: auto;
+            padding: 15px;
+        }
         .screen {
             display: none;
             width: 100%;
@@ -168,8 +159,6 @@
             color: #ffd479;
             text-decoration: underline;
         }
-
-        /* БЛОК ВЫБОРА ФРАКЦИИ (ПК) */
         .faction-warning {
             font-size: 13px;
             color: #f3dfc8;
@@ -217,128 +206,54 @@
             image-rendering: pixelated;
             filter: drop-shadow(0 8px 12px rgba(0, 0, 0, 0.8));
         }
-        .btn-kyrgyz {
+        .btn-kyrgyz, .btn-kypchak {
             width: 100%;
             padding: 13px;
-            background: linear-gradient(180deg, #d32f2f, #9a1919);
             color: #ffffff;
-            border: 1px solid #ff7b7b;
             border-radius: 6px;
             font-size: 16px;
             font-weight: bold;
             cursor: pointer;
-            box-shadow: 0 4px 14px rgba(211, 47, 47, 0.4);
             transition: all 0.2s;
+        }
+        .btn-kyrgyz {
+            background: linear-gradient(180deg, #d32f2f, #9a1919);
+            border: 1px solid #ff7b7b;
+            box-shadow: 0 4px 14px rgba(211, 47, 47, 0.4);
         }
         .btn-kypchak {
-            width: 100%;
-            padding: 13px;
             background: linear-gradient(180deg, #1976d2, #0d47a1);
-            color: #ffffff;
             border: 1px solid #64b5f6;
-            border-radius: 6px;
-            font-size: 16px;
-            font-weight: bold;
-            cursor: pointer;
             box-shadow: 0 4px 14px rgba(25, 118, 210, 0.4);
-            transition: all 0.2s;
         }
-
-        /* АДАПТАЦИЯ ДЛЯ ТЕЛЕФОНОВ: КАРТОЧКИ В СТОЛБЕЦ */
         @media (max-width: 650px) {
-            body {
-                align-items: flex-start;
-                padding: 10px;
-            }
-            .screen {
-                padding: 18px 14px;
-                border-radius: 12px;
-                margin-top: 10px;
-                margin-bottom: 20px;
-            }
-            #faction-screen {
-                padding: 16px 12px;
-            }
-            .factions-container {
-                flex-direction: column;
-                gap: 20px;
-            }
-            .faction-card {
-                width: 100%;
-                padding: 15px;
-            }
-            .faction-img-wrap {
-                height: 290px;
-                margin-bottom: 12px;
-            }
-            .faction-img-wrap img {
-                transform: scale(1.65);
-                transform-origin: bottom center;
-            }
-            .btn-kyrgyz, .btn-kypchak {
-                padding: 12px;
-                font-size: 16px;
-            }
+            body { align-items: flex-start; padding: 10px; }
+            .screen { padding: 18px 14px; border-radius: 12px; margin-top: 10px; margin-bottom: 20px; }
+            #faction-screen { padding: 16px 12px; }
+            .factions-container { flex-direction: column; gap: 20px; }
+            .faction-card { width: 100%; padding: 15px; }
+            .faction-img-wrap { height: 290px; margin-bottom: 12px; }
+            .faction-img-wrap img { transform: scale(1.65); transform-origin: bottom center; }
+            .btn-kyrgyz, .btn-kypchak { padding: 12px; font-size: 16px; }
         }
-
-        /* УНИВЕРСАЛЬНОЕ МОДАЛЬНОЕ ОКНО */
         #custom-modal {
-            display: none;
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0, 0, 0, 0.8);
-            justify-content: center;
-            align-items: center;
-            z-index: 9999;
-            padding: 15px;
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.8); justify-content: center; align-items: center; z-index: 9999; padding: 15px;
         }
         .modal-content {
-            background: #241407;
-            padding: 25px;
-            border-radius: 12px;
-            width: 100%;
-            max-width: 320px;
-            text-align: center;
-            box-shadow: 0 0 25px rgba(0, 0, 0, 0.9);
+            background: #241407; padding: 25px; border-radius: 12px; width: 100%;
+            max-width: 320px; text-align: center; box-shadow: 0 0 25px rgba(0, 0, 0, 0.9);
         }
-        .modal-content h3 {
-            margin-top: 0;
-            margin-bottom: 10px;
-        }
-        .modal-content p {
-            color: #f3dfc8;
-            font-size: 14px;
-            line-height: 1.4;
-            margin-bottom: 20px;
-        }
-        .modal-btn {
-            color: #fff;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 6px;
-            font-weight: bold;
-            cursor: pointer;
-            width: 100%;
-        }
-        .modal-error {
-            border: 2px solid #ff4d4d;
-            box-shadow: 0 0 20px rgba(255, 77, 77, 0.4);
-        }
+        .modal-content h3 { margin-top: 0; margin-bottom: 10px; }
+        .modal-content p { color: #f3dfc8; font-size: 14px; line-height: 1.4; margin-bottom: 20px; }
+        .modal-btn { color: #fff; border: none; padding: 10px 20px; border-radius: 6px; font-weight: bold; cursor: pointer; width: 100%; }
+        .modal-error { border: 2px solid #ff4d4d; box-shadow: 0 0 20px rgba(255, 77, 77, 0.4); }
         .modal-error h3 { color: #ff6b6b; }
         .modal-error .modal-btn { background: #d32f2f; }
-
-        .modal-success {
-            border: 2px solid #28a745;
-            box-shadow: 0 0 20px rgba(40, 167, 69, 0.4);
-        }
+        .modal-success { border: 2px solid #28a745; box-shadow: 0 0 20px rgba(40, 167, 69, 0.4); }
         .modal-success h3 { color: #4cd169; }
         .modal-success .modal-btn { background: #28a745; }
-
-        @keyframes pulse {
-            0% { transform: scale(1); opacity: 0.8; }
-            50% { transform: scale(1.05); opacity: 1; }
-            100% { transform: scale(1); opacity: 0.8; }
-        }
+        @keyframes pulse { 0% { transform: scale(1); opacity: 0.8; } 50% { transform: scale(1.05); opacity: 1; } 100% { transform: scale(1); opacity: 0.8; } }
     </style>
 </head>
 <body>
@@ -353,7 +268,7 @@
         </div>
     </div>
 
-   <!-- 2. ЭКРАН ВХОДА -->
+    <!-- 2. ЭКРАН ВХОДА -->
     <div id="login-screen" class="screen">
         <img src="logo.png" alt="Kaganat Logo" class="screen-logo" onerror="this.style.display='none'">
         <h2>Кирүү</h2>
@@ -369,18 +284,17 @@
         </div>
         <button class="btn" id="loginBtn">Кирүү</button>
         
-        <!-- НОВАЯ РАБОЧАЯ КНОПКА ВХОДА ЧЕРЕЗ GOOGLE -->
-        <button class="btn btn-google" id="googleLoginBtn" style="margin-top: 15px;">
-            <svg width="18" height="18" viewBox="0 0 18 18"><path fill="#4285F4" d="M17.64 9.2c0-.63-.06-1.25-.16-1.84H9v3.49h4.84c-.21 1.12-.86 2.07-1.83 2.71v2.26h2.96c1.73-1.59 2.73-3.93 2.73-6.62z"/><path fill="#34A853" d="M9 18c2.43 0 4.47-.8 5.96-2.18l-2.96-2.26c-.8.54-1.82.87-3 .87-2.3 0-4.25-1.55-4.95-3.64H1.02v2.33C2.55 15.96 5.54 18 9 18z"/><path fill="#FBBC05" d="M4.05 10.79c-.18-.54-.28-1.12-.28-1.79s.1-1.25.28-1.79V4.88H1.02C.37 6.18 0 7.65 0 9.2s.37 3.02 1.02 4.32l3.03-2.33z"/><path fill="#EA4335" d="M9 3.58c1.32 0 2.5.45 3.44 1.35l2.58-2.58C13.47.89 11.43 0 9 0 5.54 0 2.55 2.04 1.02 4.88l3.03 2.33c.7-2.09 2.65-3.63 4.95-3.63z"/></svg>
-            Google аркылуу кирүү
-        </button>
+        <!-- Ссылка на восстановление пароля через Google -->
+        <div class="switch-link" style="margin-top: 15px; font-size: 13px;" onclick="recoverPassword()">
+            Сыр сөзүңүздү унуттуңузбу? <span style="font-weight: bold;">Калыбына келтирүү</span>
+        </div>
 
-        <div class="switch-link" style="margin-top: 15px;" onclick="switchScreen('register-screen')">
+        <div class="switch-link" style="margin-top: 10px;" onclick="switchScreen('register-screen')">
             Аккаунт жокпу? <span style="font-weight: bold;">Катталуу</span>
         </div>
     </div>
 
-<!-- 3. ЭКРАН КАТТАЛУУ (РЕГИСТРАЦИИ) -->
+    <!-- 3. ЭКРАН КАТТАЛУУ (РЕГИСТРАЦИИ) -->
     <div id="register-screen" class="screen">
         <img src="logo.png" alt="Kaganat Logo" class="screen-logo" onerror="this.style.display='none'">
         <h2>Катталуу</h2>
@@ -407,26 +321,30 @@
 
         <button class="btn" id="registerSubmitBtn" style="margin-top: 15px;">Катталууну аяктоо</button>
         
-        <div class="switch-link" onclick="switchScreen('login-screen')">
-            Мурунтан аккаунтуңуз барбы? <span style="font-weight: bold;">Кирүү</span>
+        <!-- ЕДИНАЯ НАВИГАЦИЯ ДЛЯ ЭКРАНА РЕГИСТРАЦИИ -->
+        <div style="display: flex; justify-content: space-between; margin-top: 30px; font-size: 15px; font-weight: bold; padding: 0 10px; text-transform: uppercase; letter-spacing: 1px;">
+            <div onclick="showModal('Маалымат', 'Меню бөлүмү жакында кошулат!', 'success')" style="color: #8c735a; cursor: pointer; transition: color 0.2s;" onmouseover="this.style.color='#cfb395'" onmouseout="this.style.color='#8c735a'">
+                &lt; Меню
+            </div>
+            <div onclick="switchScreen('login-screen')" style="color: #ffd479; cursor: pointer; transition: color 0.2s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='#ffd479'">
+                Артка &gt;
+            </div>
         </div>
     </div>
 
-  <!-- 4. ЭКРАН ВЫБОРА ФРАКЦИИ -->
+    <!-- 4. ЭКРАН ВЫБОРА ФРАКЦИИ -->
     <div id="faction-screen" class="screen">
         <h2>Фракцияны тандаңыз</h2>
         <div class="faction-warning">
             Бул тандоо мүнөздөмөлөргө жана оюндун жүрүшүнө таасир этпейт
         </div>
         <div class="factions-container">
-            <!-- Карточка Кыргыз -->
             <div class="faction-card">
                 <div class="faction-img-wrap">
                     <img src="kyrgyz.png" alt="Кыргыз" onerror="this.src='hero_idle_in.jpg'">
                 </div>
                 <button class="btn-kyrgyz" id="chooseKyrgyzBtn">Кыргыз</button>
             </div>
-            <!-- Карточка Кыпчак -->
             <div class="faction-card">
                 <div class="faction-img-wrap">
                     <img src="kypchak.png" alt="Кыпчак" onerror="this.src='Кыпчак прото.jpg'">
@@ -435,16 +353,32 @@
             </div>
         </div>
         
-        <!-- НОВАЯ КНОПКА ВОЗВРАТА -->
-        <button class="btn" id="backFromFactionBtn" style="margin-top: 25px; background: transparent; color: #cfb395; border: 1px solid #784e1b; box-shadow: none;">Артка кайтуу (Чыгуу)</button>
+        <!-- ЕДИНАЯ НАВИГАЦИЯ ДЛЯ ЭКРАНА ФРАКЦИЙ -->
+        <div style="display: flex; justify-content: space-between; margin-top: 30px; font-size: 15px; font-weight: bold; padding: 0 10px; text-transform: uppercase; letter-spacing: 1px;">
+            <div onclick="showModal('Маалымат', 'Меню бөлүмү жакында кошулат!', 'success')" style="color: #8c735a; cursor: pointer; transition: color 0.2s;" onmouseover="this.style.color='#cfb395'" onmouseout="this.style.color='#8c735a'">
+                &lt; Меню
+            </div>
+            <div id="backFromFactionBtn" style="color: #ffd479; cursor: pointer; transition: color 0.2s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='#ffd479'">
+                Артка (Чыгуу) &gt;
+            </div>
+        </div>
     </div>
 
-    <!-- 5. ГЛАВНЫЙ ЭКРАН ИГРЫ (ЛОББИ) -->
+<!-- 5. ГЛАВНЫЙ ЭКРАН ИГРЫ (ЛОББИ) -->
     <div id="game-screen" class="screen">
         <h2 id="welcomePlayerTitle">Каганат дүйнөсүнө кош келдиңиз!</h2>
         <p id="playerFactionInfo" style="color: #ffd479; font-weight: bold; font-size: 18px;"></p>
         <p style="color: #ecd7ba; font-size: 14px;">Оюнга даярданыңыз...</p>
-        <button class="btn" id="logoutBtn" style="margin-top: 25px; background: #5a201b; color: #fff; border: 1px solid #ff6b6b;">Чыгуу (Аккаунттан чыгуу)</button>
+        
+        <!-- ЕДИНАЯ НАВИГАЦИЯ ДЛЯ ГЛАВНОГО ЭКРАНА -->
+        <div style="display: flex; justify-content: space-between; margin-top: 40px; font-size: 15px; font-weight: bold; padding: 0 10px; text-transform: uppercase; letter-spacing: 1px;">
+            <div onclick="showModal('Маалымат', 'Меню бөлүмү жакында кошулат!', 'success')" style="color: #8c735a; cursor: pointer; transition: color 0.2s;" onmouseover="this.style.color='#cfb395'" onmouseout="this.style.color='#8c735a'">
+                &lt; Меню
+            </div>
+            <div id="logoutBtn" style="color: #ffd479; cursor: pointer; transition: color 0.2s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='#ffd479'">
+                Артка (Чыгуу) &gt;
+            </div>
+        </div>
     </div>
 
     <!-- УНИВЕРСАЛЬНОЕ МОДАЛЬНОЕ ОКНО -->
@@ -525,12 +459,10 @@
             }
         });
 
-        // Слушатель для мгновенного выбивания старого устройства
         function listenForRemoteSession(nicknameKey) {
             if (unsubscribeUserListener) {
                 unsubscribeUserListener();
             }
-
             const userRef = doc(db, "nicknames", nicknameKey);
             unsubscribeUserListener = onSnapshot(userRef, (docSnap) => {
                 if (docSnap.exists()) {
@@ -596,7 +528,6 @@
             switchScreen('login-screen');
         });
 
-        // ВОЗВРАТ С ЭКРАНА ВЫБОРА ФРАКЦИИ (РАБОТАЕТ КАК ВЫХОД)
         document.getElementById('backFromFactionBtn').addEventListener('click', () => {
             if (unsubscribeUserListener) {
                 unsubscribeUserListener();
@@ -607,12 +538,12 @@
             currentActiveUser = null;
             currentSessionId = null;
             
-            // Очищаем формы на всякий случай
             document.getElementById('loginNickname').value = '';
             document.getElementById('loginPassword').value = '';
             
             switchScreen('login-screen');
         });
+
         async function chooseFaction(factionName) {
             if (!currentActiveUser) return;
             try {
@@ -701,19 +632,7 @@
             }
         });
 
-        document.getElementById('googleBindBtn').addEventListener('click', async () => {
-            const provider = new GoogleAuthProvider();
-            try {
-                const result = await signInWithPopup(auth, provider);
-                showModal('Ийгиликтүү', 'Google аккаунт ийгиликтүү байланды!\n' + result.user.email, 'success');
-            } catch (error) {
-                console.error(error);
-                showModal('Ката', 'Google аркылуу кирүү ката кетти!', 'error');
-            }
-        });
-
         // Временная переменная для почты при регистрации
-       // Временная переменная для почты при регистрации
         let tempGoogleEmail = null;
         
         // Иконка гугла, чтобы не дублировать код
@@ -835,14 +754,12 @@
                 await setDoc(nickRef, newUserData);
 
                 showModal('Ийгиликтүү', 'Катталуу ийгиликтүү аяктады!', 'success', {}, () => {
-                    // Очищаем форму, чтобы при выходе из аккаунта поля были пустые
                     document.getElementById('regNickname').value = '';
                     document.getElementById('regPassword').value = '';
                     document.getElementById('regPasswordConfirm').value = '';
                     document.getElementById('googleBindBtn').innerHTML = `${googleSvgIcon} Google аккаунтту байлоо (Милдеттүү)`;
                     tempGoogleEmail = null;
                     
-                    // СРАЗУ ЗАПУСКАЕМ ИГРОКА (без возврата на экран входа)
                     proceedUserEntry(newUserData, nicknameKey);
                 });
 
