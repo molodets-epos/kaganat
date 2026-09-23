@@ -575,13 +575,19 @@
             if (!currentActiveUser) return;
             try {
                 const userRef = doc(db, "nicknames", currentActiveUser);
-                await setDoc(userRef, { fraction: factionName }, { merge: true });
-
+                // Сохраняем фракцию И ставим начальный шаг сюжета (0) для нового игрока
+                await setDoc(userRef, { fraction: factionName, storyStep: 0 }, { merge: true });
+                
                 showModal('Ийгиликтүү', `Сиз ${factionName} фракциясын тандадыңыз!`, 'success', {}, () => {
-                    document.getElementById('welcomePlayerTitle').innerText = `Кош келдиңиз!`;
+                    document.getElementById('welcomePlayerTitle').innerText = `${currentActiveUser}, кош келдиңиз!`;
                     document.getElementById('playerFactionInfo').innerText = `Сиздин фракция: ${factionName}`;
                     switchScreen('game-screen');
                 });
+            } catch (err) {
+                console.error(err);
+                showModal('Ката', 'Фракцияны сактоодо ката кетти!', 'error');
+            }
+        }
             } catch (err) {
                 console.error(err);
                 showModal('Ката', 'Фракцияны сактоодо ката кетти!', 'error');
