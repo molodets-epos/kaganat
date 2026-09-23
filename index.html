@@ -141,8 +141,8 @@
             text-decoration: underline;
         }
 
-        /* МОДАЛЬНОЕ ОКНО ОШИБКИ */
-        #error-modal {
+        /* УНИВЕРСАЛЬНОЕ ИГРОВОЕ ОКНО УВЕДОМЛЕНИЙ */
+        #custom-modal {
             display: none;
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
@@ -155,13 +155,11 @@
             background: #111726;
             padding: 25px;
             border-radius: 12px;
-            border: 2px solid #ff4d4d;
             width: 320px;
             text-align: center;
-            box-shadow: 0 0 20px rgba(255, 77, 77, 0.3);
+            transition: all 0.3s;
         }
         .modal-content h3 {
-            color: #ff4d4d;
             margin-top: 0;
             margin-bottom: 10px;
         }
@@ -172,7 +170,6 @@
             margin-bottom: 20px;
         }
         .modal-btn {
-            background: #ff4d4d;
             color: #fff;
             border: none;
             padding: 10px 20px;
@@ -180,10 +177,27 @@
             font-weight: bold;
             cursor: pointer;
             width: 100%;
+            transition: opacity 0.2s;
         }
         .modal-btn:hover {
-            background: #ff3333;
+            opacity: 0.8;
         }
+
+        /* СТИЛЬ ОШИБКИ (Красный) */
+        .modal-error {
+            border: 2px solid #ff4d4d;
+            box-shadow: 0 0 20px rgba(255, 77, 77, 0.3);
+        }
+        .modal-error h3 { color: #ff4d4d; }
+        .modal-error .modal-btn { background: #ff4d4d; }
+
+        /* СТИЛЬ УСПЕХА (Зеленый) */
+        .modal-success {
+            border: 2px solid #28a745;
+            box-shadow: 0 0 20px rgba(40, 167, 69, 0.3);
+        }
+        .modal-success h3 { color: #28a745; }
+        .modal-success .modal-btn { background: #28a745; }
 
         @keyframes pulse {
             0% { transform: scale(1); opacity: 0.8; }
@@ -254,12 +268,12 @@
         </div>
     </div>
 
-    <!-- МОДАЛЬНОЕ ОКНО ОШИБКИ -->
-    <div id="error-modal">
-        <div class="modal-content">
-            <h3>Маалыматтар ката</h3>
-            <p id="error-message">Сураныч, маалыматтарды туура толтуруңуз!</p>
-            <button class="modal-btn" onclick="closeErrorModal()">Макул</button>
+    <!-- УНИВЕРСАЛЬНОЕ ОКНО -->
+    <div id="custom-modal">
+        <div class="modal-content" id="modal-content-box">
+            <h3 id="modal-title">Маалымат</h3>
+            <p id="modal-message">Бул жерде текст болот</p>
+            <button class="modal-btn" onclick="closeModal()">Макул</button>
         </div>
     </div>
 
@@ -269,7 +283,7 @@
         import { getAuth, signInWithPopup, GoogleAuthProvider } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
         import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
-        // ТВОЙ НАСТОЯЩИЙ РАБОЧИЙ КЛЮЧ УЖЕ ЗДЕСЬ
+        // ТВОЙ НАСТОЯЩИЙ РАБОЧИЙ КЛЮЧ
         const firebaseConfig = {
             apiKey: "AIzaSyBRkzoUhINimIQ69kBdelZhyoMmCUlDUNQ",
             authDomain: "kaganat-5c070.firebaseapp.com",
@@ -298,9 +312,16 @@
             });
         }
 
-        window.showError = function(msg, fieldErrors = {}) {
-            document.getElementById('error-message').innerText = msg;
-            document.getElementById('error-modal').style.display = 'flex';
+        // НОВАЯ ФУНКЦИЯ ДЛЯ КРАСИВЫХ ИГРОВЫХ УВЕДОМЛЕНИЙ
+        window.showModal = function(title, msg, type = 'error', fieldErrors = {}) {
+            document.getElementById('modal-title').innerText = title;
+            document.getElementById('modal-message').innerText = msg;
+            
+            const modalBox = document.getElementById('modal-content-box');
+            // Меняем цвет окна (красный или зеленый)
+            modalBox.className = 'modal-content ' + (type === 'success' ? 'modal-success' : 'modal-error');
+            
+            document.getElementById('custom-modal').style.display = 'flex';
             
             for (const [id, errorText] of Object.entries(fieldErrors)) {
                 const el = document.getElementById(id);
@@ -314,8 +335,8 @@
             }
         }
 
-        window.closeErrorModal = function() {
-            document.getElementById('error-modal').style.display = 'none';
+        window.closeModal = function() {
+            document.getElementById('custom-modal').style.display = 'none';
         }
 
         // Анимация загрузки
@@ -347,7 +368,7 @@
             if(!pass) errors['loginPassword'] = 'Сыр сөздү жазыңыз';
 
             if(Object.keys(errors).length > 0) {
-                showError('Сураныч, бардык талааларды толтуруңуз!', errors);
+                showModal('Маалыматтар ката', 'Сураныч, бардык талааларды толтуруңуз!', 'error', errors);
                 return;
             }
 
@@ -357,20 +378,20 @@
                 const userSnap = await getDoc(userDocRef);
 
                 if(!userSnap.exists()) {
-                    showError('Мындай ысым катталган эмес!', {'loginNickname': 'Катталбаган ысым'});
+                    showModal('Ката', 'Мындай ысым катталган эмес!', 'error', {'loginNickname': 'Катталбаган ысым'});
                     return;
                 }
 
                 const userData = userSnap.data();
                 if(userData.password !== pass) {
-                    showError('Сыр сөз ката жазылды!', {'loginPassword': 'Сыр сөз туура эмес'});
+                    showModal('Ката', 'Сыр сөз ката жазылды!', 'error', {'loginPassword': 'Сыр сөз туура эмес'});
                     return;
                 }
 
-                alert('Ийгиликтүү кирдиңиз!');
+                showModal('Ийгиликтүү', 'Сиз оюнга ийгиликтүү кирдиңиз!', 'success');
             } catch (e) {
                 console.error(e);
-                showError('Туура эмес маалыматтарды жаздыңыз!', {'loginNickname': '', 'loginPassword': ''});
+                showModal('Ката', 'Туура эмес маалыматтарды жаздыңыз!', 'error', {'loginNickname': '', 'loginPassword': ''});
             }
         });
 
@@ -379,10 +400,10 @@
             const provider = new GoogleAuthProvider();
             try {
                 const result = await signInWithPopup(auth, provider);
-                alert('Google аккаунт ийгиликтүү байланды: ' + result.user.email);
+                showModal('Ийгиликтүү', 'Google аккаунт ийгиликтүү байланды!\n' + result.user.email, 'success');
             } catch (error) {
                 console.error(error);
-                showError('Google аркылуу кирүү ката кетти!');
+                showModal('Ката', 'Google аркылуу кирүү ката кетти!', 'error');
             }
         });
 
@@ -399,12 +420,12 @@
             if(!pass2) errors['regPasswordConfirm'] = 'Сыр сөздү кайталаңыз';
 
             if(Object.keys(errors).length > 0) {
-                showError('Бардык талааларды толтуруу зарыл!', errors);
+                showModal('Маалыматтар ката', 'Бардык талааларды толтуруу зарыл!', 'error', errors);
                 return;
             }
 
             if(nick.length < 3) {
-                showError('Ысым эң аз 3 символдон турушу керек!', {'regNickname': 'Кем дегенде 3 символ'});
+                showModal('Ката', 'Ысым эң аз 3 символдон турушу керек!', 'error', {'regNickname': 'Кем дегенде 3 символ'});
                 return;
             }
 
@@ -413,17 +434,17 @@
             const hasNumber = /[0-9]/.test(pass1);
 
             if (pass1.length < 8) {
-                showError('Сыр сөздө эң аз 8 символ болушу керек!', {'regPassword': 'Эң аз 8 символ болушу керек', 'regPasswordConfirm': ''});
+                showModal('Ката', 'Сыр сөздө эң аз 8 символ болушу керек!', 'error', {'regPassword': 'Эң аз 8 символ болушу керек', 'regPasswordConfirm': ''});
                 return;
             }
 
             if (!englishOnlyRegex.test(pass1) || !hasLetter || !hasNumber) {
-                showError('Сыр сөздө латын тамгалары жана сандар болушу зарыл!', {'regPassword': 'Латын тамгалары жана сандар катышыш керек', 'regPasswordConfirm': ''});
+                showModal('Ката', 'Сыр сөздө латын тамгалары жана сандар болушу зарыл!', 'error', {'regPassword': 'Латын тамгалары жана сандар катышыш керек', 'regPasswordConfirm': ''});
                 return;
             }
 
             if(pass1 !== pass2) {
-                showError('Сыр сөздөр бири-бирине дал келбейт!', {'regPassword': 'Дал келбейт', 'regPasswordConfirm': 'Сыр сөздөр бирдей болушу шарт'});
+                showModal('Ката', 'Сыр сөздөр бири-бирине дал келбейт!', 'error', {'regPassword': 'Дал келбейт', 'regPasswordConfirm': 'Сыр сөздөр бирдей болушу шарт'});
                 return;
             }
 
@@ -433,7 +454,7 @@
                 const nickSnap = await getDoc(nickRef);
 
                 if (nickSnap.exists()) {
-                    showError('Бул ысым буга чейин алынган!', {'regNickname': 'Бул ысым бош эмес'});
+                    showModal('Ката', 'Бул ысым буга чейин алынган!', 'error', {'regNickname': 'Бул ысым бош эмес'});
                     return;
                 }
 
@@ -442,12 +463,12 @@
                     password: pass1 
                 });
 
-                alert('Катталуу ийгиликтүү аяктады! Эми кире аласыз.');
+                showModal('Ийгиликтүү', 'Катталуу ийгиликтүү аяктады! Эми кире аласыз.', 'success');
                 switchScreen('login-screen');
 
             } catch (error) {
                 console.error(error);
-                showError('Каттоо учурунда ката кетти!');
+                showModal('Ката', 'Каттоо учурунда ката кетти!', 'error');
             }
         });
     </script>
