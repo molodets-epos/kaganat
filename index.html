@@ -523,8 +523,21 @@
             listenForRemoteSession(nicknameKey);
 
             if (userData.fraction) {
-                document.getElementById('welcomePlayerTitle').innerText = `${userData.nickname}, кош келдиңиз!`;
-                document.getElementById('playerFactionInfo').innerText = `Фракцияңыз: ${userData.fraction}`;
+                // --- СИСТЕМА ЗАГРУЗКИ СОХРАНЕНИЙ ---
+                if (userData.storyStep === 1) {
+                    // Если игрок уже взял квест: загружаем 1-й шаг
+                    document.getElementById('storyCharacter').style.display = 'block';
+                    document.getElementById('storyText').innerText = "Карышкырларды өлтүрүү тапшырмасы аткарылууда... (Жакында согуш башталат)";
+                    document.getElementById('nextStoryBtn').style.display = 'none';
+                    document.getElementById('acceptQuestBtn').style.display = 'none';
+                } else {
+                    // Если игрок новый (нет сохранений): показываем самое начало
+                    document.getElementById('storyCharacter').style.display = 'none';
+                    document.getElementById('storyText').innerText = "Сиз кечээ раматылык устатыңыздын курал-жарак жана кийимдерин мурастап алып, өзүңүздүн баатырдык жолуңузду баштайын деп сапарга чыккансыз. Кечке маал өрөөндө жайгашкан айылга жакындап калганда катуу бороон болуп, далдоо жер издеп бир чоң бактын түбүндө уктап калган экенсиң. Таттуу уйкудан сени бир карыя ойготуп жаткансыйт.";
+                    document.getElementById('nextStoryBtn').style.display = 'block';
+                    document.getElementById('acceptQuestBtn').style.display = 'none';
+                }
+                
                 switchScreen('game-screen');
             } else {
                 switchScreen('faction-screen');
@@ -799,8 +812,23 @@
             document.getElementById('acceptQuestBtn').style.display = 'block';
         });
 
-        document.getElementById('acceptQuestBtn').addEventListener('click', () => {
-            showModal('Согуш', 'Бул жерде карышкырлар менен согуш башталат (Функция кийинки жаңыртууда кошулат)', 'success');
+        document.getElementById('acceptQuestBtn').addEventListener('click', async () => {
+            if (!currentActiveUser) return;
+            
+            try {
+                // 1. АВТОМАТИЧЕСКОЕ СОХРАНЕНИЕ В БАЗУ ДАННЫХ (игрок перешел на шаг 1)
+                const userRef = doc(db, "nicknames", currentActiveUser);
+                await setDoc(userRef, { storyStep: 1 }, { merge: true });
+                
+                // 2. ОБНОВЛЕНИЕ ИКРАНА ИГРОКА
+                document.getElementById('acceptQuestBtn').style.display = 'none';
+                document.getElementById('storyText').innerText = "Карышкырларды өлтүрүү тапшырмасы аткарылууда... (Жакында согуш башталат)";
+                
+                showModal('Согуш', 'Бул жерде карышкырлар менен согуш башталат (Функция кийинки жаңыртууда кошулат)', 'success');
+            } catch (err) {
+                console.error("Ката:", err);
+                showModal('Ката', 'Прогрессти сактоодо ката кетти!', 'error');
+            }
         });
 
     </script>
