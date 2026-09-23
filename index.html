@@ -23,7 +23,6 @@
             display: none;
             width: 100%;
             max-width: 440px;
-            /* Пергаментный винтажный стиль */
             background: radial-gradient(circle at center, #2e1c0c 0%, #160d06 100%);
             padding: 35px;
             border-radius: 14px;
@@ -34,9 +33,9 @@
         .screen.active {
             display: block;
         }
-        /* Экран выбора фракции — просторный свиток */
+        /* Экран выбора фракции — просторный */
         #faction-screen {
-            max-width: 760px;
+            max-width: 820px;
             padding: 30px 40px;
         }
         .screen-logo {
@@ -168,7 +167,6 @@
             justify-content: center;
             gap: 30px;
         }
-        /* Карточки под старинный пергамент */
         .faction-card {
             flex: 1;
             background: radial-gradient(circle at 50% 30%, #4a2c11 0%, #241407 100%);
@@ -180,31 +178,36 @@
             align-items: center;
             box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.7), 0 6px 15px rgba(0, 0, 0, 0.5);
             transition: transform 0.2s, box-shadow 0.2s;
+            overflow: hidden;
         }
         .faction-card:hover {
             transform: translateY(-5px);
             box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.7), 0 10px 25px rgba(212, 154, 61, 0.3);
         }
-        /* Зона отображения увеличенных персонажей */
+        /* Зона отображения персонажей — увеличена и настроена на 80% пространства */
         .faction-img-wrap {
             width: 100%;
-            height: 330px;
+            height: 420px;
             display: flex;
             justify-content: center;
             align-items: center;
             margin-bottom: 15px;
+            overflow: hidden;
+            position: relative;
         }
         .faction-img-wrap img {
             width: 100%;
             height: 100%;
             object-fit: contain;
+            transform: scale(2.2); /* Увеличиваем в 2.2 раза, убирая пустоты холста */
+            transform-origin: center center;
             image-rendering: pixelated;
-            filter: drop-shadow(0 8px 12px rgba(0, 0, 0, 0.7));
+            filter: drop-shadow(0 10px 15px rgba(0, 0, 0, 0.8));
         }
         /* Красная кнопка Кыргыз */
         .btn-kyrgyz {
             width: 100%;
-            padding: 13px;
+            padding: 14px;
             background: linear-gradient(180deg, #d32f2f, #9a1919);
             color: #ffffff;
             border: 1px solid #ff7b7b;
@@ -214,6 +217,7 @@
             cursor: pointer;
             box-shadow: 0 4px 14px rgba(211, 47, 47, 0.4);
             transition: all 0.2s;
+            z-index: 2;
         }
         .btn-kyrgyz:hover {
             background: linear-gradient(180deg, #e53935, #b71c1c);
@@ -221,7 +225,7 @@
         /* Синяя кнопка Кыпчак */
         .btn-kypchak {
             width: 100%;
-            padding: 13px;
+            padding: 14px;
             background: linear-gradient(180deg, #1976d2, #0d47a1);
             color: #ffffff;
             border: 1px solid #64b5f6;
@@ -231,6 +235,7 @@
             cursor: pointer;
             box-shadow: 0 4px 14px rgba(25, 118, 210, 0.4);
             transition: all 0.2s;
+            z-index: 2;
         }
         .btn-kypchak:hover {
             background: linear-gradient(180deg, #1e88e5, #1565c0);
