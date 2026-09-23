@@ -11,7 +11,7 @@
         }
         body {
             margin: 0;
-            background-color: #080b12;
+            background-color: #050505;
             color: #ffffff;
             display: flex;
             justify-content: center;
@@ -53,7 +53,7 @@
             width: 0%;
             height: 100%;
             background: linear-gradient(90deg, #c28e38, #f3d078);
-            transition: width 0.1s linear;
+            transition: width 0.05s linear;
         }
         .progress-text {
             margin-top: 10px;
@@ -86,7 +86,6 @@
             border-radius: 6px;
             font-size: 15px;
             outline: none;
-            transition: border-color 0.2s;
         }
         input:focus {
             border-color: #c28e38;
@@ -138,9 +137,9 @@
 </head>
 <body>
 
-    <!-- 1. ЭКРАН ЗАГРУЗКИ -->
+    <!-- 1. ЭКРАН ЗАГРУЗКИ С ПРОЦЕНТАМИ -->
     <div id="loader-screen" class="screen active">
-        <!-- Убедись, что файл логотипа лежит в корне репозитория (например, logo.png или поменяй название ниже) -->
+        <!-- Поставь имя своего логотипа, если оно отличается от logo.png -->
         <img src="logo.png" alt="Kaganat Logo" onerror="this.style.display='none'">
         <h2 style="margin-bottom:5px;">КАГАНАТ</h2>
         <div class="progress-text" id="loadStatus">Жүктөлүүдө... 0%</div>
@@ -149,7 +148,7 @@
         </div>
     </div>
 
-    <!-- 2. ЭКРАН ВХОДА (АВТОРИЗАЦИЯ) -->
+    <!-- 2. ЭКРАН ВХОДА -->
     <div id="login-screen" class="screen">
         <h2>Кирүү</h2>
         <div class="input-group">
@@ -162,11 +161,11 @@
         </div>
         <button class="btn" id="loginBtn">Кирүү</button>
         <div class="switch-link" onclick="switchScreen('register-screen')">
-            Аккаунт жокпу? <span>Катталуу</span>
+            Аккаунт жокпу? <span style="font-weight: bold;">Катталуу</span>
         </div>
     </div>
 
-    <!-- 3. ЭКРАН РЕГИСТРАЦИИ -->
+    <!-- 3. ЭКРАН КАТТАЛУУ (РЕГИСТРАЦИИ) -->
     <div id="register-screen" class="screen">
         <h2>Катталуу</h2>
         <div class="input-group">
@@ -190,37 +189,37 @@
         <button class="btn" id="registerSubmitBtn" style="margin-top: 15px;">Катталууну аяктоо</button>
         
         <div class="switch-link" onclick="switchScreen('login-screen')">
-            Мурунтан аккаунтуңуз барбы? <span>Кирүү</span>
+            Мурунтан аккаунтуңуз барбы? <span style="font-weight: bold;">Кирүү</span>
         </div>
     </div>
 
     <script>
-        // Функция переключения экранов
+        // Функция переключения между экранами входа и регистрации
         function switchScreen(screenId) {
             document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
             document.getElementById(screenId).classList.add('active');
         }
 
-        // Имитация экрана загрузки от 0 до 100%
+        // Анимация экрана загрузки (от 0% до 100%)
         let progress = 0;
         const progressBar = document.getElementById('progressBar');
         const loadStatus = document.getElementById('loadStatus');
 
         const loadingInterval = setInterval(() => {
-            progress += Math.floor(Math.random() * 8) + 3; // случайный шаг роста
+            progress += 2; // скорость заполнения
             if (progress >= 100) {
                 progress = 100;
                 clearInterval(loadingInterval);
-                // Загрузка окончена, переходим на экран входа
+                // После окончания загрузки автоматически открываем экран входа
                 setTimeout(() => {
                     switchScreen('login-screen');
-                }, 400);
+                }, 300);
             }
             progressBar.style.width = progress + '%';
             loadStatus.innerText = `Жүктөлүүдө... ${progress}%`;
-        }, 50);
+        }, 30);
 
-        // Заглушки на кнопки (логику базы данных привяжем следующим шагом)
+        // Кнопки взаимодействия
         document.getElementById('loginBtn').addEventListener('click', () => {
             const nick = document.getElementById('loginNickname').value.trim();
             const pass = document.getElementById('loginPassword').value.trim();
@@ -232,7 +231,7 @@
         });
 
         document.getElementById('googleBindBtn').addEventListener('click', () => {
-            alert('Google аркылуу байлоо башталды...');
+            alert('Google аккаунтту байлоо баскычы басылды...');
         });
 
         document.getElementById('registerSubmitBtn').addEventListener('click', () => {
@@ -248,7 +247,7 @@
                 alert('Ката: Сыр сөздөр бири-бирине дал келбейт!');
                 return;
             }
-            alert('Катталуу ийгиликтүү аяктады!');
+            alert('Катталуу ийгиликтүү башталды!');
         });
     </script>
 </body>
