@@ -12,7 +12,13 @@
         }
         body {
             margin: 0;
-            background: #080604;
+            /* Оранжево-терракотовый фон с темным национальным орнаментом (оюу) */
+            background-color: #a84b0d;
+            background-image: 
+                radial-gradient(circle at center, rgba(168, 75, 13, 0.45) 0%, rgba(20, 8, 3, 0.94) 100%),
+                url("data:image/svg+xml,%3Csvg width='80' height='80' viewBox='0 0 80 80' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23000000' fill-opacity='0.25' fill-rule='evenodd'%3E%3Cpath d='M0 40L40 0l40 40-40 40L0 40zm40-28.284L11.716 40 40 68.284 68.284 40 40 11.716zM40 20L20 40l20 20 20-20-20-20zm0 8l12 12-12 12-12-12 12-12z'/%3E%3Cpath d='M0 0l16 16L0 32V0zm80 0L64 16l16 16V0zM0 80l16-16L0 48v32zm80 0l-16-16 16-16v32z'/%3E%3C/g%3E%3C/svg%3E");
+            background-repeat: repeat;
+            background-size: auto, 75px 75px;
             color: #ffffff;
             display: flex;
             justify-content: center;
@@ -31,7 +37,7 @@
             padding: 30px;
             border-radius: 14px;
             border: 2px solid #d49a3d;
-            box-shadow: 0 0 45px rgba(212, 154, 61, 0.25), inset 0 0 25px rgba(0, 0, 0, 0.6);
+            box-shadow: 0 0 45px rgba(212, 154, 61, 0.3), inset 0 0 25px rgba(0, 0, 0, 0.7);
             text-align: center;
         }
         .screen.active {
@@ -228,7 +234,7 @@
             transition: all 0.2s;
         }
 
-        /* ПОЛНАЯ АДАПТАЦИЯ ДЛЯ ТЕЛЕФОНОВ: КАРТОЧКИ В СТОЛБЕЦ */
+        /* АДАПТАЦИЯ ДЛЯ ТЕЛЕФОНОВ: КАРТОЧКИ В СТОЛБЕЦ */
         @media (max-width: 650px) {
             body {
                 align-items: flex-start;
@@ -244,7 +250,7 @@
                 padding: 16px 12px;
             }
             .factions-container {
-                flex-direction: column; /* Карточки встают друг под друга! */
+                flex-direction: column;
                 gap: 20px;
             }
             .faction-card {
@@ -252,11 +258,11 @@
                 padding: 15px;
             }
             .faction-img-wrap {
-                height: 280px;
+                height: 290px;
                 margin-bottom: 12px;
             }
             .faction-img-wrap img {
-                transform: scale(1.65); /* Воины становятся огромными и четкими */
+                transform: scale(1.65);
                 transform-origin: bottom center;
             }
             .btn-kyrgyz, .btn-kypchak {
@@ -510,7 +516,6 @@
             unsubscribeUserListener = onSnapshot(userRef, (docSnap) => {
                 if (docSnap.exists()) {
                     const data = docSnap.data();
-                    // Если в базе сессия изменилась другим устройством
                     if (data.currentSessionId && currentSessionId && data.currentSessionId !== currentSessionId) {
                         if (unsubscribeUserListener) {
                             unsubscribeUserListener();
@@ -539,11 +544,9 @@
             currentActiveUser = nicknameKey;
             localStorage.setItem('kaganat_active_user', nicknameKey);
 
-            // Создаем уникальный идентификатор для текущего устройства
             currentSessionId = 'sess_' + Date.now() + '_' + Math.random().toString(36).substring(2, 9);
             localStorage.setItem('kaganat_session_id', currentSessionId);
 
-            // Обновляем сессию в Firestore (merge: true гарантирует запись без ошибок)
             try {
                 const userRef = doc(db, "nicknames", nicknameKey);
                 await setDoc(userRef, { currentSessionId: currentSessionId }, { merge: true });
@@ -551,7 +554,6 @@
                 console.error("Сессия сактоо катасы:", err);
             }
 
-            // Включаем слежку за сессией
             listenForRemoteSession(nicknameKey);
 
             if (userData.fraction) {
