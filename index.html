@@ -523,19 +523,11 @@
 
             if (userData.fraction) {
                 // --- СИСТЕМА ЗАГРУЗКИ СОХРАНЕНИЙ ---
-                if (userData.storyStep === 1) {
-                    // Если игрок уже взял квест: загружаем 1-й шаг
-                    document.getElementById('storyCharacter').style.display = 'block';
-                    document.getElementById('storyText').innerText = "Карышкырларды өлтүрүү тапшырмасы аткарылууда... (Жакында согуш башталат)";
-                    document.getElementById('nextStoryBtn').style.display = 'none';
-                    document.getElementById('acceptQuestBtn').style.display = 'none';
-                } else {
-                    // Если игрок новый (нет сохранений): показываем самое начало
-                    document.getElementById('storyCharacter').style.display = 'none';
-                    document.getElementById('storyText').innerText = "Сиз кечээ раматылык устатыңыздын курал-жарак жана кийимдерин мурастап алып, өзүңүздүн баатырдык жолуңузду баштайын деп сапарга чыккансыз. Кечке маал өрөөндө жайгашкан айылга жакындап калганда катуу бороон болуп, далдоо жер издеп бир чоң бактын түбүндө уктап калган экенсиң. Таттуу уйкудан сени бир карыя ойготуп жаткансыйт.";
-                    document.getElementById('nextStoryBtn').style.display = 'block';
-                    document.getElementById('acceptQuestBtn').style.display = 'none';
-                }
+              if (userData.storyStep === 1) {
+                // Если квест уже принят, сразу открываем боевую арену
+                switchScreen('battle-screen');
+                return;
+            }
                 
                 switchScreen('game-screen');
             } else {
