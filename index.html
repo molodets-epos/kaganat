@@ -86,9 +86,15 @@
             border-radius: 6px;
             font-size: 15px;
             outline: none;
+            transition: border-color 0.2s;
         }
         input:focus {
             border-color: #c28e38;
+        }
+        /* Подсветка ошибки красным */
+        input.error-input {
+            border-color: #ff4d4d !important;
+            box-shadow: 0 0 8px rgba(255, 77, 77, 0.4);
         }
         .btn {
             width: 100%;
@@ -128,6 +134,50 @@
             color: #f3d078;
             text-decoration: underline;
         }
+
+        /* КАСТОМНОЕ ИГРОВОЕ МОДАЛЬНОЕ ОКНО ОШИБКИ */
+        #error-modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        .modal-content {
+            background: #111726;
+            padding: 25px;
+            border-radius: 12px;
+            border: 2px solid #ff4d4d;
+            width: 320px;
+            text-align: center;
+            box-shadow: 0 0 20px rgba(255, 77, 77, 0.3);
+        }
+        .modal-content h3 {
+            color: #ff4d4d;
+            margin-top: 0;
+            margin-bottom: 10px;
+        }
+        .modal-content p {
+            color: #ddd;
+            font-size: 14px;
+            margin-bottom: 20px;
+        }
+        .modal-btn {
+            background: #ff4d4d;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            font-weight: bold;
+            cursor: pointer;
+            width: 100%;
+        }
+        .modal-btn:hover {
+            background: #ff3333;
+        }
+
         @keyframes pulse {
             0% { transform: scale(1); opacity: 0.8; }
             50% { transform: scale(1.05); opacity: 1; }
@@ -137,9 +187,8 @@
 </head>
 <body>
 
-    <!-- 1. ЭКРАН ЗАГРУЗКИ С ПРОЦЕНТАМИ -->
+    <!-- 1. ЭКРАН ЗАГРУЗКИ -->
     <div id="loader-screen" class="screen active">
-        <!-- Поставь имя своего логотипа, если оно отличается от logo.png -->
         <img src="logo.png" alt="Kaganat Logo" onerror="this.style.display='none'">
         <h2 style="margin-bottom:5px;">КАГАНАТ</h2>
         <div class="progress-text" id="loadStatus">Жүктөлүүдө... 0%</div>
@@ -193,24 +242,52 @@
         </div>
     </div>
 
+    <!-- МОДАЛЬНОЕ ОКНО ОШИБКИ -->
+    <div id="error-modal">
+        <div class="modal-content">
+            <h3>Маалыматтар ката</h3>
+            <p id="error-message">Сураныч, маалыматтарды туура толтуруңуз!</p>
+            <button class="modal-btn" onclick="closeErrorModal()">Макул</button>
+        </div>
+    </div>
+
     <script>
-        // Функция переключения между экранами входа и регистрации
         function switchScreen(screenId) {
             document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
             document.getElementById(screenId).classList.add('active');
+            clearErrors();
         }
 
-        // Анимация экрана загрузки (от 0% до 100%)
+        // Очистка подсветки ошибок
+        function clearErrors() {
+            document.querySelectorAll('input').forEach(input => input.classList.remove('error-input'));
+        }
+
+        // Показ кастомного окна ошибки
+        function showError(msg, fieldsToHighlight = []) {
+            document.getElementById('error-message').innerText = msg;
+            document.getElementById('error-modal').style.display = 'flex';
+            
+            fieldsToHighlight.forEach(id => {
+                const el = document.getElementById(id);
+                if(el) el.classList.add('error-input');
+            });
+        }
+
+        function closeErrorModal() {
+            document.getElementById('error-modal').style.display = 'none';
+        }
+
+        // Анимация загрузки
         let progress = 0;
         const progressBar = document.getElementById('progressBar');
         const loadStatus = document.getElementById('loadStatus');
 
         const loadingInterval = setInterval(() => {
-            progress += 2; // скорость заполнения
+            progress += 3;
             if (progress >= 100) {
                 progress = 100;
                 clearInterval(loadingInterval);
-                // После окончания загрузки автоматически открываем экран входа
                 setTimeout(() => {
                     switchScreen('login-screen');
                 }, 300);
@@ -219,35 +296,55 @@
             loadStatus.innerText = `Жүктөлүүдө... ${progress}%`;
         }, 30);
 
-        // Кнопки взаимодействия
+        // Кнопка входа
         document.getElementById('loginBtn').addEventListener('click', () => {
+            clearErrors();
             const nick = document.getElementById('loginNickname').value.trim();
             const pass = document.getElementById('loginPassword').value.trim();
-            if(!nick || !pass) {
-                alert('Сураныч, бардык талааларды толтуруңуз!');
+
+            let missingFields = [];
+            if(!nick) missingFields.push('loginNickname');
+            if(!pass) missingFields.push('loginPassword');
+
+            if(missingFields.length > 0) {
+                showError('Сураныч, бош калган талааларды толтуруңуз!', missingFields);
                 return;
             }
-            alert('Кирүү аракет кылынууда...');
+
+            // Пример проверки (в будущем заменим на сверку с базой Firebase)
+            // Если введены неверные данные — подсвечиваем оба поля и выводим ошибку игры
+            showError('Ысым же сыр сөз ката жазылды!', ['loginNickname', 'loginPassword']);
         });
 
+        // Кнопка привязки Google
         document.getElementById('googleBindBtn').addEventListener('click', () => {
-            alert('Google аккаунтту байлоо баскычы басылды...');
+            alert('Google аккаунтту байлоо ишке ашууда...');
         });
 
+        // Кнопка завершения регистрации
         document.getElementById('registerSubmitBtn').addEventListener('click', () => {
+            clearErrors();
             const nick = document.getElementById('regNickname').value.trim();
             const pass1 = document.getElementById('regPassword').value;
             const pass2 = document.getElementById('regPasswordConfirm').value;
 
-            if(!nick || !pass1 || !pass2) {
-                alert('Сураныч, бардык талааларды толтуруңуз!');
+            let missingFields = [];
+            if(!nick) missingFields.push('regNickname');
+            if(!pass1) missingFields.push('regPassword');
+            if(!pass2) missingFields.push('regPasswordConfirm');
+
+            if(missingFields.length > 0) {
+                showError('Бардык талааларды толтуруу зарыл!', missingFields);
                 return;
             }
+
             if(pass1 !== pass2) {
-                alert('Ката: Сыр сөздөр бири-бирине дал келбейт!');
+                showError('Сыр сөздөр бири-бирине дал келбейт!', ['regPassword', 'regPasswordConfirm']);
                 return;
             }
-            alert('Катталуу ийгиликтүү башталды!');
+
+            // Успешная регистрация заглушка
+            alert('Катталуу ийгиликтүү аяктады!');
         });
     </script>
 </body>
