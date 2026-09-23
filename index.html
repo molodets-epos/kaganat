@@ -671,11 +671,11 @@
                     return;
                 }
 
-                querySnapshot.forEach((docSnap) => {
+              querySnapshot.forEach((docSnap) => {
                     const userData = docSnap.data();
                     showModal(
-                        'Сыр сөз табылды!', 
-                        `Сиздин сыр сөзүңүз:\n\n${userData.password}\n\nУшул сыр сөздү колдонуп кирсеңиз болот.`, 
+                        'Аккаунт табылды!', 
+                        `Сиздин логиниңиз (ысым):\n${userData.nickname}\n\nСиздин сыр сөзүңүз:\n${userData.password}\n\nУшул маалыматтарды колдонуп оюнга кире аласыз.`, 
                         'success'
                     );
                 });
