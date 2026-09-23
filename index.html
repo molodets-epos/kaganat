@@ -18,7 +18,7 @@
             justify-content: center;
             align-items: center;
             min-height: 100vh;
-            height: 100dvh; /* Динамическая высота для мобилок */
+            height: 100dvh;
             overflow: hidden;
             padding: 10px;
         }
@@ -152,7 +152,7 @@
             text-decoration: underline;
         }
 
-        /* БЛОК ВЫБОРА ФРАКЦИИ (ПК стиль по умолчанию) */
+        /* БЛОК ВЫБОРА ФРАКЦИИ (ПК) */
         .faction-warning {
             font-size: 13px;
             color: #f3dfc8;
@@ -178,6 +178,7 @@
             align-items: center;
             box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.7), 0 6px 15px rgba(0, 0, 0, 0.5);
             transition: transform 0.2s, box-shadow 0.2s;
+            overflow: hidden;
         }
         .faction-card:hover {
             transform: translateY(-4px);
@@ -190,10 +191,8 @@
             align-items: flex-end;
             margin-bottom: 12px;
             position: relative;
-            overflow: hidden;
         }
         .faction-img-wrap img {
-            max-width: 100%;
             height: 100%;
             object-fit: contain;
             transform: scale(1.6);
@@ -213,6 +212,7 @@
             cursor: pointer;
             box-shadow: 0 4px 14px rgba(211, 47, 47, 0.4);
             transition: all 0.2s;
+            z-index: 2;
         }
         .btn-kypchak {
             width: 100%;
@@ -226,46 +226,51 @@
             cursor: pointer;
             box-shadow: 0 4px 14px rgba(25, 118, 210, 0.4);
             transition: all 0.2s;
+            z-index: 2;
         }
 
-        /* АДАПТАЦИЯ ДЛЯ ТЕЛЕФОНОВ (Экраны меньше 600px) */
+        /* АДАПТАЦИЯ ДЛЯ ТЕЛЕФОНОВ (КРУПНЫЕ ПЕРСОНАЖИ) */
         @media (max-width: 600px) {
             body {
-                padding: 12px;
+                padding: 10px;
             }
             .screen {
-                padding: 20px 16px;
+                padding: 20px 14px;
                 border-radius: 12px;
             }
             #faction-screen {
-                padding: 16px 14px;
+                padding: 14px 10px;
             }
             h2 {
                 font-size: 18px;
-                margin-bottom: 10px;
+                margin-bottom: 8px;
             }
             .faction-warning {
                 font-size: 11px;
-                padding: 8px 10px;
-                margin-bottom: 14px;
+                padding: 6px 8px;
+                margin-bottom: 12px;
                 line-height: 1.3;
             }
             .factions-container {
-                gap: 12px;
+                gap: 10px;
             }
             .faction-card {
-                padding: 10px 8px 12px 8px;
+                padding: 10px 6px 12px 6px;
                 border-radius: 10px;
             }
             .faction-img-wrap {
-                height: 250px; /* Идеальная высота для телефона без вытягивания */
-                margin-bottom: 8px;
+                height: 290px; /* Увеличенная высота для мобильных */
+                margin-bottom: 10px;
             }
             .faction-img-wrap img {
-                transform: scale(1.45); /* Персонажи заполняют карточку целиком */
+                height: 100%;
+                max-width: none; /* Убираем сжатие по ширине */
+                width: auto;
+                transform: scale(2.05); /* Крупные персонажи на 80% пространства */
+                transform-origin: bottom center;
             }
             .btn-kyrgyz, .btn-kypchak {
-                padding: 10px 6px;
+                padding: 10px 4px;
                 font-size: 14px;
             }
         }
@@ -436,7 +441,7 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
         import { getAuth, signInWithPopup, GoogleAuthProvider } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-        import { getFirestore, doc, getDoc, setDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+        import { getFirestore, doc, getDoc, setDoc, updateDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyBRkzoUhINimIQ69kBdelZhyoMmCUlDUNQ",
@@ -453,6 +458,8 @@
         const db = getFirestore(app);
 
         let currentActiveUser = null;
+        let currentSessionId = null;
+        let unsubscribeUserListener = null;
         let onModalCloseCallback = null;
 
         window.switchScreen = function(screenId) {
@@ -501,9 +508,59 @@
             }
         });
 
+        // Слушатель для выбивания при входе с другого устройства
+        function listenForRemoteSession(nicknameKey) {
+            if (unsubscribeUserListener) {
+                unsubscribeUserListener();
+            }
+
+            const userRef = doc(db, "nicknames", nicknameKey);
+            unsubscribeUserListener = onSnapshot(userRef, (docSnap) => {
+                if (docSnap.exists()) {
+                    const data = docSnap.data();
+                    // Если в базе сессия изменилась (зашли с другого устройства)
+                    if (data.currentSessionId && currentSessionId && data.currentSessionId !== currentSessionId) {
+                        if (unsubscribeUserListener) {
+                            unsubscribeUserListener();
+                            unsubscribeUserListener = null;
+                        }
+                        localStorage.removeItem('kaganat_active_user');
+                        localStorage.removeItem('kaganat_session_id');
+                        currentActiveUser = null;
+                        currentSessionId = null;
+
+                        showModal(
+                            'Сессия аяктады',
+                            'Башка түзмөктөн кирүү болду! Сиздин сессияңыз жабылды.',
+                            'error',
+                            {},
+                            () => {
+                                switchScreen('login-screen');
+                            }
+                        );
+                    }
+                }
+            });
+        }
+
         async function proceedUserEntry(userData, nicknameKey) {
             currentActiveUser = nicknameKey;
             localStorage.setItem('kaganat_active_user', nicknameKey);
+
+            // Создаем уникальный ID сессии для текущего входа
+            currentSessionId = 'sess_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+            localStorage.setItem('kaganat_session_id', currentSessionId);
+
+            // Обновляем сессию в Firestore, выбивая остальные устройства
+            try {
+                const userRef = doc(db, "nicknames", nicknameKey);
+                await updateDoc(userRef, { currentSessionId: currentSessionId });
+            } catch (err) {
+                console.error("Сессияны жаңыртуу катасы:", err);
+            }
+
+            // Запускаем отслеживание сессии
+            listenForRemoteSession(nicknameKey);
 
             if (userData.fraction) {
                 document.getElementById('welcomePlayerTitle').innerText = `${userData.nickname}, кош келдиңиз!`;
@@ -515,8 +572,14 @@
         }
 
         document.getElementById('logoutBtn').addEventListener('click', () => {
+            if (unsubscribeUserListener) {
+                unsubscribeUserListener();
+                unsubscribeUserListener = null;
+            }
             localStorage.removeItem('kaganat_active_user');
+            localStorage.removeItem('kaganat_session_id');
             currentActiveUser = null;
+            currentSessionId = null;
             switchScreen('login-screen');
         });
 
@@ -674,7 +737,8 @@
                 const newUserData = { 
                     nickname: nick,
                     password: pass1,
-                    fraction: null
+                    fraction: null,
+                    currentSessionId: null
                 };
 
                 await setDoc(nickRef, newUserData);
