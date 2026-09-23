@@ -161,7 +161,8 @@
         }
         .modal-content p {
             color: #ddd;
-            font-size: 14px;
+            font-size: 13px;
+            line-height: 1.4;
             margin-bottom: 20px;
         }
         .modal-btn {
@@ -223,7 +224,7 @@
         </div>
         <div class="input-group">
             <label>Сыр сөз ойлоп табыңыз</label>
-            <input type="password" id="regPassword" placeholder="Сыр сөз">
+            <input type="password" id="regPassword" placeholder="Латын тамгалары жана сандар (мин. 8)">
         </div>
         <div class="input-group">
             <label>Сыр сөзүңүздү кайталап жазыңыз</label>
@@ -251,7 +252,7 @@
         </div>
     </div>
 
-    <!-- ПОДКЛЮЧЕНИЕ LOGIC СКРИПТА FIREBASE -->
+    <!-- СКРИПТ ЛОГИКИ -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
         import { getAuth, signInWithPopup, GoogleAuthProvider } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
@@ -312,7 +313,7 @@
             loadStatus.innerText = `Жүктөлүүдө... ${progress}%`;
         }, 30);
 
-        // Кнопка Входа (проверка никнейма и пароля в Firestore)
+        // Кнопка Входа
         document.getElementById('loginBtn').addEventListener('click', async () => {
             clearErrors();
             const nick = document.getElementById('loginNickname').value.trim();
@@ -333,14 +334,12 @@
                 const userSnap = await getDoc(userDocRef);
 
                 if(!userSnap.exists()) {
-                    // Если такого никнейма нет в базе
                     showError('Мындай ысым катталган эмес!', ['loginNickname']);
                     return;
                 }
 
                 const userData = userSnap.data();
                 if(userData.password !== pass) {
-                    // Если пароль не совпал
                     showError('Сыр сөз ката жазылды!', ['loginPassword']);
                     return;
                 }
@@ -352,7 +351,7 @@
             }
         });
 
-        // Кнопка привязки Google
+        // Кнопка Google привязки
         document.getElementById('googleBindBtn').addEventListener('click', async () => {
             const provider = new GoogleAuthProvider();
             try {
@@ -364,7 +363,7 @@
             }
         });
 
-        // Кнопка завершения регистрации
+        // Кнопка Регистрации с проверкой правил пароля
         document.getElementById('registerSubmitBtn').addEventListener('click', async () => {
             clearErrors();
             const nick = document.getElementById('regNickname').value.trim();
@@ -381,13 +380,23 @@
                 return;
             }
 
-            if(pass1 !== pass2) {
-                showError('Сыр сөздөр бири-бирине дал келбейт!', ['regPassword', 'regPasswordConfirm']);
+            if(nick.length < 3) {
+                showError('Ысым эң аз 3 символдон турушу керек!', ['regNickname']);
                 return;
             }
 
-            if(nick.length < 3) {
-                showError('Ысым эң аз 3 символдон турушу керек!', ['regNickname']);
+            // ПРАВИЛА ПАРОЛЯ: английские буквы, цифры, минимум 8 символов
+            const englishOnlyRegex = /^[A-Za-z0-9]+$/;
+            const hasLetter = /[A-Za-z]/.test(pass1);
+            const hasNumber = /[0-9]/.test(pass1);
+
+            if (pass1.length < 8 || !englishOnlyRegex.test(pass1) || !hasLetter || !hasNumber) {
+                showError('Сыр сөз англис тамгаларынан, сандардан турушу жана кем дегенде 8 символ болушу шарт!', ['regPassword', 'regPasswordConfirm']);
+                return;
+            }
+
+            if(pass1 !== pass2) {
+                showError('Сыр сөздөр бири-бирине дал келбейт!', ['regPassword', 'regPasswordConfirm']);
                 return;
             }
 
@@ -401,7 +410,6 @@
                     return;
                 }
 
-                // Сохраняем в базу
                 await setDoc(nickRef, { 
                     nickname: nick,
                     password: pass1 
