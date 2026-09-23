@@ -180,13 +180,12 @@
             transform: translateY(-5px);
             box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.7), 0 10px 25px rgba(212, 154, 61, 0.3);
         }
-        /* Зона отображения персонажей в полный рост */
         .faction-img-wrap {
             width: 100%;
             height: 440px;
             display: flex;
             justify-content: center;
-            align-items: flex-end; /* Опускаем картинку к кнопкам */
+            align-items: flex-end;
             margin-bottom: 12px;
             position: relative;
         }
@@ -194,8 +193,8 @@
             max-width: 100%;
             height: 100%;
             object-fit: contain;
-            transform: scale(1.55); /* Точный масштаб во весь рост */
-            transform-origin: bottom center; /* Масштабирование от ног вверх */
+            transform: scale(1.55);
+            transform-origin: bottom center;
             image-rendering: pixelated;
             filter: drop-shadow(0 10px 15px rgba(0, 0, 0, 0.8));
         }
@@ -385,6 +384,7 @@
         <h2 id="welcomePlayerTitle">Каганат дүйнөсүнө кош келдиңиз!</h2>
         <p id="playerFactionInfo" style="color: #ffd479; font-weight: bold; font-size: 18px;"></p>
         <p style="color: #ecd7ba; font-size: 14px;">Оюнга даярданыңыз...</p>
+        <button class="btn" id="logoutBtn" style="margin-top: 25px; background: #5a201b; color: #fff; border: 1px solid #ff6b6b;">Чыгуу (Аккаунттан чыгуу)</button>
     </div>
 
     <!-- УНИВЕРСАЛЬНОЕ МОДАЛЬНОЕ ОКНО -->
@@ -420,7 +420,8 @@
 
         window.switchScreen = function(screenId) {
             document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-            document.getElementById(screenId).classList.add('active');
+            const target = document.getElementById(screenId);
+            if (target) target.classList.add('active');
             clearErrors();
         }
 
@@ -465,6 +466,8 @@
 
         async function proceedUserEntry(userData, nicknameKey) {
             currentActiveUser = nicknameKey;
+            localStorage.setItem('kaganat_active_user', nicknameKey);
+
             if (userData.fraction) {
                 document.getElementById('welcomePlayerTitle').innerText = `${userData.nickname}, кош келдиңиз!`;
                 document.getElementById('playerFactionInfo').innerText = `Фракцияңыз: ${userData.fraction}`;
@@ -473,6 +476,13 @@
                 switchScreen('faction-screen');
             }
         }
+
+        // Кнопка выхода из аккаунта
+        document.getElementById('logoutBtn').addEventListener('click', () => {
+            localStorage.removeItem('kaganat_active_user');
+            currentActiveUser = null;
+            switchScreen('login-screen');
+        });
 
         async function chooseFaction(factionName) {
             if (!currentActiveUser) return;
@@ -496,18 +506,31 @@
         document.getElementById('chooseKyrgyzBtn').addEventListener('click', () => chooseFaction('Кыргыз'));
         document.getElementById('chooseKypchakBtn').addEventListener('click', () => chooseFaction('Кыпчак'));
 
+        // Анимация загрузки с проверкой активной сессии
         let progress = 0;
         const progressBar = document.getElementById('progressBar');
         const loadStatus = document.getElementById('loadStatus');
 
-        const loadingInterval = setInterval(() => {
-            progress += 3;
+        const loadingInterval = setInterval(async () => {
+            progress += 5;
             if (progress >= 100) {
                 progress = 100;
                 clearInterval(loadingInterval);
-                setTimeout(() => {
-                    switchScreen('login-screen');
-                }, 300);
+
+                const savedUser = localStorage.getItem('kaganat_active_user');
+                if (savedUser) {
+                    try {
+                        const userRef = doc(db, "nicknames", savedUser);
+                        const userSnap = await getDoc(userRef);
+                        if (userSnap.exists()) {
+                            proceedUserEntry(userSnap.data(), savedUser);
+                            return;
+                        }
+                    } catch (e) {
+                        console.error("Авто-кирүүдө ката:", e);
+                    }
+                }
+                switchScreen('login-screen');
             }
             progressBar.style.width = progress + '%';
             loadStatus.innerText = `Жүктөлүүдө... ${progress}%`;
