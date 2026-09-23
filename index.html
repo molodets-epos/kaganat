@@ -11,7 +11,6 @@
         }
         body {
             margin: 0;
-            /* Добавили радиальный градиент для объема вместо сплошного черного */
             background: radial-gradient(circle at center, #141c2e 0%, #050505 100%);
             color: #ffffff;
             display: flex;
@@ -23,18 +22,21 @@
         .screen {
             display: none;
             width: 100%;
-            max-width: 420px; /* Увеличили размер окна */
+            max-width: 420px;
             background: #111726;
             padding: 35px;
             border-radius: 14px;
             border: 2px solid #c28e38;
-            box-shadow: 0 0 35px rgba(194, 142, 56, 0.15); /* Сделали свечение мягче и шире */
+            box-shadow: 0 0 35px rgba(194, 142, 56, 0.15);
             text-align: center;
         }
         .screen.active {
             display: block;
         }
-        /* Логотип для всех экранов */
+        /* Экран выбора фракции шире обычного окна */
+        #faction-screen {
+            max-width: 650px;
+        }
         .screen-logo {
             width: 80px;
             height: 80px;
@@ -69,7 +71,7 @@
         h2 {
             margin-top: 0;
             color: #f3d078;
-            margin-bottom: 25px;
+            margin-bottom: 20px;
             font-size: 22px;
         }
         .input-group {
@@ -146,7 +148,78 @@
             text-decoration: underline;
         }
 
-        /* УНИВЕРСАЛЬНОЕ ИГРОВОЕ ОКНО УВЕДОМЛЕНИЙ */
+        /* БЛОК ВЫБОРА ФРАКЦИИ */
+        .faction-warning {
+            font-size: 13px;
+            color: #a0aec0;
+            margin-bottom: 25px;
+            background: rgba(0, 0, 0, 0.35);
+            padding: 10px 14px;
+            border-radius: 6px;
+            border-left: 3px solid #c28e38;
+        }
+        .factions-container {
+            display: flex;
+            justify-content: center;
+            gap: 24px;
+        }
+        .faction-card {
+            flex: 1;
+            background: #090d17;
+            border: 1px solid #2a374d;
+            border-radius: 10px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .faction-card:hover {
+            transform: translateY(-4px);
+        }
+        .faction-card img {
+            width: 180px;
+            height: 220px;
+            object-fit: contain;
+            margin-bottom: 18px;
+            image-rendering: pixelated;
+        }
+        /* Красная кнопка Кыргыз */
+        .btn-kyrgyz {
+            width: 100%;
+            padding: 12px;
+            background: #d32f2f;
+            color: #ffffff;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 4px 14px rgba(211, 47, 47, 0.35);
+            transition: background 0.2s;
+        }
+        .btn-kyrgyz:hover {
+            background: #e53935;
+        }
+        /* Синяя кнопка Кыпчак */
+        .btn-kypchak {
+            width: 100%;
+            padding: 12px;
+            background: #1976d2;
+            color: #ffffff;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 4px 14px rgba(25, 118, 210, 0.35);
+            transition: background 0.2s;
+        }
+        .btn-kypchak:hover {
+            background: #1e88e5;
+        }
+
+        /* УНИВЕРСАЛЬНОЕ ИГРОВОЕ ОКНО */
         #custom-modal {
             display: none;
             position: fixed;
@@ -187,7 +260,6 @@
         .modal-btn:hover {
             opacity: 0.8;
         }
-
         .modal-error {
             border: 2px solid #ff4d4d;
             box-shadow: 0 0 20px rgba(255, 77, 77, 0.3);
@@ -273,12 +345,39 @@
         </div>
     </div>
 
-    <!-- УНИВЕРСАЛЬНОЕ ОКНО -->
+    <!-- 4. ЭКРАН ВЫБОРА ФРАКЦИИ -->
+    <div id="faction-screen" class="screen">
+        <h2>Фракцияны тандаңыз</h2>
+        <div class="faction-warning">
+            Бул тандоо мүнөздөмөлөргө жана оюндун жүрүшүнө таасир этпейт
+        </div>
+        <div class="factions-container">
+            <!-- Карточка Кыргыз -->
+            <div class="faction-card">
+                <img src="kyrgyz.png" alt="Кыргыз" onerror="this.src='hero_idle_in.jpg'">
+                <button class="btn-kyrgyz" id="chooseKyrgyzBtn">Кыргыз</button>
+            </div>
+            <!-- Карточка Кыпчак -->
+            <div class="faction-card">
+                <img src="kypchak.png" alt="Кыпчак" onerror="this.src='Кыпчак прото.jpg'">
+                <button class="btn-kypchak" id="chooseKypchakBtn">Кыпчак</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 5. ГЛАВНЫЙ ЭКРАН ИГРЫ (ЛОББИ) -->
+    <div id="game-screen" class="screen">
+        <h2 id="welcomePlayerTitle">Каганат дүйнөсүнө кош келдиңиз!</h2>
+        <p id="playerFactionInfo" style="color: #c28e38; font-weight: bold;"></p>
+        <p style="color: #b0b0b0; font-size: 14px;">Оюнга даярданыңыз...</p>
+    </div>
+
+    <!-- УНИВЕРСАЛЬНОЕ МОДАЛЬНОЕ ОКНО -->
     <div id="custom-modal">
         <div class="modal-content" id="modal-content-box">
             <h3 id="modal-title">Маалымат</h3>
             <p id="modal-message">Бул жерде текст болот</p>
-            <button class="modal-btn" onclick="closeModal()">Макул</button>
+            <button class="modal-btn" id="modalActionBtn">Макул</button>
         </div>
     </div>
 
@@ -286,9 +385,8 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
         import { getAuth, signInWithPopup, GoogleAuthProvider } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-        import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+        import { getFirestore, doc, getDoc, setDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
-        // ТВОЙ НАСТОЯЩИЙ РАБОЧИЙ КЛЮЧ
         const firebaseConfig = {
             apiKey: "AIzaSyBRkzoUhINimIQ69kBdelZhyoMmCUlDUNQ",
             authDomain: "kaganat-5c070.firebaseapp.com",
@@ -302,6 +400,9 @@
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getFirestore(app);
+
+        let currentActiveUser = null;
+        let onModalCloseCallback = null;
 
         window.switchScreen = function(screenId) {
             document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
@@ -317,7 +418,7 @@
             });
         }
 
-        window.showModal = function(title, msg, type = 'error', fieldErrors = {}) {
+        window.showModal = function(title, msg, type = 'error', fieldErrors = {}, onClose = null) {
             document.getElementById('modal-title').innerText = title;
             document.getElementById('modal-message').innerText = msg;
             
@@ -325,6 +426,7 @@
             modalBox.className = 'modal-content ' + (type === 'success' ? 'modal-success' : 'modal-error');
             
             document.getElementById('custom-modal').style.display = 'flex';
+            onModalCloseCallback = onClose;
             
             for (const [id, errorText] of Object.entries(fieldErrors)) {
                 const el = document.getElementById(id);
@@ -338,10 +440,53 @@
             }
         }
 
-        window.closeModal = function() {
+        document.getElementById('modalActionBtn').addEventListener('click', () => {
             document.getElementById('custom-modal').style.display = 'none';
+            if (typeof onModalCloseCallback === 'function') {
+                const cb = onModalCloseCallback;
+                onModalCloseCallback = null;
+                cb();
+            }
+        });
+
+        // Проверка: есть ли у игрока фракция
+        async function proceedUserEntry(userData, nicknameKey) {
+            currentActiveUser = nicknameKey;
+            if (userData.fraction) {
+                // Если фракция уже выбрана ранее
+                document.getElementById('welcomePlayerTitle').innerText = `${userData.nickname}, кош келдиңиз!`;
+                document.getElementById('playerFactionInfo').innerText = `Фракцияңыз: ${userData.fraction}`;
+                switchScreen('game-screen');
+            } else {
+                // Если заходит впервые и фракция не выбрана
+                switchScreen('faction-screen');
+            }
         }
 
+        // Выбор фракции игроком
+        async function chooseFaction(factionName) {
+            if (!currentActiveUser) return;
+            try {
+                const userRef = doc(db, "nicknames", currentActiveUser);
+                await updateDoc(userRef, {
+                    fraction: factionName
+                });
+
+                showModal('Ийгиликтүү', `Сиз ${factionName} фракциясын тандадыңыз!`, 'success', {}, () => {
+                    document.getElementById('welcomePlayerTitle').innerText = `Кош келдиңиз!`;
+                    document.getElementById('playerFactionInfo').innerText = `Сиздин фракция: ${factionName}`;
+                    switchScreen('game-screen');
+                });
+            } catch (err) {
+                console.error(err);
+                showModal('Ката', 'Фракцияны сактоодо ката кетти!', 'error');
+            }
+        }
+
+        document.getElementById('chooseKyrgyzBtn').addEventListener('click', () => chooseFaction('Кыргыз'));
+        document.getElementById('chooseKypchakBtn').addEventListener('click', () => chooseFaction('Кыпчак'));
+
+        // Анимация загрузки
         let progress = 0;
         const progressBar = document.getElementById('progressBar');
         const loadStatus = document.getElementById('loadStatus');
@@ -359,6 +504,7 @@
             loadStatus.innerText = `Жүктөлүүдө... ${progress}%`;
         }, 30);
 
+        // Кнопка Входа
         document.getElementById('loginBtn').addEventListener('click', async () => {
             clearErrors();
             const nick = document.getElementById('loginNickname').value.trim();
@@ -389,13 +535,16 @@
                     return;
                 }
 
-                showModal('Ийгиликтүү', 'Сиз оюнга ийгиликтүү кирдиңиз!', 'success');
+                showModal('Ийгиликтүү', 'Сиз оюнга ийгиликтүү кирдиңиз!', 'success', {}, () => {
+                    proceedUserEntry(userData, nicknameKey);
+                });
             } catch (e) {
                 console.error(e);
                 showModal('Ката', 'Туура эмес маалыматтарды жаздыңыз!', 'error', {'loginNickname': '', 'loginPassword': ''});
             }
         });
 
+        // Кнопка Google привязки
         document.getElementById('googleBindBtn').addEventListener('click', async () => {
             const provider = new GoogleAuthProvider();
             try {
@@ -407,6 +556,7 @@
             }
         });
 
+        // Кнопка Регистрации
         document.getElementById('registerSubmitBtn').addEventListener('click', async () => {
             clearErrors();
             const nick = document.getElementById('regNickname').value.trim();
@@ -457,13 +607,17 @@
                     return;
                 }
 
-                await setDoc(nickRef, { 
+                const newUserData = { 
                     nickname: nick,
-                    password: pass1 
-                });
+                    password: pass1,
+                    fraction: null
+                };
 
-                showModal('Ийгиликтүү', 'Катталуу ийгиликтүү аяктады! Эми кире аласыз.', 'success');
-                switchScreen('login-screen');
+                await setDoc(nickRef, newUserData);
+
+                showModal('Ийгиликтүү', 'Катталуу ийгиликтүү аяктады! Эми кире аласыз.', 'success', {}, () => {
+                    switchScreen('login-screen');
+                });
 
             } catch (error) {
                 console.error(error);
