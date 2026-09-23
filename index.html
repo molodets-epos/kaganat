@@ -33,10 +33,9 @@
         .screen.active {
             display: block;
         }
-        /* Экран выбора фракции — просторный */
         #faction-screen {
             max-width: 820px;
-            padding: 30px 40px;
+            padding: 25px 35px;
         }
         .screen-logo {
             width: 85px;
@@ -44,7 +43,6 @@
             object-fit: contain;
             margin-bottom: 15px;
         }
-        /* Экран загрузки */
         #loader-screen img {
             animation: pulse 1.5s infinite;
         }
@@ -68,7 +66,6 @@
             font-size: 14px;
             color: #d1b48c;
         }
-        /* Заголовки */
         h2 {
             margin-top: 0;
             color: #ffd479;
@@ -156,7 +153,7 @@
         .faction-warning {
             font-size: 13px;
             color: #f3dfc8;
-            margin-bottom: 25px;
+            margin-bottom: 20px;
             background: rgba(12, 7, 3, 0.6);
             padding: 10px 16px;
             border-radius: 6px;
@@ -172,39 +169,36 @@
             background: radial-gradient(circle at 50% 30%, #4a2c11 0%, #241407 100%);
             border: 2px solid #b87a28;
             border-radius: 12px;
-            padding: 20px;
+            padding: 15px 20px 20px 20px;
             display: flex;
             flex-direction: column;
             align-items: center;
             box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.7), 0 6px 15px rgba(0, 0, 0, 0.5);
             transition: transform 0.2s, box-shadow 0.2s;
-            overflow: hidden;
         }
         .faction-card:hover {
             transform: translateY(-5px);
             box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.7), 0 10px 25px rgba(212, 154, 61, 0.3);
         }
-        /* Зона отображения персонажей — увеличена и настроена на 80% пространства */
+        /* Зона отображения персонажей в полный рост */
         .faction-img-wrap {
             width: 100%;
-            height: 420px;
+            height: 440px;
             display: flex;
             justify-content: center;
-            align-items: center;
-            margin-bottom: 15px;
-            overflow: hidden;
+            align-items: flex-end; /* Опускаем картинку к кнопкам */
+            margin-bottom: 12px;
             position: relative;
         }
         .faction-img-wrap img {
-            width: 100%;
+            max-width: 100%;
             height: 100%;
             object-fit: contain;
-            transform: scale(2.2); /* Увеличиваем в 2.2 раза, убирая пустоты холста */
-            transform-origin: center center;
+            transform: scale(1.55); /* Точный масштаб во весь рост */
+            transform-origin: bottom center; /* Масштабирование от ног вверх */
             image-rendering: pixelated;
             filter: drop-shadow(0 10px 15px rgba(0, 0, 0, 0.8));
         }
-        /* Красная кнопка Кыргыз */
         .btn-kyrgyz {
             width: 100%;
             padding: 14px;
@@ -222,7 +216,6 @@
         .btn-kyrgyz:hover {
             background: linear-gradient(180deg, #e53935, #b71c1c);
         }
-        /* Синяя кнопка Кыпчак */
         .btn-kypchak {
             width: 100%;
             padding: 14px;
@@ -241,7 +234,7 @@
             background: linear-gradient(180deg, #1e88e5, #1565c0);
         }
 
-        /* УНИВЕРСАЛЬНОЕ ИГРОВОЕ ОКНО */
+        /* УНИВЕРСАЛЬНОЕ МОДАЛЬНОЕ ОКНО */
         #custom-modal {
             display: none;
             position: fixed;
@@ -403,7 +396,6 @@
         </div>
     </div>
 
-    <!-- СКРИПТ ЛОГИКИ -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
         import { getAuth, signInWithPopup, GoogleAuthProvider } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
