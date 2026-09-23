@@ -92,12 +92,10 @@
         input:focus {
             border-color: #c28e38;
         }
-        /* Подсветка ошибки красным */
         input.error-input {
             border-color: #ff4d4d !important;
             box-shadow: 0 0 8px rgba(255, 77, 77, 0.4);
         }
-        /* Текст ошибки под полем */
         .field-error-text {
             display: none;
             color: #ff4d4d;
@@ -143,7 +141,7 @@
             text-decoration: underline;
         }
 
-        /* КАСТОМНОЕ ИГРОВОЕ МОДАЛЬНОЕ ОКНО ОШИБКИ */
+        /* МОДАЛЬНОЕ ОКНО ОШИБКИ */
         #error-modal {
             display: none;
             position: fixed;
@@ -212,10 +210,12 @@
         <div class="input-group">
             <label>Ысым</label>
             <input type="text" id="loginNickname" placeholder="Ысымыңызды жазыңыз">
+            <div class="field-error-text" id="loginNicknameError"></div>
         </div>
         <div class="input-group">
             <label>Сыр сөз</label>
             <input type="password" id="loginPassword" placeholder="Сыр сөзүңүздү жазыңыз">
+            <div class="field-error-text" id="loginPasswordError"></div>
         </div>
         <button class="btn" id="loginBtn">Кирүү</button>
         <div class="switch-link" onclick="switchScreen('register-screen')">
@@ -372,7 +372,7 @@
             }
         });
 
-        // Кнопка Google привязки
+        // Кнопка Google привязки через Popup (всплывающее окно)
         document.getElementById('googleBindBtn').addEventListener('click', async () => {
             const provider = new GoogleAuthProvider();
             try {
@@ -384,7 +384,7 @@
             }
         });
 
-        // Кнопка Регистрации с проверкой правил пароля и подсказками под полями
+        // Кнопка Регистрации
         document.getElementById('registerSubmitBtn').addEventListener('click', async () => {
             clearErrors();
             const nick = document.getElementById('regNickname').value.trim();
@@ -406,7 +406,6 @@
                 return;
             }
 
-            // ПРАВИЛА ПАРОЛЯ: английские буквы, цифры, минимум 8 символов
             const englishOnlyRegex = /^[A-Za-z0-9]+$/;
             const hasLetter = /[A-Za-z]/.test(pass1);
             const hasNumber = /[0-9]/.test(pass1);
