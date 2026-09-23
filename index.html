@@ -363,19 +363,35 @@
         </div>
     </div>
 
-<!-- 5. ГЛАВНЫЙ ЭКРАН ИГРЫ (ЛОББИ) -->
-    <div id="game-screen" class="screen">
-        <h2 id="welcomePlayerTitle">Каганат дүйнөсүнө кош келдиңиз!</h2>
-        <p id="playerFactionInfo" style="color: #ffd479; font-weight: bold; font-size: 18px;"></p>
-        <p style="color: #ecd7ba; font-size: 14px;">Оюнга даярданыңыз...</p>
+<!-- 5. ГЛАВНЫЙ ЭКРАН ИГРЫ (СЮЖЕТ) -->
+    <div id="game-screen" class="screen" style="padding: 0; overflow: hidden; display: flex; flex-direction: column; text-align: left;">
         
-        <!-- ЕДИНАЯ НАВИГАЦИЯ ДЛЯ ГЛАВНОГО ЭКРАНА -->
-        <div style="display: flex; justify-content: space-between; margin-top: 40px; font-size: 15px; font-weight: bold; padding: 0 10px; text-transform: uppercase; letter-spacing: 1px;">
-            <div onclick="showModal('Маалымат', 'Меню бөлүмү жакында кошулат!', 'success')" style="color: #8c735a; cursor: pointer; transition: color 0.2s;" onmouseover="this.style.color='#cfb395'" onmouseout="this.style.color='#8c735a'">
-                &lt; Меню
-            </div>
-            <div id="logoutBtn" style="color: #ffd479; cursor: pointer; transition: color 0.2s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='#ffd479'">
-                Артка (Чыгуу) &gt;
+        <!-- Верхняя часть: Картинка долины -->
+        <div style="position: relative; width: 100%; height: 240px; background: url('bg_valley.png') center/cover no-repeat; border-bottom: 2px solid #d49a3d;">
+            
+            <!-- Фото аксакала (сначала скрыто) -->
+            <!-- ВАЖНО: Загрузи картинку аксакала в GitHub с названием aksakal.png -->
+            <img id="storyCharacter" src="aksakal.png" style="display: none; position: absolute; bottom: 0; left: 50%; transform: translateX(-50%); height: 95%; object-fit: contain;" alt="Аксакал" onerror="this.style.display='none'">
+        </div>
+        
+        <!-- Нижняя часть: Текст и кнопки -->
+        <div style="padding: 20px; display: flex; flex-direction: column; flex-grow: 1;">
+            
+            <p id="storyText" style="color: #ecd7ba; font-size: 15px; line-height: 1.6; margin-top: 0; margin-bottom: 20px; text-shadow: 1px 1px 2px #000;">
+                Сиз кечээ раматылык устатыңыздын курал-жарак жана кийимдерин мурастап алып, өзүңүздүн баатырдык жолуңузду баштайын деп сапарга чыккансыз. Кечке маал өрөөндө жайгашкан айылга жакындап калганда катуу бороон болуп, далдоо жер издеп бир чоң бактын түбүндө уктап калган экенсиң. Таттуу уйкудан сени бир карыя ойготуп жаткансыйт.
+            </p>
+            
+            <button class="btn" id="nextStoryBtn">Кийинки</button>
+            <button class="btn" id="acceptQuestBtn" style="display: none; background: linear-gradient(180deg, #d32f2f, #9a1919); color: white; border: 1px solid #ff7b7b;">Макул</button>
+
+            <!-- ЕДИНАЯ НАВИГАЦИЯ -->
+            <div style="display: flex; justify-content: space-between; margin-top: 30px; font-size: 15px; font-weight: bold; text-transform: uppercase; letter-spacing: 1px;">
+                <div onclick="showModal('Маалымат', 'Меню бөлүмү жакында кошулат!', 'success')" style="color: #8c735a; cursor: pointer; transition: color 0.2s;" onmouseover="this.style.color='#cfb395'" onmouseout="this.style.color='#8c735a'">
+                    &lt; Меню
+                </div>
+                <div id="logoutBtn" style="color: #ffd479; cursor: pointer; transition: color 0.2s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='#ffd479'">
+                    Артка (Чыгуу) &gt;
+                </div>
             </div>
         </div>
     </div>
@@ -767,6 +783,26 @@
                 showModal('Ката', 'Каттоо учурунда ката кетти!', 'error');
             }
         });
+  // --- СЮЖЕТНАЯ ЛОГИКА ---
+        const originalStoryText = "Сиз кечээ раматылык устатыңыздын курал-жарак жана кийимдерин мурастап алып, өзүңүздүн баатырдык жолуңузду баштайын деп сапарга чыккансыз. Кечке маал өрөөндө жайгашкан айылга жакындап калганда катуу бороон болуп, далдоо жер издеп бир чоң бактын түбүндө уктап калган экенсиң. Таттуу уйкудан сени бир карыя ойготуп жаткансыйт.";
+        const aksakalStoryText = "Эй жигиттин гүлү, ойгончу! Жолуктурганым ырас эле болбодубу! Айылыбыздын эр азаматтары калмактар менен согушка кетип айылыбызда дээрлик калган жок. Айылыбыздын тегерегинде 3 карышкыр аңчылап жүрөт, ошолорду бир нерсе кылчы сураныч!";
+
+        document.getElementById('nextStoryBtn').addEventListener('click', () => {
+            // Показываем фото аксакала
+            document.getElementById('storyCharacter').style.display = 'block';
+            
+            // Меняем текст на обращение аксакала
+            document.getElementById('storyText').innerText = aksakalStoryText;
+            
+            // Прячем кнопку "Кийинки" и показываем "Макул"
+            document.getElementById('nextStoryBtn').style.display = 'none';
+            document.getElementById('acceptQuestBtn').style.display = 'block';
+        });
+
+        document.getElementById('acceptQuestBtn').addEventListener('click', () => {
+            showModal('Согуш', 'Бул жерде карышкырлар менен согуш башталат (Функция кийинки жаңыртууда кошулат)', 'success');
+        });
+
     </script>
 </body>
 </html>
