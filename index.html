@@ -412,7 +412,7 @@
         </div>
     </div>
 
-    <!-- 4. ЭКРАН ВЫБОРА ФРАКЦИИ -->
+  <!-- 4. ЭКРАН ВЫБОРА ФРАКЦИИ -->
     <div id="faction-screen" class="screen">
         <h2>Фракцияны тандаңыз</h2>
         <div class="faction-warning">
@@ -434,6 +434,9 @@
                 <button class="btn-kypchak" id="chooseKypchakBtn">Кыпчак</button>
             </div>
         </div>
+        
+        <!-- НОВАЯ КНОПКА ВОЗВРАТА -->
+        <button class="btn" id="backFromFactionBtn" style="margin-top: 25px; background: transparent; color: #cfb395; border: 1px solid #784e1b; box-shadow: none;">Артка кайтуу (Чыгуу)</button>
     </div>
 
     <!-- 5. ГЛАВНЫЙ ЭКРАН ИГРЫ (ЛОББИ) -->
@@ -584,7 +587,7 @@
         document.getElementById('logoutBtn').addEventListener('click', () => {
             if (unsubscribeUserListener) {
                 unsubscribeUserListener();
-                unsubscribeUserListener = null;
+                unsubscribeUserListener = null;    
             }
             localStorage.removeItem('kaganat_active_user');
             localStorage.removeItem('kaganat_session_id');
@@ -593,6 +596,23 @@
             switchScreen('login-screen');
         });
 
+        // ВОЗВРАТ С ЭКРАНА ВЫБОРА ФРАКЦИИ (РАБОТАЕТ КАК ВЫХОД)
+        document.getElementById('backFromFactionBtn').addEventListener('click', () => {
+            if (unsubscribeUserListener) {
+                unsubscribeUserListener();
+                unsubscribeUserListener = null;
+            }
+            localStorage.removeItem('kaganat_active_user');
+            localStorage.removeItem('kaganat_session_id');
+            currentActiveUser = null;
+            currentSessionId = null;
+            
+            // Очищаем формы на всякий случай
+            document.getElementById('loginNickname').value = '';
+            document.getElementById('loginPassword').value = '';
+            
+            switchScreen('login-screen');
+        });
         async function chooseFaction(factionName) {
             if (!currentActiveUser) return;
             try {
