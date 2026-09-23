@@ -11,24 +11,34 @@
             -webkit-tap-highlight-color: transparent;
         }
         body {
-            margin: 0;
-            /* Оранжево-терракотовый фон с темным национальным орнаментом (оюу) */
-            background-color: #a84b0d;
-            background-image: 
-                radial-gradient(circle at center, rgba(168, 75, 13, 0.45) 0%, rgba(20, 8, 3, 0.94) 100%),
-                url("data:image/svg+xml,%3Csvg width='80' height='80' viewBox='0 0 80 80' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23000000' fill-opacity='0.25' fill-rule='evenodd'%3E%3Cpath d='M0 40L40 0l40 40-40 40L0 40zm40-28.284L11.716 40 40 68.284 68.284 40 40 11.716zM40 20L20 40l20 20 20-20-20-20zm0 8l12 12-12 12-12-12 12-12z'/%3E%3Cpath d='M0 0l16 16L0 32V0zm80 0L64 16l16 16V0zM0 80l16-16L0 48v32zm80 0l-16-16 16-16v32z'/%3E%3C/g%3E%3C/svg%3E");
-            background-repeat: repeat;
-            background-size: auto, 75px 75px;
-            color: #ffffff;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            min-height: 100dvh;
-            overflow-x: hidden;
-            overflow-y: auto;
-            padding: 15px;
-        }
+    margin: 0;
+    /* Наш глубокий оранжево-терракотовый цвет */
+    background-color: #a84b0d; 
+    
+    /* Затемнение по краям (виньетка) + твоя картинка */
+    background-image: 
+        radial-gradient(circle at center, rgba(168, 75, 13, 0.2) 0%, rgba(10, 4, 1, 0.95) 100%),
+        url('pattern.png'); /* ВНИМАНИЕ: Если твоя картинка в формате JPG, напиши тут pattern.jpg */
+        
+    background-repeat: no-repeat, repeat;
+    background-position: center, top left;
+    
+    /* 250px 250px — это размер одного квадрата узора. Можешь менять, если узор слишком крупный/мелкий */
+    background-size: cover, 250px 250px; 
+    
+    /* Магическое смешивание (убирает белый фон у картинки, оставляя только темный узор) */
+    background-blend-mode: normal, multiply; 
+    
+    color: #ffffff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    min-height: 100dvh;
+    overflow-x: hidden;
+    overflow-y: auto;
+    padding: 15px;
+}
         .screen {
             display: none;
             width: 100%;
