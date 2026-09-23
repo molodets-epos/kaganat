@@ -11,7 +11,8 @@
         }
         body {
             margin: 0;
-            background-color: #050505;
+            /* Добавили радиальный градиент для объема вместо сплошного черного */
+            background: radial-gradient(circle at center, #141c2e 0%, #050505 100%);
             color: #ffffff;
             display: flex;
             justify-content: center;
@@ -21,23 +22,27 @@
         }
         .screen {
             display: none;
-            width: 380px;
+            width: 100%;
+            max-width: 420px; /* Увеличили размер окна */
             background: #111726;
             padding: 35px;
             border-radius: 14px;
             border: 2px solid #c28e38;
-            box-shadow: 0 0 25px rgba(194, 142, 56, 0.2);
+            box-shadow: 0 0 35px rgba(194, 142, 56, 0.15); /* Сделали свечение мягче и шире */
             text-align: center;
         }
         .screen.active {
             display: block;
         }
+        /* Логотип для всех экранов */
+        .screen-logo {
+            width: 80px;
+            height: 80px;
+            object-fit: contain;
+            margin-bottom: 15px;
+        }
         /* Экран загрузки */
         #loader-screen img {
-            width: 100px;
-            height: 100px;
-            object-fit: contain;
-            margin-bottom: 20px;
             animation: pulse 1.5s infinite;
         }
         .progress-bar-container {
@@ -183,7 +188,6 @@
             opacity: 0.8;
         }
 
-        /* СТИЛЬ ОШИБКИ (Красный) */
         .modal-error {
             border: 2px solid #ff4d4d;
             box-shadow: 0 0 20px rgba(255, 77, 77, 0.3);
@@ -191,7 +195,6 @@
         .modal-error h3 { color: #ff4d4d; }
         .modal-error .modal-btn { background: #ff4d4d; }
 
-        /* СТИЛЬ УСПЕХА (Зеленый) */
         .modal-success {
             border: 2px solid #28a745;
             box-shadow: 0 0 20px rgba(40, 167, 69, 0.3);
@@ -210,7 +213,7 @@
 
     <!-- 1. ЭКРАН ЗАГРУЗКИ -->
     <div id="loader-screen" class="screen active">
-        <img src="logo.png" alt="Kaganat Logo" onerror="this.style.display='none'">
+        <img src="logo.png" alt="Kaganat Logo" class="screen-logo" onerror="this.style.display='none'">
         <h2 style="margin-bottom:5px;">КАГАНАТ</h2>
         <div class="progress-text" id="loadStatus">Жүктөлүүдө... 0%</div>
         <div class="progress-bar-container">
@@ -220,6 +223,7 @@
 
     <!-- 2. ЭКРАН ВХОДА -->
     <div id="login-screen" class="screen">
+        <img src="logo.png" alt="Kaganat Logo" class="screen-logo" onerror="this.style.display='none'">
         <h2>Кирүү</h2>
         <div class="input-group">
             <label>Ысым</label>
@@ -239,6 +243,7 @@
 
     <!-- 3. ЭКРАН КАТТАЛУУ (РЕГИСТРАЦИИ) -->
     <div id="register-screen" class="screen">
+        <img src="logo.png" alt="Kaganat Logo" class="screen-logo" onerror="this.style.display='none'">
         <h2>Катталуу</h2>
         <div class="input-group">
             <label>Ысым ойлоп табыңыз</label>
@@ -312,13 +317,11 @@
             });
         }
 
-        // НОВАЯ ФУНКЦИЯ ДЛЯ КРАСИВЫХ ИГРОВЫХ УВЕДОМЛЕНИЙ
         window.showModal = function(title, msg, type = 'error', fieldErrors = {}) {
             document.getElementById('modal-title').innerText = title;
             document.getElementById('modal-message').innerText = msg;
             
             const modalBox = document.getElementById('modal-content-box');
-            // Меняем цвет окна (красный или зеленый)
             modalBox.className = 'modal-content ' + (type === 'success' ? 'modal-success' : 'modal-error');
             
             document.getElementById('custom-modal').style.display = 'flex';
@@ -339,7 +342,6 @@
             document.getElementById('custom-modal').style.display = 'none';
         }
 
-        // Анимация загрузки
         let progress = 0;
         const progressBar = document.getElementById('progressBar');
         const loadStatus = document.getElementById('loadStatus');
@@ -357,7 +359,6 @@
             loadStatus.innerText = `Жүктөлүүдө... ${progress}%`;
         }, 30);
 
-        // Кнопка Входа
         document.getElementById('loginBtn').addEventListener('click', async () => {
             clearErrors();
             const nick = document.getElementById('loginNickname').value.trim();
@@ -395,7 +396,6 @@
             }
         });
 
-        // Кнопка Google привязки через Popup (всплывающее окно)
         document.getElementById('googleBindBtn').addEventListener('click', async () => {
             const provider = new GoogleAuthProvider();
             try {
@@ -407,7 +407,6 @@
             }
         });
 
-        // Кнопка Регистрации
         document.getElementById('registerSubmitBtn').addEventListener('click', async () => {
             clearErrors();
             const nick = document.getElementById('regNickname').value.trim();
