@@ -811,30 +811,17 @@
             document.getElementById('acceptQuestBtn').style.display = 'block';
         });
 
-        document.getElementById('acceptQuestBtn').addEventListener('click', async () => {
+       document.getElementById('acceptQuestBtn').addEventListener('click', async () => {
             if (!currentActiveUser) return;
             
             try {
-                // 1. АВТОМАТИЧЕСКОЕ СОХРАНЕНИЕ В БАЗУ ДАННЫХ
+                // 1. Сохраняем в базу данных, что игрок перешел на шаг 1
                 const userRef = doc(db, "nicknames", currentActiveUser);
                 await setDoc(userRef, { storyStep: 1 }, { merge: true });
                 
-                // 2. ОБНОВЛЕНИЕ ТЕКСТА НА ЭКРАНЕ СЮЖЕТА
-                document.getElementById('acceptQuestBtn').style.display = 'none';
-                document.getElementById('storyText').innerText = "Карышкырларды өлтүрүү тапшырмасы аткарылууда...";
+                // 2. Сразу переключаемся на сцену битвы, минуя лишние экраны
+                switchScreen('battle-screen');
                 
-                // 3. ПОКАЗЫВАЕМ МОДАЛКУ С НУЖНОЙ КНОПКОЙ И ПЕРЕХОДОМ В БОЙ
-                showModal(
-                    'Тапшырма', 
-                    'Карышкырды жеңиңиз!', 
-                    'success', 
-                    {}, 
-                    () => {
-                        // Эта функция сработает при клике на кнопку в модалке
-                        switchScreen('battle-screen');
-                    },
-                    'чабуул коюуу' // Текст кнопки на кыргызском языке
-                );
             } catch (err) {
                 console.error("Ката:", err);
                 showModal('Ката', 'Прогрессти сактоодо ката кетти!', 'error');
