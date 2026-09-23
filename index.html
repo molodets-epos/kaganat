@@ -815,15 +815,26 @@
             if (!currentActiveUser) return;
             
             try {
-                // 1. АВТОМАТИЧЕСКОЕ СОХРАНЕНИЕ В БАЗУ ДАННЫХ (игрок перешел на шаг 1)
+                // 1. АВТОМАТИЧЕСКОЕ СОХРАНЕНИЕ В БАЗУ ДАННЫХ
                 const userRef = doc(db, "nicknames", currentActiveUser);
                 await setDoc(userRef, { storyStep: 1 }, { merge: true });
                 
-                // 2. ОБНОВЛЕНИЕ ИКРАНА ИГРОКА
+                // 2. ОБНОВЛЕНИЕ ТЕКСТА НА ЭКРАНЕ СЮЖЕТА
                 document.getElementById('acceptQuestBtn').style.display = 'none';
-                document.getElementById('storyText').innerText = "Карышкырларды өлтүрүү тапшырмасы аткарылууда... (Жакында согуш башталат)";
+                document.getElementById('storyText').innerText = "Карышкырларды өлтүрүү тапшырмасы аткарылууда...";
                 
-                showModal('Согуш', 'Бул жерде карышкырлар менен согуш башталат (Функция кийинки жаңыртууда кошулат)', 'success');
+                // 3. ПОКАЗЫВАЕМ МОДАЛКУ С НУЖНОЙ КНОПКОЙ И ПЕРЕХОДОМ В БОЙ
+                showModal(
+                    'Тапшырма', 
+                    'Карышкырды жеңиңиз!', 
+                    'success', 
+                    {}, 
+                    () => {
+                        // Эта функция сработает при клике на кнопку в модалке
+                        switchScreen('battle-screen');
+                    },
+                    'чабуул коюуу' // Текст кнопки на кыргызском языке
+                );
             } catch (err) {
                 console.error("Ката:", err);
                 showModal('Ката', 'Прогрессти сактоодо ката кетти!', 'error');
