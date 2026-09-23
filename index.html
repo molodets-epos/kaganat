@@ -70,6 +70,7 @@
         .input-group {
             text-align: left;
             margin-bottom: 15px;
+            position: relative;
         }
         label {
             display: block;
@@ -95,6 +96,13 @@
         input.error-input {
             border-color: #ff4d4d !important;
             box-shadow: 0 0 8px rgba(255, 77, 77, 0.4);
+        }
+        /* Текст ошибки под полем */
+        .field-error-text {
+            display: none;
+            color: #ff4d4d;
+            font-size: 11px;
+            margin-top: 4px;
         }
         .btn {
             width: 100%;
@@ -221,14 +229,17 @@
         <div class="input-group">
             <label>Ысым ойлоп табыңыз</label>
             <input type="text" id="regNickname" placeholder="Уникалдуу ысым">
+            <div class="field-error-text" id="regNicknameError"></div>
         </div>
         <div class="input-group">
             <label>Сыр сөз ойлоп табыңыз</label>
-            <input type="password" id="regPassword" placeholder="Латын тамгалары жана сандар (мин. 8)">
+            <input type="password" id="regPassword" placeholder="Латын тамгалары, сандар (мин. 8)">
+            <div class="field-error-text" id="regPasswordError"></div>
         </div>
         <div class="input-group">
             <label>Сыр сөзүңүздү кайталап жазыңыз</label>
             <input type="password" id="regPasswordConfirm" placeholder="Сыр сөздү кайталаңыз">
+            <div class="field-error-text" id="regPasswordConfirmError"></div>
         </div>
         
         <button class="btn btn-google" id="googleBindBtn">
@@ -279,16 +290,26 @@
 
         window.clearErrors = function() {
             document.querySelectorAll('input').forEach(input => input.classList.remove('error-input'));
+            document.querySelectorAll('.field-error-text').forEach(el => {
+                el.innerText = '';
+                el.style.display = 'none';
+            });
         }
 
-        window.showError = function(msg, fieldsToHighlight = []) {
+        window.showError = function(msg, fieldErrors = {}) {
             document.getElementById('error-message').innerText = msg;
             document.getElementById('error-modal').style.display = 'flex';
             
-            fieldsToHighlight.forEach(id => {
+            for (const [id, errorText] of Object.entries(fieldErrors)) {
                 const el = document.getElementById(id);
                 if(el) el.classList.add('error-input');
-            });
+                
+                const errDiv = document.getElementById(id + 'Error');
+                if(errDiv && errorText) {
+                    errDiv.innerText = errorText;
+                    errDiv.style.display = 'block';
+                }
+            }
         }
 
         window.closeErrorModal = function() {
@@ -319,12 +340,12 @@
             const nick = document.getElementById('loginNickname').value.trim();
             const pass = document.getElementById('loginPassword').value.trim();
 
-            let missing = [];
-            if(!nick) missing.push('loginNickname');
-            if(!pass) missing.push('loginPassword');
+            let errors = {};
+            if(!nick) errors['loginNickname'] = 'Ысымды жазыңыз';
+            if(!pass) errors['loginPassword'] = 'Сыр сөздү жазыңыз';
 
-            if(missing.length > 0) {
-                showError('Сураныч, бардык талааларды толтуруңуз!', missing);
+            if(Object.keys(errors).length > 0) {
+                showError('Сураныч, бардык талааларды толтуруңуз!', errors);
                 return;
             }
 
@@ -334,20 +355,20 @@
                 const userSnap = await getDoc(userDocRef);
 
                 if(!userSnap.exists()) {
-                    showError('Мындай ысым катталган эмес!', ['loginNickname']);
+                    showError('Мындай ысым катталган эмес!', {'loginNickname': 'Катталбаган ысым'});
                     return;
                 }
 
                 const userData = userSnap.data();
                 if(userData.password !== pass) {
-                    showError('Сыр сөз ката жазылды!', ['loginPassword']);
+                    showError('Сыр сөз ката жазылды!', {'loginPassword': 'Сыр сөз туура эмес'});
                     return;
                 }
 
                 alert('Ийгиликтүү кирдиңиз!');
             } catch (e) {
                 console.error(e);
-                showError('Туура эмес маалыматтарды жаздыңыз!', ['loginNickname', 'loginPassword']);
+                showError('Туура эмес маалыматтарды жаздыңыз!', {'loginNickname': '', 'loginPassword': ''});
             }
         });
 
@@ -363,25 +384,25 @@
             }
         });
 
-        // Кнопка Регистрации с проверкой правил пароля
+        // Кнопка Регистрации с проверкой правил пароля и подсказками под полями
         document.getElementById('registerSubmitBtn').addEventListener('click', async () => {
             clearErrors();
             const nick = document.getElementById('regNickname').value.trim();
             const pass1 = document.getElementById('regPassword').value;
             const pass2 = document.getElementById('regPasswordConfirm').value;
 
-            let missing = [];
-            if(!nick) missing.push('regNickname');
-            if(!pass1) missing.push('regPassword');
-            if(!pass2) missing.push('regPasswordConfirm');
+            let errors = {};
+            if(!nick) errors['regNickname'] = 'Ысымды толтуруңуз';
+            if(!pass1) errors['regPassword'] = 'Сыр сөздү толтуруңуз';
+            if(!pass2) errors['regPasswordConfirm'] = 'Сыр сөздү кайталаңыз';
 
-            if(missing.length > 0) {
-                showError('Бардык талааларды толтуруу зарыл!', missing);
+            if(Object.keys(errors).length > 0) {
+                showError('Бардык талааларды толтуруу зарыл!', errors);
                 return;
             }
 
             if(nick.length < 3) {
-                showError('Ысым эң аз 3 символдон турушу керек!', ['regNickname']);
+                showError('Ысым эң аз 3 символдон турушу керек!', {'regNickname': 'Кем дегенде 3 символ'});
                 return;
             }
 
@@ -390,13 +411,18 @@
             const hasLetter = /[A-Za-z]/.test(pass1);
             const hasNumber = /[0-9]/.test(pass1);
 
-            if (pass1.length < 8 || !englishOnlyRegex.test(pass1) || !hasLetter || !hasNumber) {
-                showError('Сыр сөз англис тамгаларынан, сандардан турушу жана кем дегенде 8 символ болушу шарт!', ['regPassword', 'regPasswordConfirm']);
+            if (pass1.length < 8) {
+                showError('Сыр сөздө эң аз 8 символ болушу керек!', {'regPassword': 'Эң аз 8 символ болушу керек', 'regPasswordConfirm': ''});
+                return;
+            }
+
+            if (!englishOnlyRegex.test(pass1) || !hasLetter || !hasNumber) {
+                showError('Сыр сөздө латын тамгалары жана сандар болушу зарыл!', {'regPassword': 'Латын тамгалары жана сандар катышыш керек', 'regPasswordConfirm': ''});
                 return;
             }
 
             if(pass1 !== pass2) {
-                showError('Сыр сөздөр бири-бирине дал келбейт!', ['regPassword', 'regPasswordConfirm']);
+                showError('Сыр сөздөр бири-бирине дал келбейт!', {'regPassword': 'Дал келбейт', 'regPasswordConfirm': 'Сыр сөздөр бирдей болушу шарт'});
                 return;
             }
 
@@ -406,7 +432,7 @@
                 const nickSnap = await getDoc(nickRef);
 
                 if (nickSnap.exists()) {
-                    showError('Бул ысым буга чейин алынган!', ['regNickname']);
+                    showError('Бул ысым буга чейин алынган!', {'regNickname': 'Бул ысым бош эмес'});
                     return;
                 }
 
