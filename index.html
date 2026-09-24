@@ -300,7 +300,7 @@
             transform: scaleX(1); /* Игрок слева смотрит вправо на волка */
         }
         #wolfWrapper {
-            transform: scaleX(-1); /* Волк справа развернут лицом влево на игрока */
+            transform: scaleX(1); /* Волк справа развернут лицом влево на игрока */
         }
 
         /* Всплывающий урон */
@@ -327,9 +327,9 @@
             to { transform: translateX(0); opacity: 1; }
         }
         @keyframes entranceRight {
-            from { transform: translateX(120px) scaleX(-1); opacity: 0; }
-            to { transform: translateX(0) scaleX(-1); opacity: 1; }
-        }
+    from { transform: translateX(120px); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+}
         .hero-enter { animation: entranceLeft 0.8s ease-out forwards; }
         .wolf-enter { animation: entranceRight 0.8s ease-out forwards; }
 
@@ -1246,7 +1246,7 @@
 
             // Атака/рывок волка ВЛЕВО (к герою)
             wolfImg.src = 'wolf_attack.png';
-            wolfWrap.style.transform = 'scaleX(-1) translateX(35px)';
+           wolfWrap.style.transform = 'translateX(-35px)';
 
             const isShieldActive = document.getElementById('shieldCheckbox').checked;
             let currentBlock = Math.floor(Math.random() * (heroStats.blockMax - heroStats.blockMin + 1)) + heroStats.blockMin;
@@ -1268,7 +1268,7 @@
             await new Promise(r => setTimeout(r, 450));
 
             // Возврат в покой
-            wolfWrap.style.transform = 'scaleX(-1) translateX(0)';
+            wolfWrap.style.transform = wolfWrap.style.transform = 'translateX(0)';
             heroWrap.style.transform = 'translateX(0)';
             heroImg.src = 'hero_idle_in.png';
             wolfImg.src = 'wolf_idle_in.png';
