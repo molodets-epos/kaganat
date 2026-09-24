@@ -295,6 +295,14 @@
             filter: drop-shadow(0 6px 10px rgba(0,0,0,0.8));
         }
 
+        /* ПОЗИЦИОНИРОВАНИЕ И ПОВОРОТ СТОРОН */
+        #heroWrapper {
+            transform: scaleX(1); /* Игрок слева смотрит вправо на волка */
+        }
+        #wolfWrapper {
+            transform: scaleX(-1); /* Волк справа развернут лицом влево на игрока */
+        }
+
         /* Всплывающий урон */
         .damage-number {
             position: absolute;
@@ -319,13 +327,13 @@
             to { transform: translateX(0); opacity: 1; }
         }
         @keyframes entranceRight {
-            from { transform: translateX(120px); opacity: 0; }
-            to { transform: translateX(0); opacity: 1; }
+            from { transform: translateX(120px) scaleX(-1); opacity: 0; }
+            to { transform: translateX(0) scaleX(-1); opacity: 1; }
         }
-        .wolf-enter { animation: entranceLeft 0.8s ease-out forwards; }
-        .hero-enter { animation: entranceRight 0.8s ease-out forwards; }
+        .hero-enter { animation: entranceLeft 0.8s ease-out forwards; }
+        .wolf-enter { animation: entranceRight 0.8s ease-out forwards; }
 
-        /* Нижняя консоль управления боем */
+        /* Нижняя панель управления */
         .battle-controls {
             padding: 14px 16px 20px 16px;
             background: #170d06;
@@ -595,20 +603,9 @@
 
     <!-- 6. БОЕВАЯ АРЕНА (BATTLE SCREEN) -->
     <div id="battle-screen" class="screen">
-        <!-- Верхняя строка: Имена и ХП бойцов -->
+        <!-- Верхняя строка: Игрок СЛЕВА, Волк СПРАВА -->
         <div class="battle-top-bar">
-            <!-- Волк (слева) -->
-            <div class="fighter-info">
-                <div class="fighter-name">
-                    <span>Карышкыр</span>
-                    <span id="wolfHpVal">120/120</span>
-                </div>
-                <div class="hp-bar-bg">
-                    <div id="wolfHpBar" class="hp-bar-fill enemy"></div>
-                </div>
-            </div>
-
-            <!-- Игрок (справа) -->
+            <!-- Игрок (слева) -->
             <div class="fighter-info">
                 <div class="fighter-name">
                     <span id="playerBattleNick">Баатыр</span>
@@ -618,18 +615,29 @@
                     <div id="playerHpBar" class="hp-bar-fill"></div>
                 </div>
             </div>
+
+            <!-- Волк (справа) -->
+            <div class="fighter-info">
+                <div class="fighter-name">
+                    <span>Карышкыр</span>
+                    <span id="wolfHpVal">120/120</span>
+                </div>
+                <div class="hp-bar-bg">
+                    <div id="wolfHpBar" class="hp-bar-fill enemy"></div>
+                </div>
+            </div>
         </div>
 
-        <!-- Визуальная часть боя (Анимация спрайтов) -->
+        <!-- Визуальная часть боя: Игрок СЛЕВА, Волк СПРАВА -->
         <div class="battle-viewport">
-            <!-- Волк слева -->
-            <div class="fighter-sprite-wrap wolf-enter" id="wolfWrapper">
-                <img id="wolfSprite" src="wolf_idle_in.png" alt="Карышкыр">
-            </div>
-
-            <!-- Герой справа -->
+            <!-- Герой слева -->
             <div class="fighter-sprite-wrap hero-enter" id="heroWrapper">
                 <img id="heroSprite" src="hero_idle_in.png" alt="Баатыр">
+            </div>
+
+            <!-- Волк справа (развернут) -->
+            <div class="fighter-sprite-wrap wolf-enter" id="wolfWrapper">
+                <img id="wolfSprite" src="wolf_idle_in.png" alt="Карышкыр">
             </div>
         </div>
 
@@ -1053,7 +1061,7 @@
             document.getElementById('acceptQuestBtn').style.display = 'block';
         });
 
-        // НАЖАТИЕ НА КНОПКУ «ЧАБУУЛ КОЮУ» ПОД РЕПЛИКОЙ АКСАКАЛА
+        // КНОПКА «ЧАБУУЛ КОЮУ» ПОД РЕПЛИКОЙ АКСАКАЛА
         document.getElementById('acceptQuestBtn').addEventListener('click', () => {
             showModal(
                 'Карышкырлар кол салды!',
@@ -1061,7 +1069,7 @@
                 'success',
                 {},
                 async () => {
-                    // При клике на «Беттешүү» в модалке переходим сразу на боевую арену
+                    // При клике на «Беттешүү» переходим на боевую арену
                     if (!currentActiveUser) return;
                     try {
                         const userRef = doc(db, "nicknames", currentActiveUser);
@@ -1156,7 +1164,7 @@
             document.getElementById('shieldCheckbox').disabled = disabled;
         }
 
-        // Логика атаки героя
+        // Логика атаки героя (Слева направо)
         async function playerPerformStrike(zone) {
             if (isBattleTurnLocked || heroStats.hp <= 0 || wolfStats.hp <= 0) return;
             isBattleTurnLocked = true;
@@ -1175,13 +1183,13 @@
             }
             await new Promise(r => setTimeout(r, 200));
 
-            // 2. Фаза удара героя + выпад вперед
+            // 2. Фаза удара героя + выпад ВПРАВО (к волку)
             if (zone === 'head') {
                 heroImg.src = 'hero_strike_head.png';
             } else {
                 heroImg.src = 'hero_strike_body.png';
             }
-            heroWrap.style.transform = 'translateX(-30px)';
+            heroWrap.style.transform = 'translateX(30px)';
 
             // Расчет урона
             let baseDamage = Math.floor(Math.random() * (heroStats.damageMax - heroStats.damageMin + 1)) + heroStats.damageMin;
@@ -1195,9 +1203,9 @@
             const netDamage = Math.max(1, baseDamage - wolfStats.armor);
             wolfStats.hp = Math.max(0, wolfStats.hp - netDamage);
 
-            // Волк реагирует на попадание (wolf_hurt.png)
+            // Волк реагирует на попадание (wolf_hurt.png) и отскакивает вправо
             wolfImg.src = 'wolf_hurt.png';
-            wolfWrap.style.transform = 'translateX(-15px)';
+            wolfWrap.style.transform = 'scaleX(-1) translateX(-15px)';
             createDamageNumber(wolfWrap, `-${netDamage}`);
             updateHpBars();
 
@@ -1205,7 +1213,7 @@
 
             // Возврат в стойку покоя
             heroWrap.style.transform = 'translateX(0)';
-            wolfWrap.style.transform = 'translateX(0)';
+            wolfWrap.style.transform = 'scaleX(-1) translateX(0)';
             heroImg.src = 'hero_idle_in.png';
             wolfImg.src = 'wolf_idle_in.png';
 
@@ -1225,7 +1233,7 @@
             isBattleTurnLocked = false;
         }
 
-        // Логика атаки волка
+        // Логика атаки волка (Справа налево)
         async function wolfPerformStrike() {
             const heroImg = document.getElementById('heroSprite');
             const heroWrap = document.getElementById('heroWrapper');
@@ -1236,25 +1244,23 @@
             wolfImg.src = 'wolf_swing.png';
             await new Promise(r => setTimeout(r, 220));
 
-            // Атака/рывок волка вперед (wolf_attack.png)
+            // Атака/рывок волка ВЛЕВО (к герою)
             wolfImg.src = 'wolf_attack.png';
-            wolfWrap.style.transform = 'translateX(35px)';
+            wolfWrap.style.transform = 'scaleX(-1) translateX(35px)';
 
             const isShieldActive = document.getElementById('shieldCheckbox').checked;
             let currentBlock = Math.floor(Math.random() * (heroStats.blockMax - heroStats.blockMin + 1)) + heroStats.blockMin;
 
-            // Проверка: пробит ли блок калкана
+            // Проверка блока калкана
             if (isShieldActive && currentBlock >= wolfStats.accuracy) {
-                // Блок сработал успешно
                 createDamageNumber(heroWrap, 'КАЛКАН!', true);
             } else {
-                // Попадание
                 let wDmg = Math.floor(Math.random() * (wolfStats.damageMax - wolfStats.damageMin + 1)) + wolfStats.damageMin;
                 const finalDamage = Math.max(1, wDmg - heroStats.armor);
                 heroStats.hp = Math.max(0, heroStats.hp - finalDamage);
 
                 heroImg.src = 'hero_hurt.png';
-                heroWrap.style.transform = 'translateX(15px)';
+                heroWrap.style.transform = 'translateX(-15px)';
                 createDamageNumber(heroWrap, `-${finalDamage}`);
                 updateHpBars();
             }
@@ -1262,7 +1268,7 @@
             await new Promise(r => setTimeout(r, 450));
 
             // Возврат в покой
-            wolfWrap.style.transform = 'translateX(0)';
+            wolfWrap.style.transform = 'scaleX(-1) translateX(0)';
             heroWrap.style.transform = 'translateX(0)';
             heroImg.src = 'hero_idle_in.png';
             wolfImg.src = 'wolf_idle_in.png';
