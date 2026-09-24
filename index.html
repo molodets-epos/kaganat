@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Kaganat - Каганат</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700&family=Cinzel:wght@600;700&display=swap');
 
         * {
             box-sizing: border-box;
@@ -15,13 +15,8 @@
         }
         body {
             margin: 0;
-            background-color: #3b1e08; 
-            background-image: 
-                radial-gradient(circle at center, rgba(80, 40, 10, 0.4) 0%, rgba(15, 7, 2, 0.98) 100%),
-                url('pattern.png'); 
-            background-repeat: no-repeat, repeat;
-            background-position: center, top left;
-            background-size: cover, 250px 250px; 
+            background-color: #2b1506; 
+            background-image: radial-gradient(circle at center, rgba(60, 25, 5, 0.5) 0%, rgba(10, 4, 1, 0.98) 100%);
             color: #2c1604;
             display: flex;
             justify-content: center;
@@ -36,14 +31,13 @@
             display: none;
             width: 100%;
             max-width: 440px;
-            /* Эффект желтого пергамента */
-            background: linear-gradient(135deg, #f4e3c1 0%, #e2c290 50%, #d4ae75 100%);
-            background-image: radial-gradient(circle, rgba(255,255,255,0.2) 0%, rgba(0,0,0,0.15) 100%), url('pattern.png');
-            background-blend-mode: overlay;
+            /* Чистый постаревший пергамент без всяких ебучих орнаментов на фоне */
+            background: #e8d3a9;
+            background-image: linear-gradient(135deg, rgba(255, 255, 255, 0.15) 0%, rgba(0, 0, 0, 0.1) 100%);
             padding: 30px;
-            border-radius: 8px;
-            border: 4px solid #5a320f;
-            box-shadow: 0 0 35px rgba(0, 0, 0, 0.8), inset 0 0 40px rgba(90, 50, 15, 0.3);
+            border-radius: 6px;
+            border: 4px solid #4a250b;
+            box-shadow: 0 0 40px rgba(0, 0, 0, 0.85), inset 0 0 50px rgba(90, 45, 10, 0.25);
             text-align: center;
             color: #2c1604;
         }
@@ -59,7 +53,7 @@
             height: 80px;
             object-fit: contain;
             margin-bottom: 12px;
-            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.4));
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
         }
         #loader-screen img {
             animation: pulse 1.5s infinite;
@@ -67,9 +61,9 @@
         .progress-bar-container {
             width: 100%;
             height: 12px;
-            background: #3b1e08;
-            border-radius: 4px;
-            border: 2px solid #5a320f;
+            background: #2b1506;
+            border-radius: 3px;
+            border: 2px solid #4a250b;
             overflow: hidden;
             margin-top: 15px;
         }
@@ -82,18 +76,20 @@
         .progress-text {
             margin-top: 10px;
             font-size: 14px;
-            color: #5a320f;
+            color: #4a250b;
             font-weight: bold;
         }
-        h2 {
+        h1, h2, h3 {
+            font-family: 'Cinzel Decorative', serif;
+            color: #2b1506;
             margin-top: 0;
-            color: #3b1e08;
+            letter-spacing: 1px;
+            text-shadow: 1px 1px 0px rgba(255, 255, 255, 0.4);
+        }
+        h2 {
             margin-bottom: 15px;
-            font-size: 24px;
-            letter-spacing: 2px;
-            font-weight: 700;
-            text-shadow: 1px 1px 0px rgba(255,255,255,0.4);
-            border-bottom: 2px solid #8c5825;
+            font-size: 22px;
+            border-bottom: 2px solid #7d4820;
             padding-bottom: 8px;
         }
         .input-group {
@@ -104,32 +100,33 @@
         label {
             display: block;
             font-size: 13px;
-            color: #4a270a;
+            color: #4a250b;
             font-weight: bold;
             margin-bottom: 5px;
         }
         input {
             width: 100%;
             padding: 12px;
-            background: #faedcc;
-            border: 2px solid #8c5825;
-            color: #2c1604;
+            background: #f4e4c1;
+            border: 2px solid #7d4820;
+            color: #2b1506;
             border-radius: 4px;
             font-size: 15px;
+            font-weight: bold;
             outline: none;
             transition: border-color 0.2s;
         }
         input:focus {
-            border-color: #3b1e08;
+            border-color: #2b1506;
             background: #fff;
         }
         input.error-input {
-            border-color: #b71c1c !important;
-            box-shadow: 0 0 8px rgba(183, 28, 28, 0.4);
+            border-color: #a31d1d !important;
+            box-shadow: 0 0 8px rgba(163, 29, 29, 0.4);
         }
         .field-error-text {
             display: none;
-            color: #b71c1c;
+            color: #a31d1d;
             font-size: 11px;
             margin-top: 4px;
             font-weight: bold;
@@ -137,26 +134,27 @@
         .btn {
             width: 100%;
             padding: 12px;
-            background: linear-gradient(180deg, #8c5825, #5a320f);
-            color: #f4e3c1;
-            border: 2px solid #3b1e08;
+            background: linear-gradient(180deg, #7d4820, #4a250b);
+            color: #f4e4c1;
+            border: 2px solid #2b1506;
             border-radius: 4px;
-            font-size: 16px;
+            font-size: 15px;
+            font-family: 'Cinzel Decorative', serif;
             font-weight: bold;
             cursor: pointer;
             margin-top: 10px;
             transition: all 0.2s;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
             letter-spacing: 1px;
         }
         .btn:hover {
-            background: linear-gradient(180deg, #a36930, #6d3d13);
+            background: linear-gradient(180deg, #945828, #5c3010);
             color: #fff;
         }
         .btn-google {
-            background: #faedcc;
-            color: #3b1e08;
-            border: 2px solid #8c5825;
+            background: #f4e4c1;
+            color: #2b1506;
+            border: 2px solid #7d4820;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -164,27 +162,27 @@
             margin-top: 15px;
         }
         .btn-google:hover {
-            background: #f0debc;
+            background: #faedcc;
         }
         .switch-link {
             margin-top: 20px;
-            font-size: 14px;
-            color: #5a320f;
+            font-size: 13px;
+            color: #4a250b;
             cursor: pointer;
+            font-weight: bold;
         }
         .switch-link span {
-            color: #8c5825;
+            color: #7d4820;
             text-decoration: underline;
-            font-weight: bold;
         }
         .faction-warning {
             font-size: 13px;
-            color: #4a270a;
+            color: #4a250b;
             margin-bottom: 20px;
-            background: rgba(140, 88, 37, 0.15);
+            background: rgba(125, 72, 32, 0.15);
             padding: 10px 16px;
             border-radius: 4px;
-            border: 1px solid #8c5825;
+            border: 1px solid #7d4820;
             font-weight: 600;
         }
         .factions-container {
@@ -194,14 +192,14 @@
         }
         .faction-card {
             flex: 1;
-            background: linear-gradient(135deg, #ebd7b2 0%, #d4ae75 100%);
-            border: 2px solid #5a320f;
-            border-radius: 8px;
+            background: #f4e4c1;
+            border: 2px solid #4a250b;
+            border-radius: 6px;
             padding: 20px;
             display: flex;
             flex-direction: column;
             align-items: center;
-            box-shadow: inset 0 0 15px rgba(90, 50, 15, 0.2), 0 4px 10px rgba(0, 0, 0, 0.3);
+            box-shadow: inset 0 0 15px rgba(74, 37, 11, 0.15), 0 4px 8px rgba(0, 0, 0, 0.3);
             transition: transform 0.2s;
         }
         .faction-card:hover {
@@ -223,26 +221,27 @@
             transform: scale(1.6);
             transform-origin: bottom center;
             image-rendering: pixelated;
-            filter: drop-shadow(0 8px 12px rgba(0, 0, 0, 0.5));
+            filter: drop-shadow(0 8px 12px rgba(0, 0, 0, 0.4));
         }
         .btn-kyrgyz, .btn-kypchak {
             width: 100%;
             padding: 13px;
             color: #fff;
             border-radius: 4px;
-            font-size: 16px;
+            font-size: 15px;
+            font-family: 'Cinzel Decorative', serif;
             font-weight: bold;
             cursor: pointer;
             transition: all 0.2s;
-            border: 2px solid #2c1604;
+            border: 2px solid #2b1506;
         }
         .btn-kyrgyz {
-            background: linear-gradient(180deg, #b71c1c, #7f0000);
-            box-shadow: 0 4px 10px rgba(183, 28, 28, 0.4);
+            background: linear-gradient(180deg, #a31d1d, #660000);
+            box-shadow: 0 4px 8px rgba(163, 29, 29, 0.4);
         }
         .btn-kypchak {
-            background: linear-gradient(180deg, #0d47a1, #002171);
-            box-shadow: 0 4px 10px rgba(13, 71, 161, 0.4);
+            background: linear-gradient(180deg, #104e8b, #000080);
+            box-shadow: 0 4px 8px rgba(16, 78, 139, 0.4);
         }
 
         /* --- БОЕВАЯ АРЕНА (BATTLE ARENA) --- */
@@ -252,13 +251,13 @@
             text-align: left;
         }
         .battle-top-bar {
-            background: #2c1604;
-            border-bottom: 3px solid #8c5825;
+            background: #2b1506;
+            border-bottom: 3px solid #7d4820;
             padding: 10px 14px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            color: #f4e3c1;
+            color: #f4e4c1;
         }
         .fighter-info {
             width: 48%;
@@ -274,9 +273,9 @@
         .hp-bar-bg {
             width: 100%;
             height: 10px;
-            background: #1a0d02;
-            border: 2px solid #5a320f;
-            border-radius: 4px;
+            background: #150a02;
+            border: 2px solid #4a250b;
+            border-radius: 3px;
             overflow: hidden;
         }
         .hp-bar-fill {
@@ -286,7 +285,7 @@
             transition: width 0.3s ease;
         }
         .hp-bar-fill.enemy {
-            background: linear-gradient(90deg, #b71c1c, #e53935);
+            background: linear-gradient(90deg, #a31d1d, #e53935);
         }
         
         .battle-viewport {
@@ -294,7 +293,7 @@
             width: 100%;
             height: 250px;
             background: url('bg_battle.png') center/cover no-repeat;
-            border-bottom: 3px solid #8c5825;
+            border-bottom: 3px solid #7d4820;
             display: flex;
             justify-content: center;
             gap: 30px;
@@ -368,8 +367,8 @@
 
         .battle-controls {
             padding: 14px 16px 20px 16px;
-            background: #2c1604;
-            color: #f4e3c1;
+            background: #2b1506;
+            color: #f4e4c1;
         }
         .strike-zones-grid {
             display: flex;
@@ -380,10 +379,10 @@
         .strike-btn {
             flex: 1;
             padding: 9px 4px;
-            background: linear-gradient(180deg, #5a320f, #3b1e08);
-            border: 2px solid #8c5825;
+            background: linear-gradient(180deg, #4a250b, #2b1506);
+            border: 2px solid #7d4820;
             border-radius: 6px;
-            color: #f4e3c1;
+            color: #f4e4c1;
             font-size: 12px;
             font-weight: bold;
             display: flex;
@@ -397,7 +396,7 @@
         .strike-btn:hover:not(:disabled) {
             border-color: #ffd97d;
             transform: translateY(-2px);
-            background: linear-gradient(180deg, #724115, #4a270a);
+            background: linear-gradient(180deg, #633310, #3d1d08);
         }
         .strike-btn:active:not(:disabled) {
             transform: scale(0.96);
@@ -417,10 +416,10 @@
             display: flex;
             align-items: center;
             gap: 10px;
-            background: rgba(43, 22, 4, 0.8);
+            background: rgba(43, 21, 6, 0.85);
             padding: 7px 12px;
             border-radius: 4px;
-            border: 2px solid #8c5825;
+            border: 2px solid #7d4820;
             margin-bottom: 12px;
             cursor: pointer;
         }
@@ -428,7 +427,7 @@
             width: 19px;
             height: 19px;
             cursor: pointer;
-            accent-color: #8c5825;
+            accent-color: #7d4820;
         }
         .shield-label {
             font-size: 13px;
@@ -442,7 +441,7 @@
 
         .potions-bar-title {
             font-size: 11px;
-            color: #d4ae75;
+            color: #d4ab75;
             text-transform: uppercase;
             letter-spacing: 0.5px;
             margin-bottom: 6px;
@@ -455,21 +454,21 @@
         }
         .potion-slot {
             aspect-ratio: 1 / 1;
-            background: #1a0d02;
-            border: 2px solid #5a320f;
+            background: #150a02;
+            border: 2px solid #4a250b;
             border-radius: 4px;
             display: flex;
             justify-content: center;
             align-items: center;
             font-size: 11px;
-            color: #d4ae75;
+            color: #d4ab75;
             position: relative;
             cursor: pointer;
             transition: all 0.2s;
         }
         .potion-slot.filled {
             border-color: #ffd97d;
-            background: radial-gradient(circle, #5a320f 0%, #1a0d02 100%);
+            background: radial-gradient(circle, #4a250b 0%, #150a02 100%);
             box-shadow: inset 0 0 6px rgba(255, 217, 125, 0.4);
         }
         .potion-slot.filled:hover {
@@ -490,17 +489,16 @@
             background: rgba(0, 0, 0, 0.85); justify-content: center; align-items: center; z-index: 9999; padding: 15px;
         }
         .modal-content {
-            background: linear-gradient(135deg, #f4e3c1 0%, #d4ae75 100%);
-            padding: 25px; border-radius: 8px; width: 100%;
-            max-width: 320px; text-align: center; border: 3px solid #5a320f; box-shadow: 0 0 30px rgba(0, 0, 0, 0.9);
-            color: #2c1604;
+            background: #e8d3a9; padding: 25px; border-radius: 6px; width: 100%;
+            max-width: 320px; text-align: center; border: 3px solid #4a250b; box-shadow: 0 0 30px rgba(0, 0, 0, 0.9);
+            color: #2b1506;
         }
-        .modal-content h3 { margin-top: 0; margin-bottom: 10px; color: #3b1e08; }
-        .modal-content p { color: #4a270a; font-size: 14px; line-height: 1.4; margin-bottom: 20px; font-weight: 600; }
-        .modal-btn { color: #f4e3c1; border: 2px solid #3b1e08; padding: 10px 20px; border-radius: 4px; font-weight: bold; cursor: pointer; width: 100%; }
-        .modal-error { border: 3px solid #b71c1c; }
-        .modal-error h3 { color: #b71c1c; }
-        .modal-error .modal-btn { background: #b71c1c; }
+        .modal-content h3 { margin-top: 0; margin-bottom: 10px; color: #2b1506; }
+        .modal-content p { color: #4a250b; font-size: 14px; line-height: 1.4; margin-bottom: 20px; font-weight: bold; }
+        .modal-btn { color: #f4e4c1; border: 2px solid #2b1506; padding: 10px 20px; border-radius: 4px; font-family: 'Cinzel Decorative', serif; font-weight: bold; cursor: pointer; width: 100%; }
+        .modal-error { border: 3px solid #a31d1d; }
+        .modal-error h3 { color: #a31d1d; }
+        .modal-error .modal-btn { background: #a31d1d; }
         .modal-success { border: 3px solid #1b5e20; }
         .modal-success h3 { color: #1b5e20; }
         .modal-success .modal-btn { background: #1b5e20; }
@@ -514,11 +512,11 @@
         }
         .result-block {
             width: 100%;
-            background: rgba(90, 50, 15, 0.15);
-            border-radius: 6px;
+            background: rgba(74, 37, 11, 0.12);
+            border-radius: 4px;
             padding: 14px;
             margin-bottom: 14px;
-            border: 2px solid #8c5825;
+            border: 2px solid #7d4820;
         }
         .result-table {
             display: flex;
@@ -530,15 +528,15 @@
             grid-template-columns: 1fr 1fr 1fr;
             padding: 6px 0;
             font-size: 14px;
-            border-bottom: 1px solid rgba(90, 50, 15, 0.2);
+            border-bottom: 1px solid rgba(74, 37, 11, 0.2);
             align-items: center;
-            color: #2c1604;
-            font-weight: 600;
+            color: #2b1506;
+            font-weight: bold;
         }
         .result-row.header {
             font-weight: bold;
-            color: #5a320f;
-            border-bottom: 2px solid #8c5825;
+            color: #4a250b;
+            border-bottom: 2px solid #7d4820;
             font-size: 12px;
             text-transform: uppercase;
         }
