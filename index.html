@@ -279,6 +279,7 @@
             border-bottom: 2px solid #b87a28;
             display: flex;
             justify-content: center;
+            gap: 30px; /* Идеальная дистанция для удара мечом */
             align-items: flex-end;
             padding-bottom: 15px;
             overflow: hidden;
@@ -288,32 +289,32 @@
             position: relative;
             display: flex;
             align-items: flex-end;
-            transition: transform 0.15s ease-out; /* Резкость анимации */
+            transition: transform 0.15s ease-out;
         }
         
         /* ГЕРОЙ - СЛЕВА */
         #heroWrapper {
-            height: 90%; 
-            margin-right: -70px; /* Прижимаем героя вплотную к центру */
+            height: 80%; 
             z-index: 2; 
         }
         #heroWrapper img {
             height: 100%;
             object-fit: contain;
+            transform: scale(1.25); /* Увеличиваем героя */
             transform-origin: bottom center;
             filter: drop-shadow(0 6px 10px rgba(0,0,0,0.8));
         }
 
         /* ВОЛК - СПРАВА */
         #wolfWrapper {
-            height: 65%; 
-            margin-left: -70px; /* Прижимаем волка вплотную к герою */
+            height: 80%; 
             z-index: 1;
         }
         #wolfWrapper img {
             height: 100%;
             object-fit: contain;
-            transform: scaleX(-1); /* ЖЕЛЕЗНО поворачиваем мордой к герою */
+            /* ЖЕЛЕЗНО поворачиваем мордой к герою (-1.5 по оси X) и увеличиваем размер (1.5) */
+            transform: scale(-1.5, 1.5); 
             transform-origin: bottom center;
             filter: drop-shadow(0 6px 10px rgba(0,0,0,0.8));
         }
@@ -338,7 +339,7 @@
             100% { transform: translate(-50%, -90px) scale(1); opacity: 0; }
         }
 
-        /* Плавный выезд бойцов при старте */
+        /* Выезд бойцов при старте */
         @keyframes entranceLeft {
             from { transform: translateX(-150px); opacity: 0; }
             to { transform: translateX(0); opacity: 1; }
@@ -1038,7 +1039,7 @@
             heroImg.src = (zone === 'head') ? 'hero_swing_head.png' : 'hero_swing_body.png';
             await new Promise(r => setTimeout(r, 200));
 
-            // Удар С МЕСТА (Герой не сдвигается ни на миллиметр)
+            // Удар С МЕСТА
             heroImg.src = (zone === 'head') ? 'hero_strike_head.png' : 'hero_strike_body.png';
             heroWrap.style.transform = 'none';
 
