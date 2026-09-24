@@ -1172,65 +1172,76 @@ function startBattleSystem(nickname) {
         }
 
         // Атака Героя с места
-        async function playerPerformStrike(zone) {
-            if (isBattleTurnLocked || heroStats.hp <= 0 || wolfStats.hp <= 0) return;
-            isBattleTurnLocked = true;
-            setButtonsDisabled(true);
+       async function playerPerformStrike(zone) {
+        if (isBattleTurnLocked || heroStats.hp <= 0 || wolfStats.hp <= 0) return;
+        isBattleTurnLocked = true;
+        setButtonsDisabled(true);
 
-            const heroImg = document.getElementById('heroSprite');
-            const heroWrap = document.getElementById('heroWrapper');
-            const wolfImg = document.getElementById('wolfSprite');
-            const wolfWrap = document.getElementById('wolfWrapper');
-            heroWrap.style.zIndex = '10';
-            wolfWrap.style.zIndex = '1';
-            // Замах
-            heroImg.src = (zone === 'head') ? 'hero_swing_head.png' : 'hero_swing_body.png';
-            await new Promise(r => setTimeout(r, 200));
+        const heroImg = document.getElementById('heroSprite');
+        const heroWrap = document.getElementById('heroWrapper');
+        const wolfImg = document.getElementById('wolfSprite');
+        const wolfWrap = document.getElementById('wolfWrapper');
+        heroWrap.style.zIndex = '10';
+        wolfWrap.style.zIndex = '1';
 
-            // Удар С МЕСТА
-            heroImg.src = (zone === 'head') ? 'hero_strike_head.png' : 'hero_strike_body.png';
-            heroWrap.style.transform = 'none';
+        // Отладка: посмотрим, какая зона приходит при клике
+        console.log("Кликнута зона удара:", zone);
 
-            let baseDamage = Math.floor(Math.random() * (heroStats.damageMax - heroStats.damageMin + 1)) + heroStats.damageMin;
-            if (document.getElementById('shieldCheckbox').checked) baseDamage = Math.floor(baseDamage * 0.6);
+        // Замах
+        if (zone === 'head') {
+            heroImg.src = 'hero_swing_head.png';
+        } else {
+            heroImg.src = 'hero_swing_body.png';
+        }
+        await new Promise(r => setTimeout(r, 200));
 
-            const netDamage = Math.max(1, baseDamage - wolfStats.armor);
-            wolfStats.hp = Math.max(0, wolfStats.hp - netDamage);
-            heroStats.totalDamage += netDamage;
+        // Удар С МЕСТА
+        if (zone === 'head') {
+            heroImg.src = 'hero_strike_head.png';
+        } else {
+            heroImg.src = 'hero_strike_body.png';
+        }
+        heroWrap.style.transform = 'none';
 
-            // Волк получает урон и слегка отлетает вправо от удара
-            wolfImg.src = 'wolf_hurt.png';
-            wolfWrap.style.transform = 'none';
-            createDamageNumber(wolfWrap, `-${netDamage}`);
-            updateHpBars();
+        let baseDamage = Math.floor(Math.random() * (heroStats.damageMax - heroStats.damageMin + 1)) + heroStats.damageMin;
+        if (document.getElementById('shieldCheckbox').checked) baseDamage = Math.floor(baseDamage * 0.6);
 
-            await new Promise(r => setTimeout(r, 450));
+        const netDamage = Math.max(1, baseDamage - wolfStats.armor);
+        wolfStats.hp = Math.max(0, wolfStats.hp - netDamage);
+        heroStats.totalDamage += netDamage;
 
-            // Возврат
-    heroWrap.style.transform = 'none';
-    wolfWrap.style.transform = 'none';
-    heroWrap.style.zIndex = '';
-    wolfWrap.style.zIndex = '';
-    heroImg.src = 'hero_idle_in.png';
-    wolfImg.src = 'wolf_idle_in.png';
+        // Волк получает урон
+        wolfImg.src = 'wolf_hurt.png';
+        wolfWrap.style.transform = 'none';
+        createDamageNumber(wolfWrap, `-${netDamage}`);
+        updateHpBars();
 
-           if (wolfStats.hp <= 0) {
-        document.getElementById('res-winner-dmg').innerText = heroStats.totalDamage;
-        document.getElementById('res-loser-dmg').innerText = wolfStats.totalDamage;
-        
-        let expGained = Math.floor(Math.random() * 21) + 40;
-        document.getElementById('res-winner-exp').innerText = `+${expGained} XP`;
-        
-        switchScreen('result-screen');
-        return;
-    }
+        await new Promise(r => setTimeout(r, 450));
 
-            await new Promise(r => setTimeout(r, 600));
-            await wolfPerformStrike();
-            setButtonsDisabled(false);
-            isBattleTurnLocked = false;
+        // Возврат
+        heroWrap.style.transform = 'none';
+        wolfWrap.style.transform = 'none';
+        heroWrap.style.zIndex = '';
+        wolfWrap.style.zIndex = '';
+        heroImg.src = 'hero_idle_in.png';
+        wolfImg.src = 'wolf_idle_in.png';
+
+        if (wolfStats.hp <= 0) {
+            document.getElementById('res-winner-dmg').innerText = heroStats.totalDamage;
+            document.getElementById('res-loser-dmg').innerText = wolfStats.totalDamage;
+            
+            let expGained = Math.floor(Math.random() * 21) + 40;
+            document.getElementById('res-winner-exp').innerText = `+${expGained} XP`;
+            
+            switchScreen('result-screen');
+            return;
         }
 
+        await new Promise(r => setTimeout(r, 600));
+        await wolfPerformStrike();
+        setButtonsDisabled(false);
+        isBattleTurnLocked = false;
+    }
         // Атака волка
         async function wolfPerformStrike() {
             const heroImg = document.getElementById('heroSprite');
