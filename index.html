@@ -492,49 +492,52 @@
         .modal-success .modal-btn { background: #28a745; }
         @keyframes pulse { 0% { transform: scale(1); opacity: 0.8; } 50% { transform: scale(1.05); opacity: 1; } 100% { transform: scale(1); opacity: 0.8; } }
   <style>
-/* --- СТИЛИ ДЛЯ ЭКРАНА ИТОГОВ БОЯ --- */
-#result-screen.active {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-}
-
-.result-block {
-    width: 100%;
-    background: rgba(10, 5, 2, 0.6);
-    border-radius: 8px;
-    padding: 14px;
-    margin-bottom: 14px;
-    border: 1px solid #5a3e1b;
-}
-
-.result-table {
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-}
-
-.result-row {
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
-    padding: 6px 0;
-    font-size: 14px;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-    align-items: center;
-}
-
-.result-row.header {
-    font-weight: bold;
-    color: #ffd479;
-    border-bottom: 1px solid #b87a28;
-    font-size: 12px;
-    text-transform: uppercase;
-}
-
-.result-row:last-child {
-    border-bottom: none;
-}
-</style>
+        /* --- СТИЛИ ДЛЯ ЭКРАНА ИТОГОВ БОЯ --- */
+        #result-screen.active {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+            max-width: 440px;
+            background: radial-gradient(circle at center, #2e1c0c 0%, #160d06 100%);
+            padding: 30px;
+            border-radius: 14px;
+            border: 2px solid #d49a3d;
+            box-shadow: 0 0 45px rgba(212, 154, 61, 0.3), inset 0 0 25px rgba(0, 0, 0, 0.7);
+            text-align: center;
+        }
+        .result-block {
+            width: 100%;
+            background: rgba(10, 5, 2, 0.6);
+            border-radius: 8px;
+            padding: 14px;
+            margin-bottom: 14px;
+            border: 1px solid #5a3e1b;
+        }
+        .result-table {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+        .result-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            padding: 6px 0;
+            font-size: 14px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            align-items: center;
+        }
+        .result-row.header {
+            font-weight: bold;
+            color: #ffd479;
+            border-bottom: 1px solid #b87a28;
+            font-size: 12px;
+            text-transform: uppercase;
+        }
+        .result-row:last-child {
+            border-bottom: none;
+        }
+    </style>
 </head>
 <body>
 
