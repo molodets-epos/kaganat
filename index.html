@@ -12,13 +12,17 @@
             -webkit-tap-highlight-color: transparent;
             user-select: none;
         }
-      body {
+    body {
             margin: 0;
             font-family: 'Cinzel', 'Segoe UI', serif;
-            background-color: #1a0a04;
-            background-image: url('pattern.png');
-            background-repeat: repeat;
-            background-size: 150px 150px;
+            background-color: #3b1e0b;
+            background-image: 
+                radial-gradient(circle at center, rgba(120, 60, 20, 0.4) 0%, rgba(20, 8, 2, 0.9) 100%),
+                url('pattern.png');
+            background-repeat: no-repeat, repeat;
+            background-position: center, top left;
+            background-size: cover, 180px 180px;
+            background-blend-mode: normal, multiply;
             color: #2c1604;
             display: flex;
             justify-content: center;
@@ -29,7 +33,7 @@
             overflow-y: auto;
             padding: 15px;
         }
-       .screen {
+        .screen {
             display: none;
             width: 100%;
             max-width: 440px;
