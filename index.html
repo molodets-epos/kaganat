@@ -343,49 +343,47 @@
       .battle-viewport {
         position: relative;
         width: 100%;
-        height: 250px;
-        background: url('bg_battle.png') center/cover no-repeat;
-        border-bottom: 3px solid #7d4820;
-        display: flex;
-        justify-content: center;
-        gap: 30px;
-        align-items: flex-end;
-        padding-bottom: 15px;
-        overflow: hidden;
-    }
-    
-    .fighter-sprite-wrap {
-        position: relative;
-        display: flex;
-        align-items: flex-end;
-        transition: transform 0.15s ease-out;
-    }
-    
-    #heroWrapper {
-        height: 80%;
-        z-index: 2;
-        left: 70px;
-    }
-    #heroWrapper img {
-        height: 100%;
-        object-fit: contain;
-        transform: scale(1.20);
-        transform-origin: bottom center;
-        filter: drop-shadow(0 6px 10px rgba(0,0,0,0.8));
-    }
+        height:.battle-viewport {
+            position: relative;
+            width: 100%;
+            height: 250px;
+            background: url('bg_battle.png') center/cover no-repeat;
+            border-bottom: 3px solid #7d4820;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            padding: 0 20px 15px 20px;
+            overflow: hidden;
+        }
+        
+        .fighter-sprite-wrap {
+            position: relative;
+            display: flex;
+            align-items: flex-end;
+            height: 80%;
+        }
+        
+        #heroWrapper {
+            z-index: 2;
+        }
+        #heroWrapper img {
+            height: 100%;
+            object-fit: contain;
+            transform: scale(1.20);
+            transform-origin: bottom center;
+            filter: drop-shadow(0 6px 10px rgba(0,0,0,0.8));
+        }
 
-    #wolfWrapper {
-        height: 80%;
-        z-index: 1;
-        right: 35px;
-    }
-    #wolfWrapper img {
-        height: 100%;
-        object-fit: contain;
-        transform: scale(1.5); 
-        transform-origin: bottom center;
-        filter: drop-shadow(0 6px 10px rgba(0,0,0,0.8));
-    }
+        #wolfWrapper {
+            z-index: 1;
+        }
+        #wolfWrapper img {
+            height: 100%;
+            object-fit: contain;
+            transform: scale(1.5); 
+            transform-origin: bottom center;
+            filter: drop-shadow(0 6px 10px rgba(0,0,0,0.8));
+        }
 
         .damage-number {
             position: absolute;
