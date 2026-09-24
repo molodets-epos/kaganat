@@ -9,6 +9,7 @@
             box-sizing: border-box;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             -webkit-tap-highlight-color: transparent;
+            user-select: none;
         }
         body {
             margin: 0;
@@ -226,16 +227,224 @@
             border: 1px solid #64b5f6;
             box-shadow: 0 4px 14px rgba(25, 118, 210, 0.4);
         }
-        @media (max-width: 650px) {
-            body { align-items: flex-start; padding: 10px; }
-            .screen { padding: 18px 14px; border-radius: 12px; margin-top: 10px; margin-bottom: 20px; }
-            #faction-screen { padding: 16px 12px; }
-            .factions-container { flex-direction: column; gap: 20px; }
-            .faction-card { width: 100%; padding: 15px; }
-            .faction-img-wrap { height: 290px; margin-bottom: 12px; }
-            .faction-img-wrap img { transform: scale(1.65); transform-origin: bottom center; }
-            .btn-kyrgyz, .btn-kypchak { padding: 12px; font-size: 16px; }
+
+        /* --- БОЕВАЯ АРЕНА (BATTLE ARENA) --- */
+        #battle-screen {
+            padding: 0;
+            overflow: hidden;
+            text-align: left;
         }
+        .battle-top-bar {
+            background: rgba(14, 8, 4, 0.95);
+            border-bottom: 2px solid #b87a28;
+            padding: 10px 14px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .fighter-info {
+            width: 48%;
+        }
+        .fighter-name {
+            font-size: 13px;
+            font-weight: bold;
+            color: #ffd479;
+            margin-bottom: 3px;
+            display: flex;
+            justify-content: space-between;
+        }
+        .hp-bar-bg {
+            width: 100%;
+            height: 9px;
+            background: #2a1608;
+            border: 1px solid #5a3e1b;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        .hp-bar-fill {
+            height: 100%;
+            width: 100%;
+            background: linear-gradient(90deg, #28a745, #5cd65c);
+            transition: width 0.3s ease;
+        }
+        .hp-bar-fill.enemy {
+            background: linear-gradient(90deg, #d32f2f, #ff6b6b);
+        }
+        .battle-viewport {
+            position: relative;
+            width: 100%;
+            height: 250px;
+            background: url('bg_battle.png') center/cover no-repeat;
+            border-bottom: 2px solid #b87a28;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            padding: 0 15px 5px 15px;
+            overflow: hidden;
+        }
+        .fighter-sprite-wrap {
+            position: relative;
+            height: 88%;
+            display: flex;
+            align-items: flex-end;
+            transition: transform 0.15s ease-out;
+        }
+        .fighter-sprite-wrap img {
+            height: 100%;
+            object-fit: contain;
+            filter: drop-shadow(0 6px 10px rgba(0,0,0,0.8));
+        }
+
+        /* Всплывающий урон */
+        .damage-number {
+            position: absolute;
+            top: 25%;
+            font-size: 24px;
+            font-weight: 900;
+            color: #ff3b30;
+            text-shadow: 0 0 6px #000, 0 0 12px #ff0000;
+            animation: floatDamage 1.2s ease-out forwards;
+            pointer-events: none;
+            z-index: 50;
+        }
+        @keyframes floatDamage {
+            0% { transform: translateY(0) scale(0.8); opacity: 1; }
+            40% { transform: translateY(-30px) scale(1.3); opacity: 1; }
+            100% { transform: translateY(-90px) scale(1); opacity: 0; }
+        }
+
+        /* Плавный выезд бойцов при старте */
+        @keyframes entranceLeft {
+            from { transform: translateX(-120px); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        @keyframes entranceRight {
+            from { transform: translateX(120px); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        .wolf-enter { animation: entranceLeft 0.8s ease-out forwards; }
+        .hero-enter { animation: entranceRight 0.8s ease-out forwards; }
+
+        /* Нижняя консоль управления боем */
+        .battle-controls {
+            padding: 14px 16px 20px 16px;
+            background: #170d06;
+        }
+        .strike-zones-grid {
+            display: flex;
+            gap: 10px;
+            justify-content: space-between;
+            margin-bottom: 12px;
+        }
+        .strike-btn {
+            flex: 1;
+            padding: 9px 4px;
+            background: linear-gradient(180deg, #3c2411, #211308);
+            border: 1px solid #946428;
+            border-radius: 8px;
+            color: #f3dfc8;
+            font-size: 12px;
+            font-weight: bold;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            cursor: pointer;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.5);
+            transition: all 0.15s;
+        }
+        .strike-btn:hover:not(:disabled) {
+            border-color: #ffd479;
+            transform: translateY(-2px);
+            background: linear-gradient(180deg, #573418, #2a170a);
+        }
+        .strike-btn:active:not(:disabled) {
+            transform: scale(0.96);
+        }
+        .strike-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            filter: grayscale(0.8);
+        }
+        .strike-btn svg {
+            width: 22px;
+            height: 22px;
+            fill: #ffd479;
+        }
+
+        /* Блок Калкан (Щит) */
+        .shield-toggle-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(10, 5, 2, 0.7);
+            padding: 7px 12px;
+            border-radius: 6px;
+            border: 1px solid #5a3e1b;
+            margin-bottom: 12px;
+            cursor: pointer;
+        }
+        .shield-checkbox {
+            width: 19px;
+            height: 19px;
+            cursor: pointer;
+            accent-color: #d49a3d;
+        }
+        .shield-label {
+            font-size: 13px;
+            font-weight: bold;
+            color: #f0d09d;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        /* 8 слотов для зелий */
+        .potions-bar-title {
+            font-size: 11px;
+            color: #a48259;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 6px;
+        }
+        .potions-slots-grid {
+            display: grid;
+            grid-template-columns: repeat(8, 1fr);
+            gap: 6px;
+        }
+        .potion-slot {
+            aspect-ratio: 1 / 1;
+            background: #0d0703;
+            border: 1px solid #4a3014;
+            border-radius: 5px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 11px;
+            color: #8c735a;
+            position: relative;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .potion-slot.filled {
+            border-color: #ffd479;
+            background: radial-gradient(circle, #38210e 0%, #120904 100%);
+            box-shadow: inset 0 0 6px rgba(255, 212, 121, 0.3);
+        }
+        .potion-slot.filled:hover {
+            transform: scale(1.08);
+            border-color: #5cd65c;
+        }
+        .potion-count {
+            position: absolute;
+            bottom: 1px;
+            right: 2px;
+            font-size: 9px;
+            font-weight: bold;
+            color: #5cd65c;
+        }
+
         #custom-modal {
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0, 0, 0, 0.8); justify-content: center; align-items: center; z-index: 9999; padding: 15px;
@@ -337,13 +546,13 @@
         <div class="factions-container">
             <div class="faction-card">
                 <div class="faction-img-wrap">
-                    <img src="kyrgyz.png" alt="Кыргыз" onerror="this.src='hero_idle_in.jpg'">
+                    <img src="kyrgyz.png" alt="Кыргыз" onerror="this.src='hero_idle_in.png'">
                 </div>
                 <button class="btn-kyrgyz" id="chooseKyrgyzBtn">Кыргыз</button>
             </div>
             <div class="faction-card">
                 <div class="faction-img-wrap">
-                    <img src="kypchak.png" alt="Кыпчак" onerror="this.src='Кыпчак прото.jpg'">
+                    <img src="kypchak.png" alt="Кыпчак" onerror="this.src='hero_idle_in.png'">
                 </div>
                 <button class="btn-kypchak" id="chooseKypchakBtn">Кыпчак</button>
             </div>
@@ -359,7 +568,7 @@
         </div>
     </div>
 
-    <!-- 5. ГЛАВНЫЙ ЭКРАН ИГРЫ (СЮЖЕТ) -->
+    <!-- 5. ГЛАВНЫЙ ЭКРАН СЮЖЕТА (АКСАКАЛ) -->
     <div id="game-screen" class="screen" style="padding: 0; overflow: hidden; text-align: left;">        
         <div style="position: relative; width: 100%; height: 240px; background: url('bg_valley.png') center/cover no-repeat; border-bottom: 2px solid #d49a3d;">
             <img id="storyCharacter" src="aksakal.png" style="display: none; position: absolute; bottom: 0; left: 50%; transform: translateX(-50%); height: 95%; object-fit: contain;" alt="Аксакал" onerror="this.style.display='none'">
@@ -371,7 +580,7 @@
             </p>
             
             <button class="btn" id="nextStoryBtn">Кийинки</button>
-            <button class="btn" id="acceptQuestBtn" style="display: none; background: linear-gradient(180deg, #d32f2f, #9a1919); color: white; border: 1px solid #ff7b7b;">Макул</button>
+            <button class="btn" id="acceptQuestBtn" style="display: none; background: linear-gradient(180deg, #d32f2f, #9a1919); color: white; border: 1px solid #ff7b7b;">Чабуул коюу</button>
 
             <div style="display: flex; justify-content: space-between; margin-top: 30px; font-size: 15px; font-weight: bold; text-transform: uppercase; letter-spacing: 1px;">
                 <div onclick="showModal('Маалымат', 'Меню бөлүмү жакында кошулат!', 'success')" style="color: #8c735a; cursor: pointer; transition: color 0.2s;" onmouseover="this.style.color='#cfb395'" onmouseout="this.style.color='#8c735a'">
@@ -384,13 +593,98 @@
         </div>
     </div>
 
-    <!-- 6. ЭКРАН БОЯ (BATTLE SCREEN) -->
-    <div id="battle-screen" class="screen" style="padding: 0; overflow: hidden; text-align: left;">
-        <div style="position: relative; width: 100%; height: 260px; background: url('bg_battle.png') center/cover no-repeat; border-bottom: 2px solid #d49a3d;"></div>
-        <div style="padding: 20px; text-align: center;">
-            <h2 style="color: #ff7b7b; margin-bottom: 10px;">Карышкырлар кол салды!</h2>
-            <p style="color: #ecd7ba; font-size: 14px; margin-bottom: 20px;">Айылды коргоо үчүн карышкырды жеңишиңиз керек!</p>
-            <button class="btn" id="attackBtn" style="background: linear-gradient(180deg, #d32f2f, #9a1919); color: white; border: 1px solid #ff7b7b;">Чабуул коюу</button>
+    <!-- 6. БОЕВАЯ АРЕНА (BATTLE SCREEN) -->
+    <div id="battle-screen" class="screen">
+        <!-- Верхняя строка: Имена и ХП бойцов -->
+        <div class="battle-top-bar">
+            <!-- Волк (слева) -->
+            <div class="fighter-info">
+                <div class="fighter-name">
+                    <span>Карышкыр</span>
+                    <span id="wolfHpVal">120/120</span>
+                </div>
+                <div class="hp-bar-bg">
+                    <div id="wolfHpBar" class="hp-bar-fill enemy"></div>
+                </div>
+            </div>
+
+            <!-- Игрок (справа) -->
+            <div class="fighter-info">
+                <div class="fighter-name">
+                    <span id="playerBattleNick">Баатыр</span>
+                    <span id="playerHpVal">200/200</span>
+                </div>
+                <div class="hp-bar-bg">
+                    <div id="playerHpBar" class="hp-bar-fill"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Визуальная часть боя (Анимация спрайтов) -->
+        <div class="battle-viewport">
+            <!-- Волк слева -->
+            <div class="fighter-sprite-wrap wolf-enter" id="wolfWrapper">
+                <img id="wolfSprite" src="wolf_idle_in.png" alt="Карышкыр">
+            </div>
+
+            <!-- Герой справа -->
+            <div class="fighter-sprite-wrap hero-enter" id="heroWrapper">
+                <img id="heroSprite" src="hero_idle_in.png" alt="Баатыр">
+            </div>
+        </div>
+
+        <!-- Нижняя консоль управления боем -->
+        <div class="battle-controls">
+            <!-- 3 кнопки ударов -->
+            <div class="strike-zones-grid">
+                <!-- 1. Удар в голову (Меч направлен вверх) -->
+                <button class="strike-btn" id="strikeHeadBtn">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M6.92 5L5 6.92l8.13 8.13-1.42 1.41 1.42 1.42 2.83-2.83 1.41 1.41 1.42-1.41-1.41-1.42 2.83-2.83-1.42-1.41-1.41 1.41L6.92 5zM3 21l3.5-3.5L5 16l-3.5 3.5L3 21z"/>
+                    </svg>
+                    <span>Башка (Баш)</span>
+                </button>
+
+                <!-- 2. Удар в живот (Прямой меч) -->
+                <button class="strike-btn" id="strikeBodyBtn">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M11 2h2v12h-2V2zm-3 12h8v2H8v-2zm2 2h4v2h-4v-2zm1 2h2v4h-2v-4z"/>
+                    </svg>
+                    <span>Боорго (Ич)</span>
+                </button>
+
+                <!-- 3. Удар в ноги (Меч направлен снизу) -->
+                <button class="strike-btn" id="strikeLegsBtn">
+                    <svg viewBox="0 0 24 24" style="transform: rotate(180deg);">
+                        <path d="M6.92 5L5 6.92l8.13 8.13-1.42 1.41 1.42 1.42 2.83-2.83 1.41 1.41 1.42-1.41-1.41-1.42 2.83-2.83-1.42-1.41-1.41 1.41L6.92 5zM3 21l3.5-3.5L5 16l-3.5 3.5L3 21z"/>
+                    </svg>
+                    <span>Бутка (Бут)</span>
+                </button>
+            </div>
+
+            <!-- Режим Калкан (Блок) -->
+            <label class="shield-toggle-row" for="shieldCheckbox">
+                <input type="checkbox" id="shieldCheckbox" class="shield-checkbox">
+                <span class="shield-label">
+                    🛡️ Калкан менен коргонуу (Блок)
+                </span>
+            </label>
+
+            <!-- 8 слотов для зелий -->
+            <div class="potions-bar-title">Кур чөнтөк (Зельелор):</div>
+            <div class="potions-slots-grid">
+                <div class="potion-slot filled" id="potionSlot1" title="Устаттын дары чөбү (+30 Жан)">
+                    🌿
+                    <span class="potion-count" id="potionCount1">3</span>
+                </div>
+                <div class="potion-slot"></div>
+                <div class="potion-slot"></div>
+                <div class="potion-slot"></div>
+                <div class="potion-slot"></div>
+                <div class="potion-slot"></div>
+                <div class="potion-slot"></div>
+                <div class="potion-slot"></div>
+            </div>
         </div>
     </div>
 
@@ -407,6 +701,7 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
         import { getAuth, signInWithPopup, GoogleAuthProvider } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
         import { getFirestore, doc, getDoc, setDoc, onSnapshot, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+        
         const firebaseConfig = {
             apiKey: "AIzaSyBRkzoUhINimIQ69kBdelZhyoMmCUlDUNQ",
             authDomain: "kaganat-5c070.firebaseapp.com",
@@ -441,9 +736,10 @@
             });
         }
 
-        window.showModal = function(title, msg, type = 'error', fieldErrors = {}, onClose = null) {
+        window.showModal = function(title, msg, type = 'error', fieldErrors = {}, onClose = null, btnText = 'Макул') {
             document.getElementById('modal-title').innerText = title;
             document.getElementById('modal-message').innerText = msg;
+            document.getElementById('modalActionBtn').innerText = btnText;
             
             const modalBox = document.getElementById('modal-content-box');
             modalBox.className = 'modal-content ' + (type === 'success' ? 'modal-success' : 'modal-error');
@@ -490,15 +786,9 @@
                         currentActiveUser = null;
                         currentSessionId = null;
 
-                        showModal(
-                            'Сессия аяктады',
-                            'Башка түзмөктөн кирүү болду! Сиздин сессияңыз жабылды.',
-                            'error',
-                            {},
-                            () => {
-                                switchScreen('login-screen');
-                            }
-                        );
+                        showModal('Сессия аяктады', 'Башка түзмөктөн кирүү болду! Сиздин сессияңыз жабылды.', 'error', {}, () => {
+                            switchScreen('login-screen');
+                        });
                     }
                 }
             });
@@ -521,9 +811,8 @@
             listenForRemoteSession(nicknameKey);
 
             if (userData.fraction) {
-                // Если у игрока уже принят квест (storyStep === 1), сразу переводим его на боевую арену
                 if (userData.storyStep === 1) {
-                    switchScreen('battle-screen');
+                    startBattleSystem(nicknameKey);
                     return;
                 }
                 switchScreen('game-screen');
@@ -556,7 +845,6 @@
             
             document.getElementById('loginNickname').value = '';
             document.getElementById('loginPassword').value = '';
-            
             switchScreen('login-screen');
         });
 
@@ -567,7 +855,6 @@
                 await setDoc(userRef, { fraction: factionName, storyStep: 0 }, { merge: true });
                 
                 showModal('Ийгиликтүү', `Сиз ${factionName} фракциясын тандадыңыз!`, 'success', {}, () => {
-                    document.getElementById('game-screen').classList.add('active');
                     switchScreen('game-screen');
                 });
             } catch (err) {
@@ -643,7 +930,7 @@
                 });
             } catch (e) {
                 console.error(e);
-                showModal('Ката', 'Туура эмес маалыматтарды жаздыңыз!', 'error', {'loginNickname': '', 'loginPassword': ''});
+                showModal('Ката', 'Маалыматтар туура эмес!', 'error');
             }
         });
 
@@ -655,10 +942,8 @@
             try {
                 const result = await signInWithPopup(auth, provider);
                 tempGoogleEmail = result.user.email;
-                
                 const btn = document.getElementById('googleBindBtn');
                 btn.innerHTML = `${googleSvgIcon} ${tempGoogleEmail}`;
-                
                 showModal('Ийгиликтүү', 'Google аккаунт байланды!\nЭми "Катталууну аяктоо" баскычын басыңыз.', 'success');
             } catch (error) {
                 console.error(error);
@@ -671,7 +956,6 @@
             try {
                 const result = await signInWithPopup(auth, provider);
                 const userEmail = result.user.email;
-                
                 const nicknamesRef = collection(db, "nicknames");
                 const q = query(nicknamesRef, where("googleEmail", "==", userEmail));
                 const querySnapshot = await getDocs(q);
@@ -683,11 +967,7 @@
 
                 querySnapshot.forEach((docSnap) => {
                     const userData = docSnap.data();
-                    showModal(
-                        'Аккаунт табылды!', 
-                        `Сиздин логиниңиз (ысым):\n${userData.nickname}\n\nСиздин сыр сөзүңүз:\n${userData.password}\n\nУшул маалыматтарды колдонуп оюнга кире аласыз.`, 
-                        'success'
-                    );
+                    showModal('Аккаунт табылды!', `Сиздин логиниңиз: ${userData.nickname}\nСыр сөзүңүз: ${userData.password}`, 'success');
                 });
             } catch (error) {
                 console.error(error);
@@ -697,9 +977,8 @@
 
         document.getElementById('registerSubmitBtn').addEventListener('click', async () => {
             clearErrors();
-            
             if (!tempGoogleEmail) {
-                showModal('Ката', 'Катталууну аяктоо үчүн алгач Google аккаунтту байлоо милдеттүү!', 'error');
+                showModal('Ката', 'Google аккаунтту байлоо милдеттүү!', 'error');
                 return;
             }
 
@@ -713,7 +992,7 @@
             if(!pass2) errors['regPasswordConfirm'] = 'Сыр сөздү кайталаңыз';
 
             if(Object.keys(errors).length > 0) {
-                showModal('Маалыматтар ката', 'Бардык талааларды толтуруу зарыл!', 'error', errors);
+                showModal('Маалыматтар ката', 'Бардык талааларды толтуруңуз!', 'error', errors);
                 return;
             }
 
@@ -722,22 +1001,13 @@
                 return;
             }
 
-            const englishOnlyRegex = /^[A-Za-z0-9]+$/;
-            const hasLetter = /[A-Za-z]/.test(pass1);
-            const hasNumber = /[0-9]/.test(pass1);
-
-            if (pass1.length < 8) {
-                showModal('Ката', 'Сыр сөздө эң аз 8 символ болушу керек!', 'error', {'regPassword': 'Эң аз 8 символ болушу керек', 'regPasswordConfirm': ''});
-                return;
-            }
-
-            if (!englishOnlyRegex.test(pass1) || !hasLetter || !hasNumber) {
-                showModal('Ката', 'Сыр сөздө латын тамгалары жана сандар болушу зарыл!', 'error', {'regPassword': 'Латын тамгалары жана сандар катышыш керек', 'regPasswordConfirm': ''});
+            if (pass1.length < 8 || !/^[A-Za-z0-9]+$/.test(pass1) || !/[A-Za-z]/.test(pass1) || !/[0-9]/.test(pass1)) {
+                showModal('Ката', 'Сыр сөздө латын тамгалары жана сандар болушу зарыл (мин. 8 символ)!', 'error', {'regPassword': 'Латын тамгалары жана сандар'});
                 return;
             }
 
             if(pass1 !== pass2) {
-                showModal('Ката', 'Сыр сөздөр бири-бирине дал келбейт!', 'error', {'regPassword': 'Дал келбейт', 'regPasswordConfirm': 'Сыр сөздөр бирдей болушу шарт'});
+                showModal('Ката', 'Сыр сөздөр дал келбейт!', 'error', {'regPasswordConfirm': 'Сыр сөздөр дал келбейт'});
                 return;
             }
 
@@ -756,30 +1026,24 @@
                     password: pass1,
                     fraction: null,
                     storyStep: 0,
+                    stamina: 200,
+                    moneyBronze: 0,
                     currentSessionId: null,
                     googleEmail: tempGoogleEmail 
                 };
 
                 await setDoc(nickRef, newUserData);
 
-                showModal('Ийгиликтүү', 'Катталуу ийгиликтүү аяктады!', 'success', {}, () => {
-                    document.getElementById('regNickname').value = '';
-                    document.getElementById('regPassword').value = '';
-                    document.getElementById('regPasswordConfirm').value = '';
-                    document.getElementById('googleBindBtn').innerHTML = `${googleSvgIcon} Google аккаунтту байлоо (Милдеттүү)`;
-                    tempGoogleEmail = null;
-                    
+                showModal('Ийгиликтүү', 'Катталуу аяктады!', 'success', {}, () => {
                     proceedUserEntry(newUserData, nicknameKey);
                 });
-
             } catch (error) {
                 console.error(error);
                 showModal('Ката', 'Каттоо учурунда ката кетти!', 'error');
             }
         });
 
-        // --- СЮЖЕТНАЯ ЛОГИКА ---
-        const originalStoryText = "Сиз кечээ раматылык устатыңыздын курал-жарак жана кийимдерин мурастап алып, өзүңүздүн баатырдык жолуңузду баштайын деп сапарга чыккансыз. Кечке маал өрөөндө жайгашкан айылга жакындап калганда катуу бороон болуп, далдоо жер издеп бир чоң бактын түбүндө уктап калган экенсиз. Таттуу уйкудан сизди бир карыя ойготуп жаткансыйт.";
+        // --- СЮЖЕТНАЯ ЛОГИКА (АКСАКАЛ) ---
         const aksakalStoryText = "Эй жигиттин гүлү, ойгончу! Жолуктурганым ырас эле болбодубу! Айылыбыздын эр азаматтары калмактар менен согушка кетип айылыбызда дээрлик калган жок. Айылыбыздын тегерегинде карышкыр аңчылап жүрөт, ошону бир нерсе кылчы сураныч!";
 
         document.getElementById('nextStoryBtn').addEventListener('click', () => {
@@ -789,20 +1053,245 @@
             document.getElementById('acceptQuestBtn').style.display = 'block';
         });
 
-        document.getElementById('acceptQuestBtn').addEventListener('click', async () => {
-            if (!currentActiveUser) return;
-            
-            try {
-                // Сохраняем шаг 1 и сразу переходим на экран боя
-                const userRef = doc(db, "nicknames", currentActiveUser);
-                await setDoc(userRef, { storyStep: 1 }, { merge: true });
-                
-                switchScreen('battle-screen');
-                
-            } catch (err) {
-                console.error("Ката:", err);
-                showModal('Ката', 'Прогрессти сактоодо ката кетти!', 'error');
+        // НАЖАТИЕ НА КНОПКУ «ЧАБУУЛ КОЮУ» ПОД РЕПЛИКОЙ АКСАКАЛА
+        document.getElementById('acceptQuestBtn').addEventListener('click', () => {
+            showModal(
+                'Карышкырлар кол салды!',
+                'Карышкыр менен беттешиңиз!',
+                'success',
+                {},
+                async () => {
+                    // При клике на «Беттешүү» в модалке переходим сразу на боевую арену
+                    if (!currentActiveUser) return;
+                    try {
+                        const userRef = doc(db, "nicknames", currentActiveUser);
+                        await setDoc(userRef, { storyStep: 1 }, { merge: true });
+                        startBattleSystem(currentActiveUser);
+                    } catch (e) {
+                        console.error(e);
+                    }
+                },
+                'Беттешүү'
+            );
+        });
+
+        // ==========================================
+        //         БОЕВАЯ СИСТЕМА И АНИМАЦИЯ
+        // ==========================================
+        let heroStats = {
+            maxHp: 210,
+            hp: 210,
+            damageMin: 23,
+            damageMax: 31,
+            blockMin: 17,
+            blockMax: 22,
+            armor: 24,
+            accuracy: 28,
+            potions: 3
+        };
+
+        let wolfStats = {
+            maxHp: 120,
+            hp: 120,
+            damageMin: 15,
+            damageMax: 22,
+            accuracy: 20,
+            armor: 8
+        };
+
+        let isBattleTurnLocked = false;
+        let idleInterval = null;
+        let idleToggle = false;
+
+        function startBattleSystem(nickname) {
+            switchScreen('battle-screen');
+            document.getElementById('playerBattleNick').innerText = nickname;
+
+            // Сброс здоровья
+            heroStats.hp = heroStats.maxHp;
+            wolfStats.hp = wolfStats.maxHp;
+            updateHpBars();
+
+            // Запуск цикла дыхания (Вдох - Выдох)
+            if (idleInterval) clearInterval(idleInterval);
+            idleInterval = setInterval(() => {
+                if (isBattleTurnLocked) return;
+                idleToggle = !idleToggle;
+                const heroImg = document.getElementById('heroSprite');
+                const wolfImg = document.getElementById('wolfSprite');
+
+                heroImg.src = idleToggle ? 'hero_idle_out.png' : 'hero_idle_in.png';
+                wolfImg.src = idleToggle ? 'wolf_idle_out.png' : 'wolf_idle_in.png';
+            }, 1000);
+        }
+
+        function updateHpBars() {
+            const hPct = Math.max(0, (heroStats.hp / heroStats.maxHp) * 100);
+            const wPct = Math.max(0, (wolfStats.hp / wolfStats.maxHp) * 100);
+
+            document.getElementById('playerHpBar').style.width = hPct + '%';
+            document.getElementById('wolfHpBar').style.width = wPct + '%';
+
+            document.getElementById('playerHpVal').innerText = `${Math.ceil(heroStats.hp)}/${heroStats.maxHp}`;
+            document.getElementById('wolfHpVal').innerText = `${Math.ceil(wolfStats.hp)}/${wolfStats.maxHp}`;
+        }
+
+        function createDamageNumber(targetElement, text, isBlock = false) {
+            const num = document.createElement('div');
+            num.className = 'damage-number';
+            num.innerText = text;
+            if (isBlock) {
+                num.style.color = '#5cd65c';
+                num.style.textShadow = '0 0 8px #000, 0 0 10px #28a745';
             }
+            num.style.left = '35%';
+            targetElement.appendChild(num);
+            setTimeout(() => num.remove(), 1200);
+        }
+
+        function setButtonsDisabled(disabled) {
+            document.getElementById('strikeHeadBtn').disabled = disabled;
+            document.getElementById('strikeBodyBtn').disabled = disabled;
+            document.getElementById('strikeLegsBtn').disabled = disabled;
+            document.getElementById('shieldCheckbox').disabled = disabled;
+        }
+
+        // Логика атаки героя
+        async function playerPerformStrike(zone) {
+            if (isBattleTurnLocked || heroStats.hp <= 0 || wolfStats.hp <= 0) return;
+            isBattleTurnLocked = true;
+            setButtonsDisabled(true);
+
+            const heroImg = document.getElementById('heroSprite');
+            const heroWrap = document.getElementById('heroWrapper');
+            const wolfImg = document.getElementById('wolfSprite');
+            const wolfWrap = document.getElementById('wolfWrapper');
+
+            // 1. Фаза замаха героя
+            if (zone === 'head') {
+                heroImg.src = 'hero_swing_head.png';
+            } else {
+                heroImg.src = 'hero_swing_body.png';
+            }
+            await new Promise(r => setTimeout(r, 200));
+
+            // 2. Фаза удара героя + выпад вперед
+            if (zone === 'head') {
+                heroImg.src = 'hero_strike_head.png';
+            } else {
+                heroImg.src = 'hero_strike_body.png';
+            }
+            heroWrap.style.transform = 'translateX(-30px)';
+
+            // Расчет урона
+            let baseDamage = Math.floor(Math.random() * (heroStats.damageMax - heroStats.damageMin + 1)) + heroStats.damageMin;
+            
+            // Если включен режим щита: урон режется на 40%
+            const isShieldActive = document.getElementById('shieldCheckbox').checked;
+            if (isShieldActive) {
+                baseDamage = Math.floor(baseDamage * 0.6);
+            }
+
+            const netDamage = Math.max(1, baseDamage - wolfStats.armor);
+            wolfStats.hp = Math.max(0, wolfStats.hp - netDamage);
+
+            // Волк реагирует на попадание (wolf_hurt.png)
+            wolfImg.src = 'wolf_hurt.png';
+            wolfWrap.style.transform = 'translateX(-15px)';
+            createDamageNumber(wolfWrap, `-${netDamage}`);
+            updateHpBars();
+
+            await new Promise(r => setTimeout(r, 450));
+
+            // Возврат в стойку покоя
+            heroWrap.style.transform = 'translateX(0)';
+            wolfWrap.style.transform = 'translateX(0)';
+            heroImg.src = 'hero_idle_in.png';
+            wolfImg.src = 'wolf_idle_in.png';
+
+            // Проверка победы
+            if (wolfStats.hp <= 0) {
+                showModal('Жеңиш!', 'Сиз карышкырды жеңип, айылды коргодуңуз!', 'success', {}, () => {
+                    switchScreen('game-screen');
+                });
+                return;
+            }
+
+            // 3. Ответный ход карышкыра
+            await new Promise(r => setTimeout(r, 600));
+            await wolfPerformStrike();
+
+            setButtonsDisabled(false);
+            isBattleTurnLocked = false;
+        }
+
+        // Логика атаки волка
+        async function wolfPerformStrike() {
+            const heroImg = document.getElementById('heroSprite');
+            const heroWrap = document.getElementById('heroWrapper');
+            const wolfImg = document.getElementById('wolfSprite');
+            const wolfWrap = document.getElementById('wolfWrapper');
+
+            // Замах волка (wolf_swing.png)
+            wolfImg.src = 'wolf_swing.png';
+            await new Promise(r => setTimeout(r, 220));
+
+            // Атака/рывок волка вперед (wolf_attack.png)
+            wolfImg.src = 'wolf_attack.png';
+            wolfWrap.style.transform = 'translateX(35px)';
+
+            const isShieldActive = document.getElementById('shieldCheckbox').checked;
+            let currentBlock = Math.floor(Math.random() * (heroStats.blockMax - heroStats.blockMin + 1)) + heroStats.blockMin;
+
+            // Проверка: пробит ли блок калкана
+            if (isShieldActive && currentBlock >= wolfStats.accuracy) {
+                // Блок сработал успешно
+                createDamageNumber(heroWrap, 'КАЛКАН!', true);
+            } else {
+                // Попадание
+                let wDmg = Math.floor(Math.random() * (wolfStats.damageMax - wolfStats.damageMin + 1)) + wolfStats.damageMin;
+                const finalDamage = Math.max(1, wDmg - heroStats.armor);
+                heroStats.hp = Math.max(0, heroStats.hp - finalDamage);
+
+                heroImg.src = 'hero_hurt.png';
+                heroWrap.style.transform = 'translateX(15px)';
+                createDamageNumber(heroWrap, `-${finalDamage}`);
+                updateHpBars();
+            }
+
+            await new Promise(r => setTimeout(r, 450));
+
+            // Возврат в покой
+            wolfWrap.style.transform = 'translateX(0)';
+            heroWrap.style.transform = 'translateX(0)';
+            heroImg.src = 'hero_idle_in.png';
+            wolfImg.src = 'wolf_idle_in.png';
+
+            // Проверка поражения
+            if (heroStats.hp <= 0) {
+                showModal('Жеңилүү', 'Сиз кармашта жеңилдиңиз. Күч топтоп кайра аракет кылыңыз!', 'error', {}, () => {
+                    switchScreen('game-screen');
+                });
+            }
+        }
+
+        // Привязка кнопок ударов
+        document.getElementById('strikeHeadBtn').addEventListener('click', () => playerPerformStrike('head'));
+        document.getElementById('strikeBodyBtn').addEventListener('click', () => playerPerformStrike('body'));
+        document.getElementById('strikeLegsBtn').addEventListener('click', () => playerPerformStrike('legs'));
+
+        // Использование лечебного зелья устата (х3)
+        document.getElementById('potionSlot1').addEventListener('click', () => {
+            if (isBattleTurnLocked || heroStats.potions <= 0 || heroStats.hp >= heroStats.maxHp) return;
+            heroStats.potions--;
+            heroStats.hp = Math.min(heroStats.maxHp, heroStats.hp + 30);
+            document.getElementById('potionCount1').innerText = heroStats.potions;
+            if (heroStats.potions === 0) {
+                document.getElementById('potionSlot1').classList.remove('filled');
+                document.getElementById('potionSlot1').innerHTML = '';
+            }
+            createDamageNumber(document.getElementById('heroWrapper'), '+30 HP', true);
+            updateHpBars();
         });
 
     </script>
