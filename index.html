@@ -279,9 +279,8 @@
             border-bottom: 2px solid #b87a28;
             display: flex;
             justify-content: center;
-            gap: 15px; /* Близкая дистанция между бойцами */
             align-items: flex-end;
-            padding: 0 15px 15px 15px;
+            padding-bottom: 15px;
             overflow: hidden;
         }
         
@@ -289,12 +288,13 @@
             position: relative;
             display: flex;
             align-items: flex-end;
-            transition: transform 0.15s ease-out;
+            transition: transform 0.15s ease-out; /* Резкость анимации */
         }
         
-        /* Пропорциональные размеры бойцов */
+        /* ГЕРОЙ - СЛЕВА */
         #heroWrapper {
-            height: 80%; /* Вернули адекватный размер героя */
+            height: 90%; 
+            margin-right: -70px; /* Прижимаем героя вплотную к центру */
             z-index: 2; 
         }
         #heroWrapper img {
@@ -304,16 +304,18 @@
             filter: drop-shadow(0 6px 10px rgba(0,0,0,0.8));
         }
 
+        /* ВОЛК - СПРАВА */
         #wolfWrapper {
-            height: 65%; /* Пропорциональный размер волка */
+            height: 65%; 
+            margin-left: -70px; /* Прижимаем волка вплотную к герою */
             z-index: 1;
         }
         #wolfWrapper img {
             height: 100%;
             object-fit: contain;
+            transform: scaleX(-1); /* ЖЕЛЕЗНО поворачиваем мордой к герою */
             transform-origin: bottom center;
             filter: drop-shadow(0 6px 10px rgba(0,0,0,0.8));
-            /* НИКАКИХ ПОВОРОТОВ! Исходник волка смотрит влево */
         }
 
         /* Всплывающий урон */
@@ -336,13 +338,13 @@
             100% { transform: translate(-50%, -90px) scale(1); opacity: 0; }
         }
 
-        /* Выезд бойцов при старте без переворотов */
+        /* Плавный выезд бойцов при старте */
         @keyframes entranceLeft {
-            from { transform: translateX(-120px); opacity: 0; }
+            from { transform: translateX(-150px); opacity: 0; }
             to { transform: translateX(0); opacity: 1; }
         }
         @keyframes entranceRight {
-            from { transform: translateX(120px); opacity: 0; }
+            from { transform: translateX(150px); opacity: 0; }
             to { transform: translateX(0); opacity: 1; }
         }
         .hero-enter { animation: entranceLeft 0.8s ease-out forwards; }
@@ -988,7 +990,6 @@
 
             if (idleInterval) clearInterval(idleInterval);
             
-            // Интенсивность дыхания: 600 мс
             idleInterval = setInterval(() => {
                 if (isBattleTurnLocked) return;
                 idleToggle = !idleToggle;
@@ -1022,6 +1023,7 @@
             document.getElementById('shieldCheckbox').disabled = disabled;
         }
 
+        // Атака Героя с места
         async function playerPerformStrike(zone) {
             if (isBattleTurnLocked || heroStats.hp <= 0 || wolfStats.hp <= 0) return;
             isBattleTurnLocked = true;
@@ -1036,7 +1038,7 @@
             heroImg.src = (zone === 'head') ? 'hero_swing_head.png' : 'hero_swing_body.png';
             await new Promise(r => setTimeout(r, 200));
 
-            // Удар С МЕСТА (без смещения translateX)
+            // Удар С МЕСТА (Герой не сдвигается ни на миллиметр)
             heroImg.src = (zone === 'head') ? 'hero_strike_head.png' : 'hero_strike_body.png';
             heroWrap.style.transform = 'none';
 
@@ -1046,9 +1048,9 @@
             const netDamage = Math.max(1, baseDamage - wolfStats.armor);
             wolfStats.hp = Math.max(0, wolfStats.hp - netDamage);
 
-            // Волк получает урон и слегка отскакивает вправо
+            // Волк получает урон и слегка отлетает вправо от удара
             wolfImg.src = 'wolf_hurt.png';
-            wolfWrap.style.transform = 'translateX(10px)';
+            wolfWrap.style.transform = 'translateX(25px)';
             createDamageNumber(wolfWrap, `-${netDamage}`);
             updateHpBars();
 
@@ -1071,6 +1073,7 @@
             isBattleTurnLocked = false;
         }
 
+        // Атака волка
         async function wolfPerformStrike() {
             const heroImg = document.getElementById('heroSprite');
             const heroWrap = document.getElementById('heroWrapper');
@@ -1081,9 +1084,9 @@
             wolfImg.src = 'wolf_swing.png';
             await new Promise(r => setTimeout(r, 220));
 
-            // Волк прыгает ВЛЕВО к герою
+            // Волк делает большой прыжок к герою ВЛЕВО
             wolfImg.src = 'wolf_attack.png';
-            wolfWrap.style.transform = 'translateX(-60px)';
+            wolfWrap.style.transform = 'translateX(-120px)';
 
             let currentBlock = Math.floor(Math.random() * (heroStats.blockMax - heroStats.blockMin + 1)) + heroStats.blockMin;
             if (document.getElementById('shieldCheckbox').checked && currentBlock >= wolfStats.accuracy) {
@@ -1093,9 +1096,9 @@
                 const finalDamage = Math.max(1, wDmg - heroStats.armor);
                 heroStats.hp = Math.max(0, heroStats.hp - finalDamage);
 
-                // Герой получает урон и чуть отшатывается влево
+                // Герой получает урон и отшатывается влево
                 heroImg.src = 'hero_hurt.png';
-                heroWrap.style.transform = 'translateX(-10px)';
+                heroWrap.style.transform = 'translateX(-15px)';
                 createDamageNumber(heroWrap, `-${finalDamage}`);
                 updateHpBars();
             }
