@@ -16,7 +16,13 @@
             margin: 0;
             font-family: 'Cinzel', 'Segoe UI', serif;
             background-color: #2b1506; 
-            background-image: radial-gradient(circle at center, rgba(60, 25, 5, 0.5) 0%, rgba(10, 4, 1, 0.98) 100%);
+            background-image: 
+                radial-gradient(circle at center, rgba(43, 21, 6, 0.7) 0%, rgba(10, 4, 1, 0.95) 100%),
+                url('pattern.png');
+            background-repeat: no-repeat, repeat;
+            background-position: center, top left;
+            background-size: cover, 180px 180px;
+            background-blend-mode: overlay, multiply;
             color: #2c1604;
             display: flex;
             justify-content: center;
@@ -31,20 +37,15 @@
             display: none;
             width: 100%;
             max-width: 440px;
-            background-color: #e2c290;
-            background-image: 
-                radial-gradient(circle, rgba(255,255,255,0.3) 0%, rgba(50,20,5,0.4) 100%),
-                url('pattern.png');
-            background-repeat: no-repeat, repeat;
-            background-position: center, top left;
-            background-size: cover, 200px 200px;
-            background-blend-mode: overlay, multiply;
+            background: #e2c290;
+            background-image: linear-gradient(135deg, rgba(255, 255, 255, 0.2) 0%, rgba(0, 0, 0, 0.1) 100%);
             padding: 30px;
             border-radius: 6px;
             border: 4px solid #4a250b;
             box-shadow: 0 0 40px rgba(0, 0, 0, 0.85), inset 0 0 50px rgba(90, 45, 10, 0.25);
             text-align: center;
             color: #2c1604;
+        }
         }
         .screen.active {
             display: block;
