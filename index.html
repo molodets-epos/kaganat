@@ -5,47 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Kaganat - Каганат</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700&family=Cinzel:wght@600;700&display=swap');
-
-        * {
-            box-sizing: border-box;
-            font-family: 'Cinzel', 'Segoe UI', serif;
-            -webkit-tap-highlight-color: transparent;
-            user-select: none;
-        }
-        body {
-            margin: 0;
-            background-color: #2b1506; 
-            background-image: radial-gradient(circle at center, rgba(60, 25, 5, 0.5) 0%, rgba(10, 4, 1, 0.98) 100%);
-            color: #2c1604;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            min-height: 100dvh;
-            overflow-x: hidden;
-            overflow-y: auto;
-            padding: 15px;
-        }
-        .screen {
-            display: none;
-            width: 100%;
-            max-width: 440px;
-            /* Чистый постаревший пергамент без всяких ебучих орнаментов на фоне */
-            background: #e8d3a9;
-            background-image: linear-gradient(135deg, rgba(255, 255, 255, 0.15) 0%, rgba(0, 0, 0, 0.1) 100%);
-            padding: 30px;
-            border-radius: 6px;
-            border: 4px solid #4a250b;
-            box-shadow: 0 0 40px rgba(0, 0, 0, 0.85), inset 0 0 50px rgba(90, 45, 10, 0.25);
-            text-align: center;
-            color: #2c1604;
-        }
-        .screen.active {
-            display: block;
-        }
-        #faction-screen {
-            max-width: <style>
         @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&display=swap');
 
         * {
@@ -72,7 +31,6 @@
             display: none;
             width: 100%;
             max-width: 440px;
-            /* Возвращаем желтый пергамент с черными орнаментами через pattern.png */
             background-color: #e2c290;
             background-image: 
                 radial-gradient(circle, rgba(255,255,255,0.3) 0%, rgba(50,20,5,0.4) 100%),
@@ -80,7 +38,7 @@
             background-repeat: no-repeat, repeat;
             background-position: center, top left;
             background-size: cover, 200px 200px;
-            background-blend-mode: overlay, multiply; /* Делаем орнамент мягким, чтобы текст читался идеально */
+            background-blend-mode: overlay, multiply;
             padding: 30px;
             border-radius: 6px;
             border: 4px solid #4a250b;
@@ -155,16 +113,16 @@
         input {
             width: 100%;
             padding: 12px;
-            background: #faeed0; /* Светлая подложка для инпутов, чтобы текст был супер-контрастным */
+            background: #faeed0;
             border: 2px solid #7d4820;
             color: #2b1506;
             border-radius: 4px;
             font-size: 15px;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; /* Убираем рунический шрифт из инпутов, чтобы буквы писались нормально (без принудительного капса) */
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             font-weight: bold;
             outline: none;
             transition: border-color 0.2s;
-            text-transform: none !important; /* Жестко запрещаем капс в полях ввода */
+            text-transform: none !important;
         }
         input:focus {
             border-color: #2b1506;
@@ -340,19 +298,17 @@
             background: linear-gradient(90deg, #a31d1d, #e53935);
         }
         
-      .battle-viewport {
-        position: relative;
-        width: 100%;
-        height:.battle-viewport {
+        .battle-viewport {
             position: relative;
             width: 100%;
             height: 250px;
             background: url('bg_battle.png') center/cover no-repeat;
             border-bottom: 3px solid #7d4820;
             display: flex;
-            justify-content: space-between;
+            justify-content: center;
+            gap: 30px;
             align-items: flex-end;
-            padding: 0 20px 15px 20px;
+            padding-bottom: 15px;
             overflow: hidden;
         }
         
@@ -360,11 +316,13 @@
             position: relative;
             display: flex;
             align-items: flex-end;
-            height: 80%;
+            transition: transform 0.15s ease-out;
         }
         
         #heroWrapper {
+            height: 80%;
             z-index: 2;
+            left: 70px;
         }
         #heroWrapper img {
             height: 100%;
@@ -375,7 +333,9 @@
         }
 
         #wolfWrapper {
+            height: 80%;
             z-index: 1;
+            right: 35px;
         }
         #wolfWrapper img {
             height: 100%;
@@ -699,7 +659,7 @@
     </div>
 
     <!-- 5. ГЛАВНЫЙ ЭКРАН СЮЖЕТА -->
-    <div id="game-screen" class="screen" style="padding: 0; overflow: hidden; text-align: left;">        
+    <div id="game-screen" class="screen" style="padding: 0; overflow: hidden; text-align: left;">    
         <div style="position: relative; width: 100%; height: 240px; background: url('bg_valley.png') center/cover no-repeat; border-bottom: 2px solid #d49a3d;">
             <img id="storyCharacter" src="aksakal.png" style="display: none; position: absolute; bottom: 0; left: 50%; transform: translateX(-50%); height: 95%; object-fit: contain;" alt="Аксакал" onerror="this.style.display='none'">
         </div>
@@ -722,50 +682,49 @@
             </div>
         </div>
     </div>
-<!-- Экран итогов боя -->
-<div id="result-screen" class="screen">
-    <h1 style="margin-bottom: 30px;">Беттештин жыйынтыгы</h1>
-    
-    <!-- Верхняя половина (Победители) -->
-    <div class="result-block winner-block">
-        <h2 style="color: #4CAF50;">Жеңүүчүлөр</h2>
-        <div class="result-table">
-            <div class="result-row header">
-                <span>Ысым</span>
-                <span>Сокку</span>
-                <span>Тажрыйба</span>
-            </div>
-            <div class="result-row">
-                <span id="res-winner-name">Батыр</span>
-                <span id="res-winner-dmg">0</span>
-                <span id="res-winner-exp" style="color: #FFD700;">+50 XP</span>
+
+    <!-- Экран итогов боя -->
+    <div id="result-screen" class="screen">
+        <h1 style="margin-bottom: 30px;">Беттештин жыйынтыгы</h1>
+        
+        <div class="result-block winner-block">
+            <h2 style="color: #4CAF50;">Жеңүүчүлөр</h2>
+            <div class="result-table">
+                <div class="result-row header">
+                    <span>Ысым</span>
+                    <span>Сокку</span>
+                    <span>Тажрыйба</span>
+                </div>
+                <div class="result-row">
+                    <span id="res-winner-name">Батыр</span>
+                    <span id="res-winner-dmg">0</span>
+                    <span id="res-winner-exp" style="color: #FFD700;">+50 XP</span>
+                </div>
             </div>
         </div>
-    </div>
 
-    <!-- Нижняя половина (Проигравшие) -->
-    <div class="result-block loser-block">
-        <h2 style="color: #F44336;">Жеңилүүчү</h2>
-        <div class="result-table">
-            <div class="result-row header">
-                <span>Ысым</span>
-                <span>Сокку</span>
-                <span style="visibility: hidden;">Тажрыйба</span> 
-            </div>
-            <div class="result-row">
-                <span id="res-loser-name">Карышкыр</span>
-                <span id="res-loser-dmg">0</span>
-                <span>-</span>
+        <div class="result-block loser-block">
+            <h2 style="color: #F44336;">Жеңилүүчү</h2>
+            <div class="result-table">
+                <div class="result-row header">
+                    <span>Ысым</span>
+                    <span>Сокку</span>
+                    <span style="visibility: hidden;">Тажрыйба</span> 
+                </div>
+                <div class="result-row">
+                    <span id="res-loser-name">Карышкыр</span>
+                    <span id="res-loser-dmg">0</span>
+                    <span>-</span>
+                </div>
             </div>
         </div>
+
+        <button class="btn" onclick="switchScreen('game-screen')" style="margin-top: 20px;">Улантуу</button>
     </div>
 
-    <button class="action-btn" onclick="switchScreen('game-screen')" style="margin-top: 40px; padding: 10px 30px; font-size: 18px; cursor: pointer;">Улантуу</button>
-</div>
     <!-- 6. БОЕВАЯ АРЕНА -->
     <div id="battle-screen" class="screen">
         <div class="battle-top-bar">
-            <!-- Игрок (слева) -->
             <div class="fighter-info">
                 <div class="fighter-name">
                     <span id="playerBattleNick">Баатыр</span>
@@ -776,7 +735,6 @@
                 </div>
             </div>
 
-            <!-- Волк (справа) -->
             <div class="fighter-info">
                 <div class="fighter-name">
                     <span>Карышкыр</span>
@@ -789,19 +747,16 @@
         </div>
 
         <div class="battle-viewport">
-            <!-- Герой слева -->
             <div class="fighter-sprite-wrap hero-enter" id="heroWrapper">
                 <img id="heroSprite" src="hero_idle_in.png" alt="Баатыр">
             </div>
 
-            <!-- Волк справа -->
             <div class="fighter-sprite-wrap wolf-enter" id="wolfWrapper">
                 <img id="wolfSprite" src="wolf_idle_in.png" alt="Карышкыр">
             </div>
         </div>
 
         <div class="battle-controls">
-            <!-- Кнопки ударов -->
             <div class="strike-zones-grid">
                 <button class="strike-btn" id="strikeHeadBtn">
                     <svg viewBox="0 0 24 24"><path d="M6.92 5L5 6.92l8.13 8.13-1.42 1.41 1.42 1.42 2.83-2.83 1.41 1.41 1.42-1.41-1.41-1.42 2.83-2.83-1.42-1.41-1.41 1.41L6.92 5zM3 21l3.5-3.5L5 16l-3.5 3.5L3 21z"/></svg>
@@ -822,7 +777,6 @@
                 <span class="shield-label">🛡️ Калкан менен коргонуу (Блок)</span>
             </label>
 
-            <!-- 8 слотов для зелий -->
             <div class="potions-bar-title">Кур чөнтөк (Зельелор):</div>
             <div class="potions-slots-grid">
                 <div class="potion-slot filled" id="potionSlot1" title="Устаттын дары чөбү (+30 Жан)">
@@ -1094,7 +1048,6 @@
             } catch (error) { console.error(error); showModal('Ката', 'Каттоо учурунда ката кетти!', 'error'); }
         });
 
-        // СЮЖЕТНАЯ ЛОГИКА
         const aksakalStoryText = "Эй жигиттин гүлү, ойгончу! Жолуктурганым ырас эле болбодубу! Айылыбыздын эр азаматтары калмактар менен согушка кетип айылыбызда дээрлик калган жок. Айылыбыздын тегерегинде карышкыр аңчылап жүрөт, ошону бир нерсе кылчы сураныч!";
 
         document.getElementById('nextStoryBtn').addEventListener('click', () => {
@@ -1118,21 +1071,21 @@
         // ==========================================
         // БОЕВАЯ СИСТЕМА
         // ==========================================
-       let heroStats = { maxHp: 210, hp: 210, damageMin: 23, damageMax: 31, blockMin: 17, blockMax: 22, armor: 24, accuracy: 28, potions: 3, totalDamage: 0 };
-let wolfStats = { maxHp: 120, hp: 120, damageMin: 15, damageMax: 22, accuracy: 20, armor: 8, totalDamage: 0 };
-let isBattleTurnLocked = false;
-let idleInterval = null;
-let idleToggle = false;
+        let heroStats = { maxHp: 210, hp: 210, damageMin: 23, damageMax: 31, blockMin: 17, blockMax: 22, armor: 24, accuracy: 28, potions: 3, totalDamage: 0 };
+        let wolfStats = { maxHp: 120, hp: 120, damageMin: 15, damageMax: 22, accuracy: 20, armor: 8, totalDamage: 0 };
+        let isBattleTurnLocked = false;
+        let idleInterval = null;
+        let idleToggle = false;
 
-function startBattleSystem(nickname) {
-    switchScreen('battle-screen');
-    document.getElementById('playerBattleNick').innerText = nickname;
+        function startBattleSystem(nickname) {
+            switchScreen('battle-screen');
+            document.getElementById('playerBattleNick').innerText = nickname;
 
-    heroStats.hp = heroStats.maxHp;
-    wolfStats.hp = wolfStats.maxHp;
-    heroStats.totalDamage = 0;
-    wolfStats.totalDamage = 0;
-    updateHpBars();
+            heroStats.hp = heroStats.maxHp;
+            wolfStats.hp = wolfStats.maxHp;
+            heroStats.totalDamage = 0;
+            wolfStats.totalDamage = 0;
+            updateHpBars();
 
             if (idleInterval) clearInterval(idleInterval);
             
@@ -1170,79 +1123,77 @@ function startBattleSystem(nickname) {
         }
 
         // Атака Героя с места
-      async function playerPerformStrike(zone) {
-        if (isBattleTurnLocked || heroStats.hp <= 0 || wolfStats.hp <= 0) return;
-        isBattleTurnLocked = true;
-        setButtonsDisabled(true);
+        async function playerPerformStrike(zone) {
+            if (isBattleTurnLocked || heroStats.hp <= 0 || wolfStats.hp <= 0) return;
+            isBattleTurnLocked = true;
+            setButtonsDisabled(true);
 
-        const heroImg = document.getElementById('heroSprite');
-        const heroWrap = document.getElementById('heroWrapper');
-        const wolfImg = document.getElementById('wolfSprite');
-        const wolfWrap = document.getElementById('wolfWrapper');
-        heroWrap.style.zIndex = '10';
-        wolfWrap.style.zIndex = '1';
+            const heroImg = document.getElementById('heroSprite');
+            const heroWrap = document.getElementById('heroWrapper');
+            const wolfImg = document.getElementById('wolfSprite');
+            const wolfWrap = document.getElementById('wolfWrapper');
+            heroWrap.style.zIndex = '10';
+            wolfWrap.style.zIndex = '1';
 
-        // Замах: для головы подставляем спрайт удара головой, для остальных — корпус
-        heroImg.src = (zone === 'head') ? 'hero_swing_head.png' : 'hero_swing_body.png';
-        await new Promise(r => setTimeout(r, 200));
+            // Замах: для головы подставляем спрайт удара головой, для остальных — корпус
+            heroImg.src = (zone === 'head') ? 'hero_swing_head.png' : 'hero_swing_body.png';
+            await new Promise(r => setTimeout(r, 200));
 
-        // Удар с места
-        heroImg.src = (zone === 'head') ? 'hero_strike_head.png' : 'hero_strike_body.png';
+            // Удар с места
+            heroImg.src = (zone === 'head') ? 'hero_strike_head.png' : 'hero_strike_body.png';
 
-        let baseDamage = Math.floor(Math.random() * (heroStats.damageMax - heroStats.damageMin + 1)) + heroStats.damageMin;
-        if (document.getElementById('shieldCheckbox').checked) baseDamage = Math.floor(baseDamage * 0.6);
+            let baseDamage = Math.floor(Math.random() * (heroStats.damageMax - heroStats.damageMin + 1)) + heroStats.damageMin;
+            if (document.getElementById('shieldCheckbox').checked) baseDamage = Math.floor(baseDamage * 0.6);
 
-        const netDamage = Math.max(1, baseDamage - wolfStats.armor);
-        wolfStats.hp = Math.max(0, wolfStats.hp - netDamage);
-        heroStats.totalDamage += netDamage;
+            const netDamage = Math.max(1, baseDamage - wolfStats.armor);
+            wolfStats.hp = Math.max(0, wolfStats.hp - netDamage);
+            heroStats.totalDamage += netDamage;
 
-        // Волк получает урон
-        wolfImg.src = 'wolf_hurt.png';
-        createDamageNumber(wolfWrap, `-${netDamage}`);
-        updateHpBars();
+            // Волк получает урон
+            wolfImg.src = 'wolf_hurt.png';
+            createDamageNumber(wolfWrap, `-${netDamage}`);
+            updateHpBars();
 
-        await new Promise(r => setTimeout(r, 450));
+            await new Promise(r => setTimeout(r, 450));
 
-        // Возврат в исходное положение
-        heroWrap.style.zIndex = '';
-        wolfWrap.style.zIndex = '';
-        heroImg.src = 'hero_idle_in.png';
-        wolfImg.src = 'wolf_idle_in.png';
+            // Возврат в исходное положение
+            heroWrap.style.zIndex = '';
+            wolfWrap.style.zIndex = '';
+            heroImg.src = 'hero_idle_in.png';
+            wolfImg.src = 'wolf_idle_in.png';
 
-        if (wolfStats.hp <= 0) {
-            document.getElementById('res-winner-dmg').innerText = heroStats.totalDamage;
-            document.getElementById('res-loser-dmg').innerText = wolfStats.totalDamage;
-            
-            let expGained = Math.floor(Math.random() * 21) + 40;
-            document.getElementById('res-winner-exp').innerText = `+${expGained} XP`;
-            
-            switchScreen('result-screen');
-            return;
+            if (wolfStats.hp <= 0) {
+                document.getElementById('res-winner-dmg').innerText = heroStats.totalDamage;
+                document.getElementById('res-loser-dmg').innerText = wolfStats.totalDamage;
+                
+                let expGained = Math.floor(Math.random() * 21) + 40;
+                document.getElementById('res-winner-exp').innerText = `+${expGained} XP`;
+                
+                switchScreen('result-screen');
+                return;
+            }
+
+            await new Promise(r => setTimeout(r, 600));
+            await wolfPerformStrike();
+            setButtonsDisabled(false);
+            isBattleTurnLocked = false;
         }
 
-        await new Promise(r => setTimeout(r, 600));
-        await wolfPerformStrike();
-        setButtonsDisabled(false);
-        isBattleTurnLocked = false;
-    }
         // Атака волка
         async function wolfPerformStrike() {
             const heroImg = document.getElementById('heroSprite');
-    const heroWrap = document.getElementById('heroWrapper'); /* Исправлена буква W */
-    const wolfImg = document.getElementById('wolfSprite');
-    const wolfWrap = document.getElementById('wolfWrapper'); /* Исправлена буква W */
+            const heroWrap = document.getElementById('heroWrapper'); 
+            const wolfImg = document.getElementById('wolfSprite');
+            const wolfWrap = document.getElementById('wolfWrapper'); 
 
-    /* Вставляем отключение анимации сюда: */
-    wolfWrap.style.animation = 'none';
-    heroWrap.style.animation = 'none';
-// Выводим волка на передний план
-    wolfWrap.style.zIndex = '10';
-    heroWrap.style.zIndex = '1';
-    // Волк замахивается
+            wolfWrap.style.animation = 'none';
+            heroWrap.style.animation = 'none';
+            wolfWrap.style.zIndex = '10';
+            heroWrap.style.zIndex = '1';
+
             wolfImg.src = 'wolf_swing.png';
             await new Promise(r => setTimeout(r, 220));
 
-            // Волк делает большой прыжок к герою ВЛЕВО
             wolfImg.src = 'wolf_attack.png';
             wolfWrap.style.transform = 'translateX(-120px)';
 
@@ -1255,7 +1206,6 @@ function startBattleSystem(nickname) {
                 heroStats.hp = Math.max(0, heroStats.hp - finalDamage);
                 wolfStats.totalDamage += finalDamage;
 
-                // Герой получает урон и отшатывается влево
                 heroImg.src = 'hero_hurt.png';
                 heroWrap.style.transform = 'translateX(-15px)';
                 createDamageNumber(heroWrap, `-${finalDamage}`);
@@ -1264,13 +1214,12 @@ function startBattleSystem(nickname) {
 
             await new Promise(r => setTimeout(r, 450));
 
-            // Возврат
-    wolfWrap.style.transform = 'none';
-    heroWrap.style.transform = 'none';
-    wolfWrap.style.zIndex = ''; /* Сбрасываем слой волка */
-    heroWrap.style.zIndex = ''; /* Сбрасываем слой героя */
-    heroImg.src = 'hero_idle_in.png';
-    wolfImg.src = 'wolf_idle_in.png';
+            wolfWrap.style.transform = 'none';
+            heroWrap.style.transform = 'none';
+            wolfWrap.style.zIndex = ''; 
+            heroWrap.style.zIndex = ''; 
+            heroImg.src = 'hero_idle_in.png';
+            wolfImg.src = 'wolf_idle_in.png';
 
             if (heroStats.hp <= 0) {
                 showModal('Жеңилүү', 'Сиз кармашта жеңилдиңиз. Күч топтоп кайра аракет кылыңыз!', 'error', {}, () => { switchScreen('game-screen'); });
