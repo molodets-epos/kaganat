@@ -492,6 +492,40 @@
         .modal-success .modal-btn { background: #28a745; }
         @keyframes pulse { 0% { transform: scale(1); opacity: 0.8; } 50% { transform: scale(1.05); opacity: 1; } 100% { transform: scale(1); opacity: 0.8; } }
     </style>
+    /* --- СТИЛИ ДЛЯ ЭКРАНА ИТОГОВ БОЯ --- */
+.result-block {
+    width: 80%;
+    max-width: 600px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 10px;
+    padding: 20px;
+    margin-bottom: 20px;
+    text-align: center;
+    border: 1px solid #333;
+}
+
+.result-table {
+    display: flex;
+    flex-direction: column;
+    margin-top: 15px;
+}
+
+.result-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    padding: 10px 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.result-row.header {
+    font-weight: bold;
+    color: #aaa;
+    border-bottom: 2px solid rgba(255, 255, 255, 0.3);
+}
+
+.result-row:last-child {
+    border-bottom: none;
+}
 </head>
 <body>
 
@@ -620,7 +654,46 @@
             </div>
         </div>
     </div>
+<!-- Экран итогов боя -->
+<div id="result-screen" class="screen hidden" style="display: none; flex-direction: column; align-items: center; justify-content: center; height: 100vh; background-color: #1a1a1a; color: white;">
+    <h1 style="margin-bottom: 30px;">Беттештин жыйынтыгы</h1>
+    
+    <!-- Верхняя половина (Победители) -->
+    <div class="result-block winner-block">
+        <h2 style="color: #4CAF50;">Жеңүүчүлөр</h2>
+        <div class="result-table">
+            <div class="result-row header">
+                <span>Ысым</span>
+                <span>Сокку</span>
+                <span>Тажрыйба</span>
+            </div>
+            <div class="result-row">
+                <span id="res-winner-name">Батыр</span>
+                <span id="res-winner-dmg">0</span>
+                <span id="res-winner-exp" style="color: #FFD700;">+50 XP</span>
+            </div>
+        </div>
+    </div>
 
+    <!-- Нижняя половина (Проигравшие) -->
+    <div class="result-block loser-block">
+        <h2 style="color: #F44336;">Жеңилүүчү</h2>
+        <div class="result-table">
+            <div class="result-row header">
+                <span>Ысым</span>
+                <span>Сокку</span>
+                <span style="visibility: hidden;">Тажрыйба</span> 
+            </div>
+            <div class="result-row">
+                <span id="res-loser-name">Карышкыр</span>
+                <span id="res-loser-dmg">0</span>
+                <span>-</span>
+            </div>
+        </div>
+    </div>
+
+    <button class="action-btn" onclick="switchScreen('game-screen')" style="margin-top: 40px; padding: 10px 30px; font-size: 18px; cursor: pointer;">Улантуу</button>
+</div>
     <!-- 6. БОЕВАЯ АРЕНА -->
     <div id="battle-screen" class="screen">
         <div class="battle-top-bar">
@@ -977,19 +1050,21 @@
         // ==========================================
         // БОЕВАЯ СИСТЕМА
         // ==========================================
-        let heroStats = { maxHp: 210, hp: 210, damageMin: 23, damageMax: 31, blockMin: 17, blockMax: 22, armor: 24, accuracy: 28, potions: 3 };
-        let wolfStats = { maxHp: 120, hp: 120, damageMin: 15, damageMax: 22, accuracy: 20, armor: 8 };
-        let isBattleTurnLocked = false;
-        let idleInterval = null;
-        let idleToggle = false;
+       let heroStats = { maxHp: 210, hp: 210, damageMin: 23, damageMax: 31, blockMin: 17, blockMax: 22, armor: 24, accuracy: 28, potions: 3, totalDamage: 0 };
+let wolfStats = { maxHp: 120, hp: 120, damageMin: 15, damageMax: 22, accuracy: 20, armor: 8, totalDamage: 0 };
+let isBattleTurnLocked = false;
+let idleInterval = null;
+let idleToggle = false;
 
-        function startBattleSystem(nickname) {
-            switchScreen('battle-screen');
-            document.getElementById('playerBattleNick').innerText = nickname;
+function startBattleSystem(nickname) {
+    switchScreen('battle-screen');
+    document.getElementById('playerBattleNick').innerText = nickname;
 
-            heroStats.hp = heroStats.maxHp;
-            wolfStats.hp = wolfStats.maxHp;
-            updateHpBars();
+    heroStats.hp = heroStats.maxHp;
+    wolfStats.hp = wolfStats.maxHp;
+    heroStats.totalDamage = 0;
+    wolfStats.totalDamage = 0;
+    updateHpBars();
 
             if (idleInterval) clearInterval(idleInterval);
             
@@ -1051,6 +1126,7 @@
 
             const netDamage = Math.max(1, baseDamage - wolfStats.armor);
             wolfStats.hp = Math.max(0, wolfStats.hp - netDamage);
+            heroStats.totalDamage += netDamage;
 
             // Волк получает урон и слегка отлетает вправо от удара
             wolfImg.src = 'wolf_hurt.png';
@@ -1068,10 +1144,16 @@
     heroImg.src = 'hero_idle_in.png';
     wolfImg.src = 'wolf_idle_in.png';
 
-            if (wolfStats.hp <= 0) {
-                showModal('Жеңиш!', 'Сиз карышкырды жеңип, айылды коргодуңуз!', 'success', {}, () => { switchScreen('game-screen'); });
-                return;
-            }
+           if (wolfStats.hp <= 0) {
+        document.getElementById('res-winner-dmg').innerText = heroStats.totalDamage;
+        document.getElementById('res-loser-dmg').innerText = wolfStats.totalDamage;
+        
+        let expGained = Math.floor(Math.random() * 21) + 40;
+        document.getElementById('res-winner-exp').innerText = `+${expGained} XP`;
+        
+        switchScreen('result-screen');
+        return;
+    }
 
             await new Promise(r => setTimeout(r, 600));
             await wolfPerformStrike();
@@ -1107,6 +1189,7 @@
                 let wDmg = Math.floor(Math.random() * (wolfStats.damageMax - wolfStats.damageMin + 1)) + wolfStats.damageMin;
                 const finalDamage = Math.max(1, wDmg - heroStats.armor);
                 heroStats.hp = Math.max(0, heroStats.hp - finalDamage);
+                wolfStats.totalDamage += finalDamage;
 
                 // Герой получает урон и отшатывается влево
                 heroImg.src = 'hero_hurt.png';
