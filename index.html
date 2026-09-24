@@ -5,23 +5,24 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Kaganat - Каганат</title>
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&display=swap');
+
         * {
             box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Cinzel', 'Segoe UI', serif;
             -webkit-tap-highlight-color: transparent;
             user-select: none;
         }
         body {
             margin: 0;
-            background-color: #a84b0d; 
+            background-color: #3b1e08; 
             background-image: 
-                radial-gradient(circle at center, rgba(168, 75, 13, 0.2) 0%, rgba(10, 4, 1, 0.95) 100%),
+                radial-gradient(circle at center, rgba(80, 40, 10, 0.4) 0%, rgba(15, 7, 2, 0.98) 100%),
                 url('pattern.png'); 
             background-repeat: no-repeat, repeat;
             background-position: center, top left;
             background-size: cover, 250px 250px; 
-            background-blend-mode: normal, multiply; 
-            color: #ffffff;
+            color: #2c1604;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -35,12 +36,16 @@
             display: none;
             width: 100%;
             max-width: 440px;
-            background: radial-gradient(circle at center, #2e1c0c 0%, #160d06 100%);
+            /* Эффект желтого пергамента */
+            background: linear-gradient(135deg, #f4e3c1 0%, #e2c290 50%, #d4ae75 100%);
+            background-image: radial-gradient(circle, rgba(255,255,255,0.2) 0%, rgba(0,0,0,0.15) 100%), url('pattern.png');
+            background-blend-mode: overlay;
             padding: 30px;
-            border-radius: 14px;
-            border: 2px solid #d49a3d;
-            box-shadow: 0 0 45px rgba(212, 154, 61, 0.3), inset 0 0 25px rgba(0, 0, 0, 0.7);
+            border-radius: 8px;
+            border: 4px solid #5a320f;
+            box-shadow: 0 0 35px rgba(0, 0, 0, 0.8), inset 0 0 40px rgba(90, 50, 15, 0.3);
             text-align: center;
+            color: #2c1604;
         }
         .screen.active {
             display: block;
@@ -54,37 +59,42 @@
             height: 80px;
             object-fit: contain;
             margin-bottom: 12px;
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.4));
         }
         #loader-screen img {
             animation: pulse 1.5s infinite;
         }
         .progress-bar-container {
             width: 100%;
-            height: 10px;
-            background: #0c0804;
-            border-radius: 5px;
-            border: 1px solid #d49a3d;
+            height: 12px;
+            background: #3b1e08;
+            border-radius: 4px;
+            border: 2px solid #5a320f;
             overflow: hidden;
             margin-top: 15px;
         }
         .progress-bar {
             width: 0%;
             height: 100%;
-            background: linear-gradient(90deg, #d49a3d, #ffd479);
+            background: linear-gradient(90deg, #c28d32, #ffd97d);
             transition: width 0.05s linear;
         }
         .progress-text {
             margin-top: 10px;
             font-size: 14px;
-            color: #d1b48c;
+            color: #5a320f;
+            font-weight: bold;
         }
         h2 {
             margin-top: 0;
-            color: #ffd479;
+            color: #3b1e08;
             margin-bottom: 15px;
-            font-size: 22px;
-            letter-spacing: 1px;
-            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.8);
+            font-size: 24px;
+            letter-spacing: 2px;
+            font-weight: 700;
+            text-shadow: 1px 1px 0px rgba(255,255,255,0.4);
+            border-bottom: 2px solid #8c5825;
+            padding-bottom: 8px;
         }
         .input-group {
             text-align: left;
@@ -94,53 +104,59 @@
         label {
             display: block;
             font-size: 13px;
-            color: #ecd7ba;
+            color: #4a270a;
+            font-weight: bold;
             margin-bottom: 5px;
         }
         input {
             width: 100%;
             padding: 12px;
-            background: #0f0a06;
-            border: 1px solid #5a3e1b;
-            color: #fff;
-            border-radius: 6px;
+            background: #faedcc;
+            border: 2px solid #8c5825;
+            color: #2c1604;
+            border-radius: 4px;
             font-size: 15px;
             outline: none;
             transition: border-color 0.2s;
         }
         input:focus {
-            border-color: #ffd479;
+            border-color: #3b1e08;
+            background: #fff;
         }
         input.error-input {
-            border-color: #ff4d4d !important;
-            box-shadow: 0 0 8px rgba(255, 77, 77, 0.4);
+            border-color: #b71c1c !important;
+            box-shadow: 0 0 8px rgba(183, 28, 28, 0.4);
         }
         .field-error-text {
             display: none;
-            color: #ff6b6b;
+            color: #b71c1c;
             font-size: 11px;
             margin-top: 4px;
+            font-weight: bold;
         }
         .btn {
             width: 100%;
             padding: 12px;
-            background: linear-gradient(180deg, #e6a745, #b87a28);
-            color: #1a0f05;
-            border: none;
-            border-radius: 6px;
+            background: linear-gradient(180deg, #8c5825, #5a320f);
+            color: #f4e3c1;
+            border: 2px solid #3b1e08;
+            border-radius: 4px;
             font-size: 16px;
             font-weight: bold;
             cursor: pointer;
             margin-top: 10px;
             transition: all 0.2s;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+            letter-spacing: 1px;
         }
         .btn:hover {
-            background: linear-gradient(180deg, #f5b758, #c98934);
+            background: linear-gradient(180deg, #a36930, #6d3d13);
+            color: #fff;
         }
         .btn-google {
-            background: #ffffff;
-            color: #333;
+            background: #faedcc;
+            color: #3b1e08;
+            border: 2px solid #8c5825;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -148,26 +164,28 @@
             margin-top: 15px;
         }
         .btn-google:hover {
-            background: #e0e0e0;
+            background: #f0debc;
         }
         .switch-link {
             margin-top: 20px;
             font-size: 14px;
-            color: #cfb395;
+            color: #5a320f;
             cursor: pointer;
         }
         .switch-link span {
-            color: #ffd479;
+            color: #8c5825;
             text-decoration: underline;
+            font-weight: bold;
         }
         .faction-warning {
             font-size: 13px;
-            color: #f3dfc8;
+            color: #4a270a;
             margin-bottom: 20px;
-            background: rgba(12, 7, 3, 0.6);
+            background: rgba(140, 88, 37, 0.15);
             padding: 10px 16px;
-            border-radius: 6px;
-            border: 1px solid #784e1b;
+            border-radius: 4px;
+            border: 1px solid #8c5825;
+            font-weight: 600;
         }
         .factions-container {
             display: flex;
@@ -176,14 +194,14 @@
         }
         .faction-card {
             flex: 1;
-            background: radial-gradient(circle at 50% 30%, #4a2c11 0%, #241407 100%);
-            border: 2px solid #b87a28;
-            border-radius: 12px;
+            background: linear-gradient(135deg, #ebd7b2 0%, #d4ae75 100%);
+            border: 2px solid #5a320f;
+            border-radius: 8px;
             padding: 20px;
             display: flex;
             flex-direction: column;
             align-items: center;
-            box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.7), 0 6px 15px rgba(0, 0, 0, 0.5);
+            box-shadow: inset 0 0 15px rgba(90, 50, 15, 0.2), 0 4px 10px rgba(0, 0, 0, 0.3);
             transition: transform 0.2s;
         }
         .faction-card:hover {
@@ -205,27 +223,26 @@
             transform: scale(1.6);
             transform-origin: bottom center;
             image-rendering: pixelated;
-            filter: drop-shadow(0 8px 12px rgba(0, 0, 0, 0.8));
+            filter: drop-shadow(0 8px 12px rgba(0, 0, 0, 0.5));
         }
         .btn-kyrgyz, .btn-kypchak {
             width: 100%;
             padding: 13px;
-            color: #ffffff;
-            border-radius: 6px;
+            color: #fff;
+            border-radius: 4px;
             font-size: 16px;
             font-weight: bold;
             cursor: pointer;
             transition: all 0.2s;
+            border: 2px solid #2c1604;
         }
         .btn-kyrgyz {
-            background: linear-gradient(180deg, #d32f2f, #9a1919);
-            border: 1px solid #ff7b7b;
-            box-shadow: 0 4px 14px rgba(211, 47, 47, 0.4);
+            background: linear-gradient(180deg, #b71c1c, #7f0000);
+            box-shadow: 0 4px 10px rgba(183, 28, 28, 0.4);
         }
         .btn-kypchak {
-            background: linear-gradient(180deg, #1976d2, #0d47a1);
-            border: 1px solid #64b5f6;
-            box-shadow: 0 4px 14px rgba(25, 118, 210, 0.4);
+            background: linear-gradient(180deg, #0d47a1, #002171);
+            box-shadow: 0 4px 10px rgba(13, 71, 161, 0.4);
         }
 
         /* --- БОЕВАЯ АРЕНА (BATTLE ARENA) --- */
@@ -235,12 +252,13 @@
             text-align: left;
         }
         .battle-top-bar {
-            background: rgba(14, 8, 4, 0.95);
-            border-bottom: 2px solid #b87a28;
+            background: #2c1604;
+            border-bottom: 3px solid #8c5825;
             padding: 10px 14px;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            color: #f4e3c1;
         }
         .fighter-info {
             width: 48%;
@@ -248,27 +266,27 @@
         .fighter-name {
             font-size: 13px;
             font-weight: bold;
-            color: #ffd479;
+            color: #ffd97d;
             margin-bottom: 3px;
             display: flex;
             justify-content: space-between;
         }
         .hp-bar-bg {
             width: 100%;
-            height: 9px;
-            background: #2a1608;
-            border: 1px solid #5a3e1b;
+            height: 10px;
+            background: #1a0d02;
+            border: 2px solid #5a320f;
             border-radius: 4px;
             overflow: hidden;
         }
         .hp-bar-fill {
             height: 100%;
             width: 100%;
-            background: linear-gradient(90deg, #28a745, #5cd65c);
+            background: linear-gradient(90deg, #1b5e20, #4caf50);
             transition: width 0.3s ease;
         }
         .hp-bar-fill.enemy {
-            background: linear-gradient(90deg, #d32f2f, #ff6b6b);
+            background: linear-gradient(90deg, #b71c1c, #e53935);
         }
         
         .battle-viewport {
@@ -276,10 +294,10 @@
             width: 100%;
             height: 250px;
             background: url('bg_battle.png') center/cover no-repeat;
-            border-bottom: 2px solid #b87a28;
+            border-bottom: 3px solid #8c5825;
             display: flex;
             justify-content: center;
-            gap: 30px; /* Идеальная дистанция для удара мечом */
+            gap: 30px;
             align-items: flex-end;
             padding-bottom: 15px;
             overflow: hidden;
@@ -292,36 +310,32 @@
             transition: transform 0.15s ease-out;
         }
         
-        /* ГЕРОЙ - СЛЕВА */
         #heroWrapper {
-    height: 80%;
-    z-index: 2;
-    left: 70px;
-}
+            height: 80%;
+            z-index: 2;
+            left: 70px;
+        }
         #heroWrapper img {
             height: 100%;
             object-fit: contain;
-            transform: scale(1.20); /* Увеличиваем героя */
+            transform: scale(1.20);
             transform-origin: bottom center;
             filter: drop-shadow(0 6px 10px rgba(0,0,0,0.8));
         }
 
-        /* ВОЛК - СПРАВА */
-       #wolfWrapper {
-    height: 80%;
-    z-index: 1;
-    right: 35px;
-}
+        #wolfWrapper {
+            height: 80%;
+            z-index: 1;
+            right: 35px;
+        }
         #wolfWrapper img {
             height: 100%;
             object-fit: contain;
-            /* ЖЕЛЕЗНО поворачиваем мордой к герою (-1.5 по оси X) и увеличиваем размер (1.5) */
             transform: scale(1.5); 
             transform-origin: bottom center;
             filter: drop-shadow(0 6px 10px rgba(0,0,0,0.8));
         }
 
-        /* Всплывающий урон */
         .damage-number {
             position: absolute;
             top: 15%;
@@ -341,7 +355,6 @@
             100% { transform: translate(-50%, -90px) scale(1); opacity: 0; }
         }
 
-        /* Выезд бойцов при старте */
         @keyframes entranceLeft {
             from { transform: translateX(-150px); opacity: 0; }
             to { transform: translateX(0); opacity: 1; }
@@ -353,10 +366,10 @@
         .hero-enter { animation: entranceLeft 0.8s ease-out forwards; }
         .wolf-enter { animation: entranceRight 0.8s ease-out forwards; }
 
-        /* Нижняя панель управления */
         .battle-controls {
             padding: 14px 16px 20px 16px;
-            background: #170d06;
+            background: #2c1604;
+            color: #f4e3c1;
         }
         .strike-zones-grid {
             display: flex;
@@ -367,10 +380,10 @@
         .strike-btn {
             flex: 1;
             padding: 9px 4px;
-            background: linear-gradient(180deg, #3c2411, #211308);
-            border: 1px solid #946428;
-            border-radius: 8px;
-            color: #f3dfc8;
+            background: linear-gradient(180deg, #5a320f, #3b1e08);
+            border: 2px solid #8c5825;
+            border-radius: 6px;
+            color: #f4e3c1;
             font-size: 12px;
             font-weight: bold;
             display: flex;
@@ -382,9 +395,9 @@
             transition: all 0.15s;
         }
         .strike-btn:hover:not(:disabled) {
-            border-color: #ffd479;
+            border-color: #ffd97d;
             transform: translateY(-2px);
-            background: linear-gradient(180deg, #573418, #2a170a);
+            background: linear-gradient(180deg, #724115, #4a270a);
         }
         .strike-btn:active:not(:disabled) {
             transform: scale(0.96);
@@ -397,18 +410,17 @@
         .strike-btn svg {
             width: 22px;
             height: 22px;
-            fill: #ffd479;
+            fill: #ffd97d;
         }
 
-        /* Блок Калкан (Щит) */
         .shield-toggle-row {
             display: flex;
             align-items: center;
             gap: 10px;
-            background: rgba(10, 5, 2, 0.7);
+            background: rgba(43, 22, 4, 0.8);
             padding: 7px 12px;
-            border-radius: 6px;
-            border: 1px solid #5a3e1b;
+            border-radius: 4px;
+            border: 2px solid #8c5825;
             margin-bottom: 12px;
             cursor: pointer;
         }
@@ -416,25 +428,25 @@
             width: 19px;
             height: 19px;
             cursor: pointer;
-            accent-color: #d49a3d;
+            accent-color: #8c5825;
         }
         .shield-label {
             font-size: 13px;
             font-weight: bold;
-            color: #f0d09d;
+            color: #ffd97d;
             cursor: pointer;
             display: flex;
             align-items: center;
             gap: 6px;
         }
 
-        /* 8 слотов для зелий */
         .potions-bar-title {
             font-size: 11px;
-            color: #a48259;
+            color: #d4ae75;
             text-transform: uppercase;
             letter-spacing: 0.5px;
             margin-bottom: 6px;
+            font-weight: bold;
         }
         .potions-slots-grid {
             display: grid;
@@ -443,26 +455,26 @@
         }
         .potion-slot {
             aspect-ratio: 1 / 1;
-            background: #0d0703;
-            border: 1px solid #4a3014;
-            border-radius: 5px;
+            background: #1a0d02;
+            border: 2px solid #5a320f;
+            border-radius: 4px;
             display: flex;
             justify-content: center;
             align-items: center;
             font-size: 11px;
-            color: #8c735a;
+            color: #d4ae75;
             position: relative;
             cursor: pointer;
             transition: all 0.2s;
         }
         .potion-slot.filled {
-            border-color: #ffd479;
-            background: radial-gradient(circle, #38210e 0%, #120904 100%);
-            box-shadow: inset 0 0 6px rgba(255, 212, 121, 0.3);
+            border-color: #ffd97d;
+            background: radial-gradient(circle, #5a320f 0%, #1a0d02 100%);
+            box-shadow: inset 0 0 6px rgba(255, 217, 125, 0.4);
         }
         .potion-slot.filled:hover {
             transform: scale(1.08);
-            border-color: #5cd65c;
+            border-color: #4caf50;
         }
         .potion-count {
             position: absolute;
@@ -470,49 +482,43 @@
             right: 2px;
             font-size: 9px;
             font-weight: bold;
-            color: #5cd65c;
+            color: #4caf50;
         }
 
         #custom-modal {
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0, 0, 0, 0.8); justify-content: center; align-items: center; z-index: 9999; padding: 15px;
+            background: rgba(0, 0, 0, 0.85); justify-content: center; align-items: center; z-index: 9999; padding: 15px;
         }
         .modal-content {
-            background: #241407; padding: 25px; border-radius: 12px; width: 100%;
-            max-width: 320px; text-align: center; box-shadow: 0 0 25px rgba(0, 0, 0, 0.9);
+            background: linear-gradient(135deg, #f4e3c1 0%, #d4ae75 100%);
+            padding: 25px; border-radius: 8px; width: 100%;
+            max-width: 320px; text-align: center; border: 3px solid #5a320f; box-shadow: 0 0 30px rgba(0, 0, 0, 0.9);
+            color: #2c1604;
         }
-        .modal-content h3 { margin-top: 0; margin-bottom: 10px; }
-        .modal-content p { color: #f3dfc8; font-size: 14px; line-height: 1.4; margin-bottom: 20px; }
-        .modal-btn { color: #fff; border: none; padding: 10px 20px; border-radius: 6px; font-weight: bold; cursor: pointer; width: 100%; }
-        .modal-error { border: 2px solid #ff4d4d; box-shadow: 0 0 20px rgba(255, 77, 77, 0.4); }
-        .modal-error h3 { color: #ff6b6b; }
-        .modal-error .modal-btn { background: #d32f2f; }
-        .modal-success { border: 2px solid #28a745; box-shadow: 0 0 20px rgba(40, 167, 69, 0.4); }
-        .modal-success h3 { color: #4cd169; }
-        .modal-success .modal-btn { background: #28a745; }
+        .modal-content h3 { margin-top: 0; margin-bottom: 10px; color: #3b1e08; }
+        .modal-content p { color: #4a270a; font-size: 14px; line-height: 1.4; margin-bottom: 20px; font-weight: 600; }
+        .modal-btn { color: #f4e3c1; border: 2px solid #3b1e08; padding: 10px 20px; border-radius: 4px; font-weight: bold; cursor: pointer; width: 100%; }
+        .modal-error { border: 3px solid #b71c1c; }
+        .modal-error h3 { color: #b71c1c; }
+        .modal-error .modal-btn { background: #b71c1c; }
+        .modal-success { border: 3px solid #1b5e20; }
+        .modal-success h3 { color: #1b5e20; }
+        .modal-success .modal-btn { background: #1b5e20; }
         @keyframes pulse { 0% { transform: scale(1); opacity: 0.8; } 50% { transform: scale(1.05); opacity: 1; } 100% { transform: scale(1); opacity: 0.8; } }
-  <style>
+
         /* --- СТИЛИ ДЛЯ ЭКРАНА ИТОГОВ БОЯ --- */
         #result-screen.active {
             display: flex;
             flex-direction: column;
             align-items: center;
-            width: 100%;
-            max-width: 440px;
-            background: radial-gradient(circle at center, #2e1c0c 0%, #160d06 100%);
-            padding: 30px;
-            border-radius: 14px;
-            border: 2px solid #d49a3d;
-            box-shadow: 0 0 45px rgba(212, 154, 61, 0.3), inset 0 0 25px rgba(0, 0, 0, 0.7);
-            text-align: center;
         }
         .result-block {
             width: 100%;
-            background: rgba(10, 5, 2, 0.6);
-            border-radius: 8px;
+            background: rgba(90, 50, 15, 0.15);
+            border-radius: 6px;
             padding: 14px;
             margin-bottom: 14px;
-            border: 1px solid #5a3e1b;
+            border: 2px solid #8c5825;
         }
         .result-table {
             display: flex;
@@ -524,13 +530,15 @@
             grid-template-columns: 1fr 1fr 1fr;
             padding: 6px 0;
             font-size: 14px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            border-bottom: 1px solid rgba(90, 50, 15, 0.2);
             align-items: center;
+            color: #2c1604;
+            font-weight: 600;
         }
         .result-row.header {
             font-weight: bold;
-            color: #ffd479;
-            border-bottom: 1px solid #b87a28;
+            color: #5a320f;
+            border-bottom: 2px solid #8c5825;
             font-size: 12px;
             text-transform: uppercase;
         }
