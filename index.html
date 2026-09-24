@@ -12,17 +12,13 @@
             -webkit-tap-highlight-color: transparent;
             user-select: none;
         }
-        body {
+      body {
             margin: 0;
             font-family: 'Cinzel', 'Segoe UI', serif;
-            background-color: #2b1506; 
-            background-image: 
-                radial-gradient(circle at center, rgba(43, 21, 6, 0.7) 0%, rgba(10, 4, 1, 0.95) 100%),
-                url('pattern.png');
-            background-repeat: no-repeat, repeat;
-            background-position: center, top left;
-            background-size: cover, 180px 180px;
-            background-blend-mode: overlay, multiply;
+            background-color: #1a0a04;
+            background-image: url('pattern.png');
+            background-repeat: repeat;
+            background-size: 150px 150px;
             color: #2c1604;
             display: flex;
             justify-content: center;
@@ -33,7 +29,7 @@
             overflow-y: auto;
             padding: 15px;
         }
-        .screen {
+       .screen {
             display: none;
             width: 100%;
             max-width: 440px;
@@ -45,7 +41,6 @@
             box-shadow: 0 0 40px rgba(0, 0, 0, 0.85), inset 0 0 50px rgba(90, 45, 10, 0.25);
             text-align: center;
             color: #2c1604;
-        }
         }
         .screen.active {
             display: block;
