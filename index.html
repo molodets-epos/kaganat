@@ -1172,7 +1172,7 @@ function startBattleSystem(nickname) {
         }
 
         // Атака Героя с места
-       async function playerPerformStrike(zone) {
+      async function playerPerformStrike(zone) {
         if (isBattleTurnLocked || heroStats.hp <= 0 || wolfStats.hp <= 0) return;
         isBattleTurnLocked = true;
         setButtonsDisabled(true);
@@ -1184,24 +1184,12 @@ function startBattleSystem(nickname) {
         heroWrap.style.zIndex = '10';
         wolfWrap.style.zIndex = '1';
 
-        // Отладка: посмотрим, какая зона приходит при клике
-        console.log("Кликнута зона удара:", zone);
-
-        // Замах
-        if (zone === 'head') {
-            heroImg.src = 'hero_swing_head.png';
-        } else {
-            heroImg.src = 'hero_swing_body.png';
-        }
+        // Замах: для головы подставляем спрайт удара головой, для остальных — корпус
+        heroImg.src = (zone === 'head') ? 'hero_swing_head.png' : 'hero_swing_body.png';
         await new Promise(r => setTimeout(r, 200));
 
-        // Удар С МЕСТА
-        if (zone === 'head') {
-            heroImg.src = 'hero_strike_head.png';
-        } else {
-            heroImg.src = 'hero_strike_body.png';
-        }
-        heroWrap.style.transform = 'none';
+        // Удар с места
+        heroImg.src = (zone === 'head') ? 'hero_strike_head.png' : 'hero_strike_body.png';
 
         let baseDamage = Math.floor(Math.random() * (heroStats.damageMax - heroStats.damageMin + 1)) + heroStats.damageMin;
         if (document.getElementById('shieldCheckbox').checked) baseDamage = Math.floor(baseDamage * 0.6);
@@ -1212,15 +1200,12 @@ function startBattleSystem(nickname) {
 
         // Волк получает урон
         wolfImg.src = 'wolf_hurt.png';
-        wolfWrap.style.transform = 'none';
         createDamageNumber(wolfWrap, `-${netDamage}`);
         updateHpBars();
 
         await new Promise(r => setTimeout(r, 450));
 
-        // Возврат
-        heroWrap.style.transform = 'none';
-        wolfWrap.style.transform = 'none';
+        // Возврат в исходное положение
         heroWrap.style.zIndex = '';
         wolfWrap.style.zIndex = '';
         heroImg.src = 'hero_idle_in.png';
