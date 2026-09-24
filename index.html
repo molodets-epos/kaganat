@@ -1079,11 +1079,15 @@
         // Атака волка
         async function wolfPerformStrike() {
             const heroImg = document.getElementById('heroSprite');
-            const heroWrap = document.getElementById('heroWrapper');
-            const wolfImg = document.getElementById('wolfSprite');
-            const wolfWrap = document.getElementById('wolfWrapper');
+    const heroWrap = document.getElementById('heroWrapper'); /* Исправлена буква W */
+    const wolfImg = document.getElementById('wolfSprite');
+    const wolfWrap = document.getElementById('wolfWrapper'); /* Исправлена буква W */
 
-            // Волк замахивается
+    /* Вставляем отключение анимации сюда: */
+    wolfWrap.style.animation = 'none';
+    heroWrap.style.animation = 'none';
+
+    // Волк замахивается
             wolfImg.src = 'wolf_swing.png';
             await new Promise(r => setTimeout(r, 220));
 
