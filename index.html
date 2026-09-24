@@ -1122,7 +1122,7 @@
             document.getElementById('shieldCheckbox').disabled = disabled;
         }
 
-      // Атака Героя с места
+     // Атака Героя с места
     async function playerPerformStrike(zone) {
         if (isBattleTurnLocked || heroStats.hp <= 0 || wolfStats.hp <= 0) return;
         isBattleTurnLocked = true;
@@ -1137,17 +1137,18 @@
         heroWrap.style.zIndex = '10';
         wolfWrap.style.zIndex = '1';
 
-        // 1. ЗАМАХ: отчетливо показываем спрайт замаха и выдерживаем паузу (400 мс)
+        // 1. ДОЛГИЙ ЗАМАХ: держим спрайт замаха целых 600 мс, чтобы ты 100% увидел движение рук/оружия
         heroImg.src = (zone === 'head') ? 'hero_swing_head.png' : 'hero_swing_body.png';
-        await new Promise(r => setTimeout(r, 400));
+        await new Promise(r => setTimeout(r, 600));
 
-        // 2. УДАР: переключаем на спрайт удара на месте
+        // 2. УДАР: переключаем на спрайт удара
         heroImg.src = (zone === 'head') ? 'hero_strike_head.png' : 'hero_strike_body.png';
 
         let baseDamage = Math.floor(Math.random() * (heroStats.damageMax - heroStats.damageMin + 1)) + heroStats.damageMin;
         if (document.getElementById('shieldCheckbox').checked) baseDamage = Math.floor(baseDamage * 0.6);
 
         const netDamage = Math.max(1, baseDamage - wolfStats.armor);
+        wolfStats.hp = Math.max(0, wolfStats.hp - netName = Math.max(0, wolfStats.hp - netDamage)); // фиксируем опечатку на всякий
         wolfStats.hp = Math.max(0, wolfStats.hp - netDamage);
         heroStats.totalDamage += netDamage;
 
@@ -1181,7 +1182,6 @@
         setButtonsDisabled(false);
         isBattleTurnLocked = false;
     }
-
         // Атака волка
         async function wolfPerformStrike() {
             const heroImg = document.getElementById('heroSprite');
