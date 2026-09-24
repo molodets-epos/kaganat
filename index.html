@@ -1132,14 +1132,16 @@
         const heroWrap = document.getElementById('heroWrapper');
         const wolfImg = document.getElementById('wolfSprite');
         const wolfWrap = document.getElementById('wolfWrapper');
+        
+        heroWrap.style.animation = 'none';
         heroWrap.style.zIndex = '10';
         wolfWrap.style.zIndex = '1';
 
-        // 1. ЗАМАХ: показываем спрайт замаха и ждем подольше (350 миллисекунд), чтобы игрок успел его увидеть
+        // 1. ЗАМАХ: отчетливо показываем спрайт замаха и выдерживаем паузу (400 мс)
         heroImg.src = (zone === 'head') ? 'hero_swing_head.png' : 'hero_swing_body.png';
-        await new Promise(r => setTimeout(r, 350));
+        await new Promise(r => setTimeout(r, 400));
 
-        // 2. УДАР: переключаем на спрайт самого удара
+        // 2. УДАР: переключаем на спрайт удара на месте
         heroImg.src = (zone === 'head') ? 'hero_strike_head.png' : 'hero_strike_body.png';
 
         let baseDamage = Math.floor(Math.random() * (heroStats.damageMax - heroStats.damageMin + 1)) + heroStats.damageMin;
@@ -1154,7 +1156,7 @@
         createDamageNumber(wolfWrap, `-${netDamage}`);
         updateHpBars();
 
-        // Держим удар на экране, чтобы анимация считывалась
+        // Держим удар на экране
         await new Promise(r => setTimeout(r, 450));
 
         // Возврат в исходное положение
