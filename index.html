@@ -1093,7 +1093,7 @@
 
             // Волк делает большой прыжок к герою ВЛЕВО
             wolfImg.src = 'wolf_attack.png';
-            wolfWrap.style.transform = 'translateX(-150px)';
+            wolfWrap.style.transform = 'translateX(-120px)';
 
             let currentBlock = Math.floor(Math.random() * (heroStats.blockMax - heroStats.blockMin + 1)) + heroStats.blockMin;
             if (document.getElementById('shieldCheckbox').checked && currentBlock >= wolfStats.accuracy) {
