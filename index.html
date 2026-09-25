@@ -890,7 +890,7 @@
         <!-- Рамка локации -->
         <div class="rpg-loc-frame">
             <img src="bg_kichiordo.png" alt="Кичи-Ордо" onerror="this.src='bg_valley.png'">
-            <div class="rpg-loc-title">Кичи-Ордо (Борбор)</div>
+            <div class="rpg-loc-title">Кичи-Ордо</div>
         </div>
 
         <!-- Кнопки действий -->
@@ -904,33 +904,31 @@
             <div class="rpg-list-item" onclick="showModal('Тапшырмалар', 'Сизде 1 тапшырма бар: Устаттын мурасы.', 'success')">
                 📜 Тапшырмалар (1/0/0)
             </div>
-            <div class="rpg-list-item">
-                🛖 Кичи-Ордо (Локация)
-            </div>
+            <!-- Кнопку локации Кичи-Ордо убрали -->
         </div>
 
         <!-- Всплывающее боковое меню -->
         <div class="rpg-side-menu" id="sideMenu">
-            <button class="rpg-side-menu-btn" onclick="toggleSideMenu()">Башкы бет (Главная)</button>
+            <button class="rpg-side-menu-btn" onclick="toggleSideMenu()">Башкы бет</button>
             <button class="rpg-side-menu-btn" onclick="toggleSideMenu()">Топ</button>
-            <button class="rpg-side-menu-btn" onclick="toggleSideMenu()">Клан</button>
+            <button class="rpg-side-menu-btn" onclick="toggleSideMenu()">Уруулар</button>
             <button class="rpg-side-menu-btn" onclick="toggleSideMenu()">Аукцион</button>
-            <button class="rpg-side-menu-btn" onclick="toggleSideMenu()">Дүкөн (Магазин)</button>
+            <button class="rpg-side-menu-btn" onclick="toggleSideMenu()">Базар</button>
             <button class="rpg-side-menu-btn" onclick="toggleSideMenu()">Банк</button>
             <button class="rpg-side-menu-btn" onclick="toggleSideMenu()">Онлайн</button>
             <button class="rpg-side-menu-btn" onclick="toggleSideMenu()">Почта</button>
-            <button class="rpg-side-menu-btn" onclick="toggleSideMenu()">Достор (Друзья)</button>
-            <button class="rpg-side-menu-btn" onclick="toggleSideMenu()">Чат</button>
-            <button class="rpg-side-menu-btn" onclick="toggleSideMenu()">Жабдуу (Снаряжение)</button>
-            <button class="rpg-side-menu-btn" onclick="toggleSideMenu()">Каарман (Персонаж)</button>
-            <button class="rpg-side-menu-btn" onclick="toggleSideMenu()">Жардам (Помощь)</button>
+            <button class="rpg-side-menu-btn" onclick="toggleSideMenu()">Достор</button>
+            <button class="rpg-side-menu-btn" onclick="toggleSideMenu()">Маектешүү</button>
+            <button class="rpg-side-menu-btn" onclick="toggleSideMenu()">Жабдыктар</button>
+            <button class="rpg-side-menu-btn" onclick="toggleSideMenu()">Каарман</button>
+            <button class="rpg-side-menu-btn" onclick="toggleSideMenu()">Жардам</button>
         </div>
 
         <!-- Фиксированный подвал -->
         <div class="rpg-bottom-bar" style="z-index: 1001;">
             <span class="rpg-bottom-link" onclick="toggleSideMenu()">Меню</span>
             <span id="serverTime">00:00:00</span>
-            <span class="rpg-bottom-link" id="mainMenuLogoutBtn">Выход</span>
+            <span class="rpg-bottom-link" id="mainMenuLogoutBtn">Чыгуу</span>
         </div>
     </div>
     <!-- 6. БОЕВАЯ АРЕНА -->
