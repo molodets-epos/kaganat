@@ -12,7 +12,7 @@
             -webkit-tap-highlight-color: transparent;
             user-select: none;
         }
-    body {
+        body {
             margin: 0;
             font-family: 'Cinzel', 'Segoe UI', serif;
             background-color: #3b1e0b;
@@ -1122,66 +1122,66 @@
             document.getElementById('shieldCheckbox').disabled = disabled;
         }
 
-     // Атака Героя с места
-    async function playerPerformStrike(zone) {
-        if (isBattleTurnLocked || heroStats.hp <= 0 || wolfStats.hp <= 0) return;
-        isBattleTurnLocked = true;
-        setButtonsDisabled(true);
+        // Атака Героя с места
+        async function playerPerformStrike(zone) {
+            if (isBattleTurnLocked || heroStats.hp <= 0 || wolfStats.hp <= 0) return;
+            isBattleTurnLocked = true;
+            setButtonsDisabled(true);
 
-        const heroImg = document.getElementById('heroSprite');
-        const heroWrap = document.getElementById('heroWrapper');
-        const wolfImg = document.getElementById('wolfSprite');
-        const wolfWrap = document.getElementById('wolfWrapper');
-        
-        heroWrap.style.animation = 'none';
-        heroWrap.style.zIndex = '10';
-        wolfWrap.style.zIndex = '1';
-
-        // 1. ДОЛГИЙ ЗАМАХ: держим спрайт замаха целых 600 мс, чтобы ты 100% увидел движение рук/оружия
-        heroImg.src = (zone === 'head') ? 'hero_swing_head.png' : 'hero_swing_body.png';
-        await new Promise(r => setTimeout(r, 600));
-
-        // 2. УДАР: переключаем на спрайт удара
-        heroImg.src = (zone === 'head') ? 'hero_strike_head.png' : 'hero_strike_body.png';
-
-        let baseDamage = Math.floor(Math.random() * (heroStats.damageMax - heroStats.damageMin + 1)) + heroStats.damageMin;
-        if (document.getElementById('shieldCheckbox').checked) baseDamage = Math.floor(baseDamage * 0.6);
-
-        const netDamage = Math.max(1, baseDamage - wolfStats.armor);
-        wolfStats.hp = Math.max(0, wolfStats.hp - netName = Math.max(0, wolfStats.hp - netDamage)); // фиксируем опечатку на всякий
-        wolfStats.hp = Math.max(0, wolfStats.hp - netDamage);
-        heroStats.totalDamage += netDamage;
-
-        // Волк получает урон
-        wolfImg.src = 'wolf_hurt.png';
-        createDamageNumber(wolfWrap, `-${netDamage}`);
-        updateHpBars();
-
-        // Держим удар на экране
-        await new Promise(r => setTimeout(r, 450));
-
-        // Возврат в исходное положение
-        heroWrap.style.zIndex = '';
-        wolfWrap.style.zIndex = '';
-        heroImg.src = 'hero_idle_in.png';
-        wolfImg.src = 'wolf_idle_in.png';
-
-        if (wolfStats.hp <= 0) {
-            document.getElementById('res-winner-dmg').innerText = heroStats.totalDamage;
-            document.getElementById('res-loser-dmg').innerText = wolfStats.totalDamage;
+            const heroImg = document.getElementById('heroSprite');
+            const heroWrap = document.getElementById('heroWrapper');
+            const wolfImg = document.getElementById('wolfSprite');
+            const wolfWrap = document.getElementById('wolfWrapper');
             
-            let expGained = Math.floor(Math.random() * 21) + 40;
-            document.getElementById('res-winner-exp').innerText = `+${expGained} XP`;
-            
-            switchScreen('result-screen');
-            return;
+            heroWrap.style.animation = 'none';
+            heroWrap.style.zIndex = '10';
+            wolfWrap.style.zIndex = '1';
+
+            // 1. ЗАМАХ: держим спрайт замаха 400 мс
+            heroImg.src = (zone === 'head') ? 'hero_swing_head.png' : 'hero_swing_body.png';
+            await new Promise(r => setTimeout(r, 400));
+
+            // 2. УДАР: переключаем на спрайт удара
+            heroImg.src = (zone === 'head') ? 'hero_strike_head.png' : 'hero_strike_body.png';
+
+            let baseDamage = Math.floor(Math.random() * (heroStats.damageMax - heroStats.damageMin + 1)) + heroStats.damageMin;
+            if (document.getElementById('shieldCheckbox').checked) baseDamage = Math.floor(baseDamage * 0.6);
+
+            const netDamage = Math.max(1, baseDamage - wolfStats.armor);
+            wolfStats.hp = Math.max(0, wolfStats.hp - netDamage);
+            heroStats.totalDamage += netDamage;
+
+            // Волк получает урон
+            wolfImg.src = 'wolf_hurt.png';
+            createDamageNumber(wolfWrap, `-${netDamage}`);
+            updateHpBars();
+
+            // Держим удар на экране
+            await new Promise(r => setTimeout(r, 450));
+
+            // Возврат в исходное положение
+            heroWrap.style.zIndex = '';
+            wolfWrap.style.zIndex = '';
+            heroImg.src = 'hero_idle_in.png';
+            wolfImg.src = 'wolf_idle_in.png';
+
+            if (wolfStats.hp <= 0) {
+                document.getElementById('res-winner-dmg').innerText = heroStats.totalDamage;
+                document.getElementById('res-loser-dmg').innerText = wolfStats.totalDamage;
+                
+                let expGained = Math.floor(Math.random() * 21) + 40;
+                document.getElementById('res-winner-exp').innerText = `+${expGained} XP`;
+                
+                switchScreen('result-screen');
+                return;
+            }
+
+            await new Promise(r => setTimeout(r, 600));
+            await wolfPerformStrike();
+            setButtonsDisabled(false);
+            isBattleTurnLocked = false;
         }
 
-        await new Promise(r => setTimeout(r, 600));
-        await wolfPerformStrike();
-        setButtonsDisabled(false);
-        isBattleTurnLocked = false;
-    }
         // Атака волка
         async function wolfPerformStrike() {
             const heroImg = document.getElementById('heroSprite');
