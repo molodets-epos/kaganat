@@ -846,30 +846,49 @@
         </div>
     </div>
 
-    <!-- 8. ГЛАВНОЕ МЕНЮ -->
-    <div id="main-menu-screen" class="screen" style="padding: 0; overflow: hidden;">
-        <div style="width: 100%; height: 160px; background: url('bg_valley.png') center/cover no-repeat; border-bottom: 3px solid #7d4820; display: flex; align-items: flex-end; padding: 15px;">
-            <h2 style="color: #ffd97d; margin: 0; border: none; font-size: 28px; text-shadow: 2px 2px 5px #000;">Башкы Меню</h2>
+   <!-- 8. ГЛАВНАЯ ЛОКАЦИЯ (ХАБ В КЛАССИЧЕСКОМ СТИЛЕ) -->
+    <div id="main-menu-screen" class="screen" style="padding: 15px 15px 50px 15px;">
+        
+        <!-- Верхняя панель ресурсов -->
+        <div class="rpg-top-bar">
+            <span>🪙 <span id="uiGold">10</span></span>
+            <span>🥈 <span id="uiSilver">10</span></span>
+            <span>🥉 <span id="uiBronze">10</span></span>
         </div>
-        <div style="padding: 20px;">
-            <button class="btn" style="background: linear-gradient(180deg, #3d2210, #1a0a04);" onclick="showModal('Тапшырмалар', 'Азырынча жаңы тапшырмалар жок.', 'success')">📜 Тапшырмалар</button>
-            <button class="btn" style="background: linear-gradient(180deg, #1b5e20, #0d3b10); margin-top: 15px;" onclick="switchScreen('kichi-ordo-screen')">🏕️ Кичи-Ордо (Локация)</button>
-            
-            <div id="mainMenuLogoutBtn" style="margin-top: 30px; font-size: 14px; font-weight: bold; text-align: center; color: #ffd479; cursor: pointer; text-transform: uppercase;">Чыгуу (Артка)</div>
-        </div>
-    </div>
 
-    <!-- 9. ЛОКАЦИЯ КИЧИ-ОРДО -->
-    <div id="kichi-ordo-screen" class="screen" style="padding: 0; overflow: hidden;">
-        <div style="width: 100%; height: 220px; background: url('bg_kichiordo.png') center/cover no-repeat; border-bottom: 3px solid #7d4820; position: relative;">
-            <!-- Сюда потом добавим NPC учителя -->
+        <!-- Рамка локации -->
+        <div class="rpg-loc-frame">
+            <img src="bg_kichiordo.png" alt="Кичи-Ордо" onerror="this.src='bg_valley.png'">
+            <div class="rpg-loc-title">Кичи-Ордо (Борбор)</div>
         </div>
-        <div style="padding: 20px; text-align: center;">
-            <h2 style="color: #4a250b; font-size: 22px; border-bottom: 2px solid #7d4820; padding-bottom: 8px;">Кичи-Ордо</h2>
-            <p style="color: #2b1506; font-size: 14px; font-weight: bold; margin-bottom: 25px;">
-                Бул жерден сиз биринчи супер-соккуну үйрөнөсүз. (Жакында кошулат)
-            </p>
-            <button class="btn" onclick="switchScreen('main-menu-screen')">Артка кайтуу</button>
+
+        <!-- Кнопки действий -->
+        <div class="rpg-actions">
+            <button class="rpg-btn-split" onclick="showModal('Охота', 'Жакында ачылат', 'success')">Аңчылык</button>
+            <button class="rpg-btn-split" onclick="showModal('Дуэли', 'Жакында ачылат', 'success')">Дуэль</button>
+        </div>
+
+        <!-- Блок со списком заданий и переходов -->
+        <div class="rpg-content-box">
+            <div class="rpg-section-title">📜 Тапшырмалар (1/0/0)</div>
+            <div class="rpg-list-item" style="background: rgba(212, 171, 117, 0.4);" onclick="showModal('Тапшырма', 'Устаттын эски досунан супер-соккуну үйрөнүү.', 'success', {}, null, 'Баштоо')">
+                ❗️ Устаттын мурасы
+            </div>
+            
+            <div class="rpg-section-title" style="margin-top: 15px;">📍 Жерлер</div>
+            <div class="rpg-list-item">
+                🛖 Базар
+            </div>
+            <div class="rpg-list-item">
+                ⚔️ Машыгуу аянты (Устат)
+            </div>
+        </div>
+
+        <!-- Фиксированный подвал (как в оригинале) -->
+        <div class="rpg-bottom-bar">
+            <span class="rpg-bottom-link" onclick="showModal('Меню', 'Оюндун менюсу', 'success')">Меню</span>
+            <span id="serverTime">21:17:59</span>
+            <span class="rpg-bottom-link" id="mainMenuLogoutBtn">Выход</span>
         </div>
     </div>
     <!-- 6. БОЕВАЯ АРЕНА -->
