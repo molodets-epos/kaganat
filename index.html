@@ -719,9 +719,47 @@
             </div>
         </div>
 
-        <button class="btn" onclick="switchScreen('game-screen')" style="margin-top: 20px;">Улантуу</button>
+       <button class="btn" id="resultContinueBtn" style="margin-top: 20px;">Улантуу</button>
+    </div>
+<!-- 7. ЭКРАН БЛАГОДАРНОСТИ (АКСАКАЛ) -->
+    <div id="thanks-screen" class="screen" style="padding: 0; overflow: hidden; text-align: left;">
+        <div style="position: relative; width: 100%; height: 240px; background: url('bg_valley.png') center/cover no-repeat; border-bottom: 2px solid #d49a3d;">
+            <img src="aksakal.png" style="position: absolute; bottom: 0; left: 50%; transform: translateX(-50%); height: 95%; object-fit: contain;" alt="Аксакал" onerror="this.style.display='none'">
+        </div>
+        <div style="padding: 20px; display: flex; flex-direction: column; flex-grow: 1;">
+            <p style="color: #ecd7ba; font-size: 15px; line-height: 1.6; margin-top: 0; margin-bottom: 20px; text-shadow: 1px 1px 2px #000;">
+                Чоң рахмат уулум! Бир айылдын сообуна калдың. Бул карышкырлар малыбызга эле кол салса мейли эле. Сенин чоң өнөрүң бар сымал, сени алдыда узун жана татаал сапар күтүп турат. Ал эми бул болсо айылыбыздан ыраазычылык.
+            </p>
+            <button class="btn" id="finishThanksBtn">Кийинки</button>
+        </div>
     </div>
 
+    <!-- 8. ГЛАВНОЕ МЕНЮ -->
+    <div id="main-menu-screen" class="screen" style="padding: 0; overflow: hidden;">
+        <div style="width: 100%; height: 160px; background: url('bg_valley.png') center/cover no-repeat; border-bottom: 3px solid #7d4820; display: flex; align-items: flex-end; padding: 15px;">
+            <h2 style="color: #ffd97d; margin: 0; border: none; font-size: 28px; text-shadow: 2px 2px 5px #000;">Башкы Меню</h2>
+        </div>
+        <div style="padding: 20px;">
+            <button class="btn" style="background: linear-gradient(180deg, #3d2210, #1a0a04);" onclick="showModal('Тапшырмалар', 'Азырынча жаңы тапшырмалар жок.', 'success')">📜 Тапшырмалар</button>
+            <button class="btn" style="background: linear-gradient(180deg, #1b5e20, #0d3b10); margin-top: 15px;" onclick="switchScreen('kichi-ordo-screen')">🏕️ Кичи-Ордо (Локация)</button>
+            
+            <div id="mainMenuLogoutBtn" style="margin-top: 30px; font-size: 14px; font-weight: bold; text-align: center; color: #ffd479; cursor: pointer; text-transform: uppercase;">Чыгуу (Артка)</div>
+        </div>
+    </div>
+
+    <!-- 9. ЛОКАЦИЯ КИЧИ-ОРДО -->
+    <div id="kichi-ordo-screen" class="screen" style="padding: 0; overflow: hidden;">
+        <div style="width: 100%; height: 220px; background: url('bg_kichiordo.png') center/cover no-repeat; border-bottom: 3px solid #7d4820; position: relative;">
+            <!-- Сюда потом добавим NPC учителя -->
+        </div>
+        <div style="padding: 20px; text-align: center;">
+            <h2 style="color: #4a250b; font-size: 22px; border-bottom: 2px solid #7d4820; padding-bottom: 8px;">Кичи-Ордо</h2>
+            <p style="color: #2b1506; font-size: 14px; font-weight: bold; margin-bottom: 25px;">
+                Бул жерден сиз биринчи супер-соккуну үйрөнөсүз. (Жакында кошулат)
+            </p>
+            <button class="btn" onclick="switchScreen('main-menu-screen')">Артка кайтуу</button>
+        </div>
+    </div>
     <!-- 6. БОЕВАЯ АРЕНА -->
     <div id="battle-screen" class="screen">
         <div class="battle-top-bar">
@@ -903,9 +941,16 @@
             listenForRemoteSession(nicknameKey);
 
             if (userData.fraction) {
-                if (userData.storyStep === 1) { startBattleSystem(nicknameKey); return; }
-                switchScreen('game-screen');
-            } else { switchScreen('faction-screen'); }
+                if (userData.storyStep === 1) { 
+                    startBattleSystem(nicknameKey); 
+                } else if (userData.storyStep >= 2) {
+                    switchScreen('main-menu-screen'); // Если сюжет пройден, кидаем в меню
+                } else {
+                    switchScreen('game-screen');
+                }
+            } else { 
+                switchScreen('faction-screen'); 
+            }
         }
 
         document.getElementById('logoutBtn').addEventListener('click', () => {
@@ -1244,6 +1289,41 @@
             }
             createDamageNumber(document.getElementById('heroWrapper'), '+30 HP', true);
             updateHpBars();
+        });
+        // Логика перехода после победы над волком
+        document.getElementById('resultContinueBtn').addEventListener('click', () => {
+            switchScreen('thanks-screen');
+        });
+
+        // Награда от Аксакала
+        document.getElementById('finishThanksBtn').addEventListener('click', () => {
+            // Показываем уведомление, 6-й параметр меняет текст кнопки на "Рахмат"
+            showModal('Сыйлык', 'Айылдын атынан сизге 10 алтын, 10 күмүш жана 10 жез берилди.', 'success', {}, async () => {
+                if (currentActiveUser) {
+                    try {
+                        const userRef = doc(db, "nicknames", currentActiveUser);
+                        // Сохраняем прогресс сюжета и выдаем деньги в базу
+                        await setDoc(userRef, { 
+                            storyStep: 2,
+                            moneyGold: 10,
+                            moneySilver: 10,
+                            moneyBronze: 10
+                        }, { merge: true });
+                    } catch (e) { console.error("Ошибка сохранения награды:", e); }
+                }
+                // После нажатия "Рахмат" переходим в Главное меню
+                switchScreen('main-menu-screen');
+            }, 'Рахмат'); 
+        });
+
+        // Кнопка выхода из Главного меню
+        document.getElementById('mainMenuLogoutBtn').addEventListener('click', () => {
+            if (unsubscribeUserListener) { unsubscribeUserListener(); unsubscribeUserListener = null; }
+            localStorage.removeItem('kaganat_active_user');
+            localStorage.removeItem('kaganat_session_id');
+            currentActiveUser = null;
+            currentSessionId = null;
+            switchScreen('login-screen');
         });
     </script>
 </body>
