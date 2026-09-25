@@ -553,6 +553,118 @@
         .result-row:last-child {
             border-bottom: none;
         }
+        /* --- КЛАССИЧЕСКИЙ RPG ИНТЕРФЕЙС (В СТИЛЕ DWAR) --- */
+        .rpg-top-bar {
+            background: linear-gradient(180deg, #fcebb5, #d4a753);
+            border: 2px solid #5c3010;
+            border-radius: 4px;
+            padding: 4px 10px;
+            display: inline-flex;
+            gap: 10px;
+            font-size: 13px;
+            font-weight: bold;
+            color: #2b1506;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.5);
+        }
+        .rpg-loc-frame {
+            position: relative;
+            width: 100%;
+            height: 200px;
+            border: 4px solid #5c3010;
+            border-radius: 4px;
+            background: #000;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.7);
+        }
+        .rpg-loc-frame img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .rpg-loc-frame::before, .rpg-loc-frame::after {
+            content: ''; position: absolute; width: 12px; height: 12px; background: #c28d32; border: 1px solid #2b1506; border-radius: 50%;
+        }
+        .rpg-loc-frame::before { top: -6px; left: -6px; box-shadow: calc(100% + 350px) 0 #c28d32; } /* Упрощенные декоративные углы */
+        .rpg-loc-title {
+            position: absolute;
+            bottom: -12px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: linear-gradient(180deg, #faeed0, #d4ab75);
+            border: 2px solid #5c3010;
+            padding: 2px 15px;
+            border-radius: 3px;
+            font-size: 12px;
+            font-weight: bold;
+            color: #2b1506;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.5);
+        }
+        .rpg-actions {
+            display: flex;
+            gap: 5px;
+            margin-bottom: 10px;
+        }
+        .rpg-btn-split {
+            flex: 1;
+            padding: 8px;
+            background: linear-gradient(180deg, #ff9900, #cc5500);
+            border: 2px solid #5c3010;
+            color: #fff;
+            font-size: 13px;
+            font-weight: bold;
+            cursor: pointer;
+            text-shadow: 1px 1px 1px rgba(0,0,0,0.5);
+            border-radius: 3px;
+            box-shadow: inset 0 1px 2px rgba(255,255,255,0.4), 0 2px 4px rgba(0,0,0,0.4);
+        }
+        .rpg-btn-split:active { background: linear-gradient(180deg, #cc5500, #993300); transform: translateY(1px); }
+        .rpg-content-box {
+            background: #dec79b;
+            border: 2px solid #8c6b42;
+            padding: 10px;
+            text-align: left;
+            min-height: 120px;
+        }
+        .rpg-section-title {
+            font-size: 12px;
+            font-weight: bold;
+            color: #2b1506;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .rpg-list-item {
+            background: rgba(250, 238, 208, 0.6);
+            border-bottom: 1px solid #bda377;
+            padding: 8px 5px;
+            font-size: 13px;
+            color: #2b1506;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: background 0.2s;
+        }
+        .rpg-list-item:hover { background: #faeed0; }
+        .rpg-bottom-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background: linear-gradient(180deg, #5c3010, #2b1506);
+            border-top: 2px solid #8c6b42;
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 15px;
+            color: #f4e4c1;
+            font-size: 12px;
+            font-weight: bold;
+            z-index: 100;
+        }
+        .rpg-bottom-link { cursor: pointer; color: #ffd97d; transition: color 0.2s; }
+        .rpg-bottom-link:hover { color: #fff; }
     </style>
 </head>
 <body>
