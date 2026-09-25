@@ -1605,6 +1605,77 @@
                 timeEl.innerText = now.toLocaleTimeString('ru-RU');
             }
         }, 1000);
+        // --- БОЕВАЯ МЕХАНИКА КАГАНАТА ---
+        function getRandomInt(min, max) {
+            return Math.floor(Math.random() * (max - min + 1)) + min;
+        }
+
+        function calculateStrike(attacker, defender) {
+            let logMessage = "";
+
+            // 1. ПРОВЕРКА УВОРОТА
+            if (defender.stats.minDodge > attacker.stats.maxAcc) {
+                return { damage: 0, result: "dodge", message: `${defender.name} шамдагайлыгы менен буйтап кетти (Кепилденген уворот)!` };
+            }
+
+            let dodgeRoll = getRandomInt(defender.stats.minDodge, defender.stats.maxDodge);
+            let accRoll = getRandomInt(attacker.stats.minAcc, attacker.stats.maxAcc);
+
+            if (dodgeRoll > accRoll) {
+                return { damage: 0, result: "dodge", message: `${defender.name} соккудан буйтап кетти!` };
+            }
+
+            // 2. ПРОВЕРКА БЛОКА (Калкан)
+            if (defender.blockCharges > 0) {
+                if (accRoll <= defender.stats.block) {
+                    defender.blockCharges--; 
+                    return { damage: 0, result: "block", message: `🛡️ ${defender.name} соккуну калкан менен тосту!` };
+                }
+            }
+
+            // 3. РАСЧЕТ УРОНА
+            let dmgRoll = getRandomInt(attacker.stats.minDmg, attacker.stats.maxDmg);
+            
+            if (attacker.blockCharges > 0) {
+                dmgRoll = Math.round(dmgRoll * 0.6);
+            }
+
+            let finalDamage = dmgRoll - defender.stats.armor;
+            if (finalDamage <= 0) {
+                finalDamage = 1; 
+            }
+
+            defender.currentHp -= finalDamage;
+            logMessage += `⚔️ ${attacker.name} ${finalDamage} зыян келтирди. `;
+
+            // 4. ПРОВЕРКА ОГЛУШЕНИЯ
+            let isStunned = false;
+            let stunChance = (attacker.stats.stun * 2.5) - defender.stats.armor;
+            
+            if (stunChance > 0) {
+                let stunRoll = Math.random() * 100;
+                if (stunRoll <= stunChance) {
+                    if (attacker.consecutiveStuns < 2) {
+                        isStunned = true;
+                        attacker.consecutiveStuns++;
+                        logMessage += `💫 ${defender.name} эс-учун жоготту! `;
+                    } else {
+                        attacker.consecutiveStuns = 0; 
+                    }
+                } else {
+                    attacker.consecutiveStuns = 0; 
+                }
+            } else {
+                attacker.consecutiveStuns = 0;
+            }
+
+            return {
+                damage: finalDamage,
+                result: "hit",
+                stunned: isStunned,
+                message: logMessage
+            };
+        }
     </script>
 </body>
 </html>
