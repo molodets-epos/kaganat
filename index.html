@@ -1498,6 +1498,24 @@
             currentSessionId = null;
             switchScreen('login-screen');
         });
+        // Функция открытия/закрытия бокового меню
+        window.toggleSideMenu = function() {
+            const menu = document.getElementById('sideMenu');
+            if (menu.style.display === 'block') {
+                menu.style.display = 'none';
+            } else {
+                menu.style.display = 'block';
+            }
+        };
+
+        // Живые часы в подвале
+        setInterval(() => {
+            const timeEl = document.getElementById('serverTime');
+            if (timeEl) {
+                const now = new Date();
+                timeEl.innerText = now.toLocaleTimeString('ru-RU');
+            }
+        }, 1000);
     </script>
 </body>
 </html>
