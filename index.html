@@ -665,6 +665,37 @@
         }
         .rpg-bottom-link { cursor: pointer; color: #ffd97d; transition: color 0.2s; }
         .rpg-bottom-link:hover { color: #fff; }
+        /* --- ВСПЛЫВАЮЩЕЕ БОКОВОЕ МЕНЮ --- */
+        .rpg-side-menu {
+            display: none;
+            position: fixed;
+            bottom: 34px; /* Высота нижнего бара */
+            left: 0;
+            width: 170px;
+            background: #4a250b;
+            z-index: 1000;
+            border-right: 2px solid #1a0a04;
+            border-top: 2px solid #1a0a04;
+            box-shadow: 4px -4px 10px rgba(0,0,0,0.7);
+        }
+        .rpg-side-menu-btn {
+            display: block;
+            width: 100%;
+            padding: 12px 10px;
+            background: linear-gradient(180deg, #6b3e1b, #432109);
+            border: none;
+            border-bottom: 1px solid #1a0a04;
+            border-top: 1px solid #8c5730;
+            color: #ecd7ba;
+            font-size: 15px;
+            text-align: center;
+            font-family: inherit;
+            cursor: pointer;
+        }
+        .rpg-side-menu-btn:hover {
+            background: linear-gradient(180deg, #8c5730, #5c3010);
+            color: #fff;
+        }
     </style>
 </head>
 <body>
