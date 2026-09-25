@@ -895,30 +895,41 @@
 
         <!-- Кнопки действий -->
         <div class="rpg-actions">
-            <button class="rpg-btn-split" onclick="showModal('Охота', 'Жакында ачылат', 'success')">Аңчылык</button>
-            <button class="rpg-btn-split" onclick="showModal('Дуэли', 'Жакында ачылат', 'success')">Дуэль</button>
+            <button class="rpg-btn-split" onclick="showModal('Аңчылык', 'Жакында ачылат', 'success')">Аңчылык</button>
+            <button class="rpg-btn-split" onclick="showModal('Дуэль', 'Жакында ачылат', 'success')">Дуэль</button>
         </div>
 
-        <!-- Блок со списком заданий и переходов -->
+        <!-- Чистый блок списка -->
         <div class="rpg-content-box">
-            <div class="rpg-section-title">📜 Тапшырмалар (1/0/0)</div>
-            <div class="rpg-list-item" style="background: rgba(212, 171, 117, 0.4);" onclick="showModal('Тапшырма', 'Устаттын эски досунан супер-соккуну үйрөнүү.', 'success', {}, null, 'Баштоо')">
-                ❗️ Устаттын мурасы
-            </div>
-            
-            <div class="rpg-section-title" style="margin-top: 15px;">📍 Жерлер</div>
-            <div class="rpg-list-item">
-                🛖 Базар
+            <div class="rpg-list-item" onclick="showModal('Тапшырмалар', 'Сизде 1 тапшырма бар: Устаттын мурасы.', 'success')">
+                📜 Тапшырмалар (1/0/0)
             </div>
             <div class="rpg-list-item">
-                ⚔️ Машыгуу аянты (Устат)
+                🛖 Кичи-Ордо (Локация)
             </div>
         </div>
 
-        <!-- Фиксированный подвал (как в оригинале) -->
-        <div class="rpg-bottom-bar">
-            <span class="rpg-bottom-link" onclick="showModal('Меню', 'Оюндун менюсу', 'success')">Меню</span>
-            <span id="serverTime">21:17:59</span>
+        <!-- Всплывающее боковое меню -->
+        <div class="rpg-side-menu" id="sideMenu">
+            <button class="rpg-side-menu-btn" onclick="toggleSideMenu()">Башкы бет (Главная)</button>
+            <button class="rpg-side-menu-btn" onclick="toggleSideMenu()">Топ</button>
+            <button class="rpg-side-menu-btn" onclick="toggleSideMenu()">Клан</button>
+            <button class="rpg-side-menu-btn" onclick="toggleSideMenu()">Аукцион</button>
+            <button class="rpg-side-menu-btn" onclick="toggleSideMenu()">Дүкөн (Магазин)</button>
+            <button class="rpg-side-menu-btn" onclick="toggleSideMenu()">Банк</button>
+            <button class="rpg-side-menu-btn" onclick="toggleSideMenu()">Онлайн</button>
+            <button class="rpg-side-menu-btn" onclick="toggleSideMenu()">Почта</button>
+            <button class="rpg-side-menu-btn" onclick="toggleSideMenu()">Достор (Друзья)</button>
+            <button class="rpg-side-menu-btn" onclick="toggleSideMenu()">Чат</button>
+            <button class="rpg-side-menu-btn" onclick="toggleSideMenu()">Жабдуу (Снаряжение)</button>
+            <button class="rpg-side-menu-btn" onclick="toggleSideMenu()">Каарман (Персонаж)</button>
+            <button class="rpg-side-menu-btn" onclick="toggleSideMenu()">Жардам (Помощь)</button>
+        </div>
+
+        <!-- Фиксированный подвал -->
+        <div class="rpg-bottom-bar" style="z-index: 1001;">
+            <span class="rpg-bottom-link" onclick="toggleSideMenu()">Меню</span>
+            <span id="serverTime">00:00:00</span>
             <span class="rpg-bottom-link" id="mainMenuLogoutBtn">Выход</span>
         </div>
     </div>
