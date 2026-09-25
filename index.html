@@ -696,6 +696,50 @@
             background: linear-gradient(180deg, #8c5730, #5c3010);
             color: #fff;
         }
+        /* --- ИНВЕНТАРЬ (ЖАБДЫКТАР) --- */
+        .inv-header {
+            background: #d4a753;
+            border: 2px solid #5c3010;
+            padding: 6px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 13px;
+            font-weight: bold;
+            color: #2b1506;
+            margin-bottom: 10px;
+        }
+        .inv-btn {
+            background: #ff9900;
+            border: 1px solid #5c3010;
+            padding: 3px 8px;
+            cursor: pointer;
+            font-weight: bold;
+            color: #2b1506;
+            border-radius: 2px;
+        }
+        .inv-cap {
+            background: #ff9900;
+            border: 1px solid #5c3010;
+            padding: 3px 6px;
+            border-radius: 2px;
+        }
+        .inv-list {
+            background: #dfc699;
+            border: 2px solid #8c6b42;
+        }
+        .inv-item {
+            border-bottom: 1px solid #bda377;
+            padding: 10px;
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            color: #2b1506;
+            cursor: pointer;
+        }
+        .inv-item:last-child { border-bottom: none; }
+        .inv-empty { color: #7885a3; } /* Синеватый цвет для пустых слотов */
     </style>
 </head>
 <body>
@@ -919,7 +963,7 @@
             <button class="rpg-side-menu-btn" onclick="toggleSideMenu()">Почта</button>
             <button class="rpg-side-menu-btn" onclick="toggleSideMenu()">Достор</button>
             <button class="rpg-side-menu-btn" onclick="toggleSideMenu()">Маектешүү</button>
-            <button class="rpg-side-menu-btn" onclick="toggleSideMenu()">Жабдыктар</button>
+            <button class="rpg-side-menu-btn" onclick="toggleSideMenu(); switchScreen('inventory-screen')">Жабдыктар</button>           
             <button class="rpg-side-menu-btn" onclick="toggleSideMenu()">Каарман</button>
             <button class="rpg-side-menu-btn" onclick="toggleSideMenu()">Жардам</button>
         </div>
@@ -929,6 +973,51 @@
             <span class="rpg-bottom-link" onclick="toggleSideMenu()">Меню</span>
             <span id="serverTime">00:00:00</span>
             <span class="rpg-bottom-link" id="mainMenuLogoutBtn">Чыгуу</span>
+        </div>
+    </div>
+    <!-- 10. ИНВЕНТАРЬ (ЖАБДЫКТАР) -->
+    <div id="inventory-screen" class="screen" style="padding: 15px 15px 50px 15px; overflow-y: auto; background-image: none; background-color: #d1b482;">
+        
+        <!-- Верхняя панель ресурсов (как в меню) -->
+        <div class="rpg-top-bar" style="display: flex; justify-content: center;">
+            <span>🪙 <span id="invGold">10</span></span>
+            <span>🥈 <span id="invSilver">10</span></span>
+            <span>🥉 <span id="invBronze">10</span></span>
+        </div>
+
+        <!-- Плашка инвентаря -->
+        <div class="inv-header">
+            <div class="inv-cap">0/50</div>
+            <div>Стиль: Жок</div>
+            <div style="display: flex; gap: 5px;">
+                <button class="inv-btn">Топтом</button>
+                <button class="inv-btn">Кур</button>
+            </div>
+        </div>
+
+        <!-- Список вещей -->
+        <div class="inv-list">
+            <div class="inv-item">🗡️ <b>[1]</b> Башталгычтын канжары</div>
+            <div class="inv-item inv-empty">🛡️ <b>[0]</b> Калкан</div>
+            <div class="inv-item inv-empty">🪖 <b>[0]</b> Туулга</div>
+            <div class="inv-item inv-empty">🧤 <b>[0]</b> Мээлей</div>
+            <div class="inv-item">👕 <b>[1]</b> Эски чапан</div>
+            <div class="inv-item inv-empty">👖 <b>[0]</b> Чалбар</div>
+            <div class="inv-item">🥾 <b>[1]</b> Жыртык өтүк</div>
+            <div class="inv-item inv-empty">📿 <b>[0]</b> Тумар</div>
+            <div class="inv-item inv-empty">💍 <b>[0]</b> Шакектер</div>
+            <div class="inv-item">🧪 <b>[3]</b> Жөнөкөй шыпаа дарысы</div>
+            <div class="inv-item">📜 <b>[0]</b> Тапшырма үчүн</div>
+            <div class="inv-item">🧰 <b>[0]</b> Сандыктар</div>
+            <div class="inv-item">✨ <b>[0]</b> Бонустар</div>
+            <div class="inv-item">🤲 <b>[0]</b> Баталар</div>
+        </div>
+
+        <!-- Фиксированный подвал для возврата назад -->
+        <div class="rpg-bottom-bar" style="z-index: 1001;">
+            <span class="rpg-bottom-link" onclick="switchScreen('main-menu-screen')">◀ Артка</span>
+            <span style="color: #ffd97d;">Жабдыктар</span>
+            <span class="rpg-bottom-link" onclick="switchScreen('main-menu-screen')">Жабуу ✖</span>
         </div>
     </div>
     <!-- 6. БОЕВАЯ АРЕНА -->
