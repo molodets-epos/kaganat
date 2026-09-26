@@ -1863,33 +1863,33 @@
                     { name: "Калыбына келтирүү", val: "+30 HP" }
                 ]
             }
-        };
+       };
 
-        // Функция открытия детальной информации о предмете
-        window.openItemInfo = function(itemId) {
-            let item = itemsDatabase[itemId];
-            if(!item) return;
+    // Функция открытия детальной информации о предмете
+    window.openItemInfo = function(itemId) {
+        let item = itemsDatabase[itemId];
+        if(!item) return;
 
-            // Заполняем карточку
-            document.getElementById("infoItemName").innerText = item.name;
-            document.getElementById("infoItemDesc").innerText = item.desc;
-            document.getElementById("infoItemImg").innerText = item.icon; // Заглушка вместо картинки
-            
-            // Генерируем статы
-            let statsHtml = "";
-            item.stats.forEach(s => {
-                // Если стат отрицательный (как уворот у щита), делаем красным, иначе зеленым
-                let color = s.negative ? '#b30000' : '#006400';
-                statsHtml += `<div class="hero-stat-row">
-                                <span>${s.name}</span> 
-                                <span style="color: ${color}; font-weight: bold;">${s.val}</span>
-                              </div>`;
-            });
-            document.getElementById("infoItemStats").innerHTML = statsHtml;
+        // Заполняем карточку
+        document.getElementById("infoItemName").innerText = item.name;
+        document.getElementById("infoItemDesc").innerText = item.desc;
+        document.getElementById("infoItemImg").innerText = item.icon; // Заглушка вместо картинки
+        
+        // Генерируем статы
+        let statsHtml = "";
+        item.stats.forEach(s => {
+            // Если стат отрицательный (как уворот у щита), делаем красным, иначе зеленым
+            let color = s.negative ? '#b30000' : '#006400';
+            statsHtml += `<div class="hero-stat-row">
+                            <span>${s.name}</span> 
+                            <span style="color: ${color}; font-weight: bold;">${s.val}</span>
+                          </div>`;
+        });
+        document.getElementById("infoItemStats").innerHTML = statsHtml;
 
-            // Переключаем экран
-            switchScreen("item-info-screen");
-        }
-    </script>
+        // Переключаем экран
+        switchScreen("item-info-screen");
+    }
+</script>
 </body>
 </html>
