@@ -1873,23 +1873,16 @@
             // Переключаем экран
             switchScreen("item-info-screen");
         }
-        // Функция автоматического вывода всех предметов в инвентарь
-        function renderInventory() {
-            const container = document.getElementById('invListContainer');
-            if (!container) return;
-            
-            let html = "";
-            for (let key in itemsDatabase) {
-                let item = itemsDatabase[key];
-                html += `<div class="inv-item" onclick="openItemInfo('${key}')">
-                            ${item.icon} <b>[${item.count}]</b> ${item.name}
-                         </div>`;
+        // Универсальная функция переключения экранов
+        function switchScreen(screenId) {
+            document.querySelectorAll('.screen').forEach(screen => {
+                screen.style.display = 'none';
+            });
+            const target = document.getElementById(screenId);
+            if (target) {
+                target.style.display = 'block';
             }
-            container.innerHTML = html;
         }
-
-        // Автоматически запускаем отрисовку инвентаря при загрузке
-        window.addEventListener('DOMContentLoaded', renderInventory);
     </script>
 </body>
 </html>
