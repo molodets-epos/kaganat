@@ -1003,7 +1003,7 @@
             <button class="rpg-side-menu-btn" onclick="toggleSideMenu()">Почта</button>
             <button class="rpg-side-menu-btn" onclick="toggleSideMenu()">Достор</button>
             <button class="rpg-side-menu-btn" onclick="toggleSideMenu()">Маектешүү</button>
-            <button class="rpg-side-menu-btn" onclick="document.getElementById('sideMenu').style.display='none'; document.querySelectorAll('.screen').forEach(s => s.style.display='none'); document.getElementById('inventory-screen').style.display='block';">Жабдыктар</button>           
+            <button class="rpg-side-menu-btn" onclick="toggleSideMenu(); switchScreen('inventory-screen');">Жабдыктар</button>           
             <button class="rpg-side-menu-btn" onclick="toggleSideMenu()">Каарман</button>
             <button class="rpg-side-menu-btn" onclick="toggleSideMenu()">Жардам</button>
         </div>
@@ -1045,7 +1045,7 @@
             <div class="inv-item" onclick="openItemInfo('ustat_boots')">🥾 <b>[1]</b> Устаттын өтүгү</div>
             <div class="inv-item" onclick="openItemInfo('ustat_amulet')">📿 <b>[1]</b> Устаттын тумары</div>
             <div class="inv-item" onclick="openItemInfo('simple_herb')">🧪 <b>[3]</b> Жөнөкөй дары чөп</div>
-        </div>
+         </div>
 
         <!-- Фиксированный подвал для возврата назад -->
         <div class="rpg-bottom-bar" style="z-index: 1001;">
@@ -1053,6 +1053,7 @@
             <span style="color: #ffd97d;">Жабдыктар</span>
             <span class="rpg-bottom-link" onclick="switchScreen('main-menu-screen')">Жабуу ✖</span>
         </div>
+       </div>
   <!-- 12. СПИСОК СНАРЯЖЕНИЯ (ОДИН ВИД) -->
 <div id="equip-list-screen" class="screen" style="padding: 15px 15px 50px 15px; background-color: #d1b482;">       
     <div class="inv-header">
