@@ -1080,27 +1080,36 @@
     </div>
 
     <!-- 13. ИНФОРМАЦИЯ О ПРЕДМЕТЕ -->
-    <div id="item-info-screen" class="screen" style="padding: 15px 15px 50px 15px; background-color: #d1b482;">        
-        <!-- Карточка предмета: картинка слева, текст справа -->
-        <div class="item-info-card">
-            <div class="item-img-box" id="infoItemImg">🗡️</div>
+    <div id="item-info-screen" class="screen" style="display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; padding: 15px 15px 50px 15px; overflow-y: auto; background-color: #d1b482; z-index: 99999;">        
+        
+        <!-- Верхняя панель (как в инвентаре, для единообразия) -->
+        <div class="inv-header" style="margin-bottom: 15px;">
+            <div style="font-weight: bold; font-size: 16px;">Буюм жөнүндө маалымат</div>
+        </div>
+
+        <!-- Карточка предмета -->
+        <div class="item-info-card" style="background-color: #e6d0b3; border: 2px solid #8c735a; border-radius: 8px; padding: 15px;">
+            <div class="item-img-box" id="infoItemImg" style="font-size: 32px; text-align: center; margin-bottom: 10px;">🗡️</div>
             <div class="item-desc-box">
-                <span class="item-desc-name" id="infoItemName">Устаттын канжары</span>
-                <span id="infoItemDesc">Устаттын колунан түшпөгөн, курчтугу менен таң калтырган эски курал.</span>
+                <div class="item-desc-name" id="infoItemName" style="font-weight: bold; font-size: 18px; color: #4a2e12; text-align: center; margin-bottom: 10px;">Устаттын канжары</div>
+                <div id="infoItemDesc" style="font-size: 14px; color: #2b1506; line-height: 1.5; text-align: center;">Устаттын колунан түшпөгөн, курчтугу менен таң калтырган эски курал.</div>
             </div>
         </div>
 
         <!-- Блок характеристик -->
-        <div class="hero-stats-box">
-            <div style="font-weight: bold; margin-bottom: 5px; color: #2b1506;">Мүнөздөмө берет:</div>
-            <div id="infoItemStats">
+        <div class="hero-stats-box" style="margin-top: 15px; background-color: #e6d0b3; border: 2px solid #8c735a; border-radius: 8px; padding: 15px;">
+            <div style="font-weight: bold; margin-bottom: 10px; color: #2b1506; font-size: 16px; border-bottom: 1px solid #8c735a; padding-bottom: 5px;">Мүнөздөмөлөр:</div>
+            <div id="infoItemStats" style="display: flex; flex-direction: column; gap: 8px;">
                 <!-- Сюда JS будет вставлять статы -->
             </div>
         </div>
+        
+        <!-- Кнопка "Надеть" (Сразу добавим на будущее) -->
+        <button class="btn" id="equipItemBtn" style="margin-top: 20px; width: 100%; font-size: 16px; padding: 12px; background: linear-gradient(180deg, #4CAF50, #2E7D32); color: white; border: 1px solid #1B5E20; border-radius: 5px;">Кийүү (Надеть)</button>
 
         <!-- Нижняя навигация -->
         <div class="rpg-bottom-bar" style="z-index: 1001;">
-            <span class="rpg-bottom-link" onclick="switchScreen('equip-list-screen')">◀ Артка</span>
+            <span class="rpg-bottom-link" onclick="switchScreen('inventory-screen')">◀ Артка</span>
             <span style="color: #ffd97d;">Буюм</span>
             <span class="rpg-bottom-link" onclick="switchScreen('main-menu-screen')">Жабуу ✖</span>
         </div>
