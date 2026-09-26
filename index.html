@@ -1014,7 +1014,6 @@
             <span id="serverTime">00:00:00</span>
             <span class="rpg-bottom-link" id="mainMenuLogoutBtn">Чыгуу</span>
         </div>
-    </div>
     <!-- 10. ИНВЕНТАРЬ (ЖАБДЫКТАР) -->
     <div id="inventory-screen" class="screen" style="padding: 15px 15px 50px 15px; overflow-y: auto; background-image: none; background-color: #d1b482;">
         
@@ -1036,8 +1035,16 @@
         </div>
 
         <!-- Список вещей -->
- 
-        <div class="inv-list" id="invListContainer"></div>
+        <div class="inv-list">
+            <div class="inv-item" onclick="openItemInfo('ustat_weapon')">🗡️ <b>[1]</b> Устаттын канжары</div>
+            <div class="inv-item" onclick="openItemInfo('ustat_shield')">🛡️ <b>[1]</b> Устаттын жыгач тосмосу</div>
+            <div class="inv-item" onclick="openItemInfo('ustat_helm')">🪖 <b>[1]</b> Устаттын баш кийими</div>
+            <div class="inv-item" onclick="openItemInfo('ustat_armor')">👕 <b>[1]</b> Устаттын чапаны</div>
+            <div class="inv-item" onclick="openItemInfo('ustat_gloves')">🧤 <b>[1]</b> Устаттын мээлейи</div>
+            <div class="inv-item" onclick="openItemInfo('ustat_pants')">👖 <b>[1]</b> Устаттын чалбары</div>
+            <div class="inv-item" onclick="openItemInfo('ustat_boots')">🥾 <b>[1]</b> Устаттын өтүгү</div>
+            <div class="inv-item" onclick="openItemInfo('ustat_amulet')">📿 <b>[1]</b> Устаттын тумары</div>
+            <div class="inv-item" onclick="openItemInfo('simple_herb')">🧪 <b>[3]</b> Жөнөкөй дары чөп</div>
         </div>
 
         <!-- Фиксированный подвал для возврата назад -->
@@ -1046,7 +1053,6 @@
             <span style="color: #ffd97d;">Жабдыктар</span>
             <span class="rpg-bottom-link" onclick="switchScreen('main-menu-screen')">Жабуу ✖</span>
         </div>
-    </div>
   <!-- 12. СПИСОК СНАРЯЖЕНИЯ (ОДИН ВИД) -->
 <div id="equip-list-screen" class="screen" style="padding: 15px 15px 50px 15px; background-color: #d1b482;">       
     <div class="inv-header">
