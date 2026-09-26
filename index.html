@@ -1015,7 +1015,7 @@
             <span class="rpg-bottom-link" id="mainMenuLogoutBtn">Чыгуу</span>
         </div>
     <!-- 10. ИНВЕНТАРЬ (ЖАБДЫКТАР) -->
-   <div id="inventory-screen" class="screen" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; padding: 15px 15px 50px 15px; overflow-y: auto; background-color: #d1b482; z-index: 500;">
+   <div id="inventory-screen" style="display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; padding: 15px 15px 50px 15px; overflow-y: auto; background-color: #d1b482; z-index: 99999;">
         
         <!-- Верхняя панель ресурсов (как в меню) -->
         <div class="rpg-top-bar" style="display: flex; justify-content: center;">
@@ -1207,18 +1207,29 @@
         let unsubscribeUserListener = null;
         let onModalCloseCallback = null;
 
-      window.switchScreen = function(screenId) {
+    window.switchScreen = function(screenId) {
             document.querySelectorAll('.screen').forEach(screen => {
                 screen.style.display = 'none';
                 screen.classList.remove('active');
             });
+            
+            // Принудительно скрываем инвентарь
+            const inv = document.getElementById('inventory-screen');
+            if (inv) inv.style.display = 'none';
+
+            // Если запрашивают именно инвентарь — открываем его
+            if (screenId === 'inventory-screen') {
+                if (inv) inv.style.display = 'block';
+                clearErrors();
+                return;
+            }
+
             const target = document.getElementById(screenId);
             if (target) {
                 target.style.display = 'block';
                 target.classList.add('active');
             }
             clearErrors();
-        }
 
         window.clearErrors = function() {
             document.querySelectorAll('input').forEach(input => input.classList.remove('error-input'));
