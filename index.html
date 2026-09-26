@@ -1207,10 +1207,16 @@
         let unsubscribeUserListener = null;
         let onModalCloseCallback = null;
 
-        window.switchScreen = function(screenId) {
-            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+      window.switchScreen = function(screenId) {
+            document.querySelectorAll('.screen').forEach(screen => {
+                screen.style.display = 'none';
+                screen.classList.remove('active');
+            });
             const target = document.getElementById(screenId);
-            if (target) target.classList.add('active');
+            if (target) {
+                target.style.display = 'block';
+                target.classList.add('active');
+            }
             clearErrors();
         }
 
@@ -1872,16 +1878,6 @@
 
             // Переключаем экран
             switchScreen("item-info-screen");
-        }
-        // Универсальная функция переключения экранов
-        function switchScreen(screenId) {
-            document.querySelectorAll('.screen').forEach(screen => {
-                screen.style.display = 'none';
-            });
-            const target = document.getElementById(screenId);
-            if (target) {
-                target.style.display = 'block';
-            }
         }
     </script>
 </body>
