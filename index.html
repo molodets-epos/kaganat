@@ -1036,23 +1036,8 @@
         </div>
 
         <!-- Список вещей -->
-   <!-- Список вещей -->
-        <div class="inv-list">
-<div class="inv-item" onclick="switchScreen('equip-list-screen'); document.getElementById('equipCategoryTitle').innerText = 'Куралдар (Оружие)';">🗡️ <b>[1]</b> Устаттын канжары</div>            
-            <div class="inv-item">🛡️ <b>[1]</b> Устаттын калканы</div>
-            <div class="inv-item">🪖 <b>[1]</b> Устаттын баш кийими</div>
-            <div class="inv-item">👕 <b>[1]</b> Устаттын чапаны</div>
-            <div class="inv-item">🧤 <b>[1]</b> Устаттын мээлейи</div>
-            <div class="inv-item">👖 <b>[1]</b> Устаттын чалбары</div>
-            <div class="inv-item">🥾 <b>[1]</b> Устаттын өтүгү</div>
-            <div class="inv-item">📿 <b>[1]</b> Устаттын тумары</div>
-            <div class="inv-item">💍 <b>[2]</b> Устаттын шакеги, Устаттын билериги</div>
-            
-            <div class="inv-item">🧪 <b>[3]</b> Жөнөкөй дарысы чөп</div>
-            <div class="inv-item">📜 <b>[0]</b> Тапшырма үчүн</div>
-            <div class="inv-item">🧰 <b>[0]</b> Сандык</div>
-            <div class="inv-item">✨ <b>[0]</b> Бонустар</div>
-            <div class="inv-item">🤲 <b>[0]</b> Баталар</div>
+ 
+        <div class="inv-list" id="invListContainer"></div>
         </div>
 
         <!-- Фиксированный подвал для возврата назад -->
@@ -1767,42 +1752,92 @@
             };
         }
       // --- БАЗА ДАННЫХ СНАРЯЖЕНИЯ ---
-        const itemsDatabase = {
+       const itemsDatabase = {
             "ustat_weapon": {
                 name: "Устаттын канжары",
                 icon: "🗡️",
+                count: 1,
                 desc: "Устаттын колунан түшпөгөн, курчтугу менен таң калтырган эски курал. Терини эле эмес, соотту да тешип өтүүгө жөндөмдүү.",
                 stats: [
                     { name: "Сокку (Урон)", val: "+5" },
                     { name: "Тактык (Точность)", val: "+2" }
                 ]
             },
-            "ustat_armor": {
-                name: "Устаттын чапаны",
-                icon: "👕",
-                desc: "Көптөгөн салгылашууларды көргөн, бышык кездемеден тигилген чапан. Ээсине кошумча өмүр берет.",
-                stats: [
-                    { name: "Жан (HP)", val: "+50" },
-                    { name: "Чыдамкайлык (Броня)", val: "+1" }
-                ]
-            },
             "ustat_shield": {
                 name: "Устаттын жыгач тосмосу",
                 icon: "🛡️",
+                count: 1,
                 desc: "Жөнөкөй, бирок бышык жыгачтан жасалган калкан. Кыймылды бир аз жайлатат, бирок соккуну жакшы тосот.",
                 stats: [
                     { name: "Блок (Калкан)", val: "+8" },
                     { name: "Шамдагайлык (Уворот)", val: "-2", negative: true }
                 ]
             },
+            "ustat_helm": {
+                name: "Устаттын баш кийими",
+                icon: "🪖",
+                count: 1,
+                desc: "Башты коргоо үчүн жасалган катуу териден жана темир кесиндилеринен тигилген баш кийим.",
+                stats: [
+                    { name: "Чыдамкайлык (Броня)", val: "+3" },
+                    { name: "Жан (HP)", val: "+15" }
+                ]
+            },
+            "ustat_armor": {
+                name: "Устаттын чапаны",
+                icon: "👕",
+                count: 1,
+                desc: "Көптөгөн салгылашууларды көргөн, бышык кездемеден тигилген чапан. Ээсине кошумча өмүр берет.",
+                stats: [
+                    { name: "Жан (HP)", val: "+50" },
+                    { name: "Чыдамкайлык (Броня)", val: "+1" }
+                ]
+            },
             "ustat_gloves": {
                 name: "Устаттын мээлейи",
                 icon: "🧤",
+                count: 1,
                 desc: "Колду бекем коргогон, куралды ишенимдүү кармоого жана таамай урууга жардам берген мээлей.",
                 stats: [
                     { name: "Жан (HP)", val: "+21" },
                     { name: "Сокку (Урон)", val: "+2" },
                     { name: "Тактык (Точность)", val: "+2" }
+                ]
+            },
+            "ustat_pants": {
+                name: "Устаттын чалбары",
+                icon: "👖",
+                count: 1,
+                desc: "Узак жолго жана чабышка ылайыкталып тигилген чыдамкай чалбар.",
+                stats: [
+                    { name: "Чыдамкайлык (Броня)", val: "+2" }
+                ]
+            },
+            "ustat_boots": {
+                name: "Устаттын өтүгү",
+                icon: "🥾",
+                count: 1,
+                desc: "Калың териден жасалган бекем өтүк.",
+                stats: [
+                    { name: "Шамдагайлык (Уворот)", val: "+3" }
+                ]
+            },
+            "ustat_amulet": {
+                name: "Устаттын тумары",
+                icon: "📿",
+                count: 1,
+                desc: "Ээсин жаман көздөн жана кооптуу учурлардан сактаган сырдуу тумар.",
+                stats: [
+                    { name: "Ийгилик", val: "+5" }
+                ]
+            },
+            "simple_herb": {
+                name: "Жөнөкөй дары чөп",
+                icon: "🧪",
+                count: 3,
+                desc: "Жараатты тез айыктыруучу касиетке ээ тоо чөбү.",
+                stats: [
+                    { name: "Калыбына келтирүү", val: "+30 HP" }
                 ]
             }
         };
@@ -1832,6 +1867,23 @@
             // Переключаем экран
             switchScreen("item-info-screen");
         }
+        // Функция автоматического вывода всех предметов в инвентарь
+        function renderInventory() {
+            const container = document.getElementById('invListContainer');
+            if (!container) return;
+            
+            let html = "";
+            for (let key in itemsDatabase) {
+                let item = itemsDatabase[key];
+                html += `<div class="inv-item" onclick="openItemInfo('${key}')">
+                            ${item.icon} <b>[${item.count}]</b> ${item.name}
+                         </div>`;
+            }
+            container.innerHTML = html;
+        }
+
+        // Автоматически запускаем отрисовку инвентаря при загрузке
+        window.addEventListener('DOMContentLoaded', renderInventory);
     </script>
 </body>
 </html>
