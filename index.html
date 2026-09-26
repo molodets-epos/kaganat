@@ -1003,7 +1003,7 @@
             <button class="rpg-side-menu-btn" onclick="toggleSideMenu()">Почта</button>
             <button class="rpg-side-menu-btn" onclick="toggleSideMenu()">Достор</button>
             <button class="rpg-side-menu-btn" onclick="toggleSideMenu()">Маектешүү</button>
-            <button class="rpg-side-menu-btn" onclick="toggleSideMenu(); switchScreen('inventory-screen')">Жабдыктар</button>           
+            <button class="rpg-side-menu-btn" onclick="document.getElementById('sideMenu').style.display='none'; document.querySelectorAll('.screen').forEach(s => s.style.display='none'); document.getElementById('inventory-screen').style.display='block';">Жабдыктар</button>           
             <button class="rpg-side-menu-btn" onclick="toggleSideMenu()">Каарман</button>
             <button class="rpg-side-menu-btn" onclick="toggleSideMenu()">Жардам</button>
         </div>
