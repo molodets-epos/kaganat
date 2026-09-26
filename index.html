@@ -740,6 +740,46 @@
         }
         .inv-item:last-child { border-bottom: none; }
         .inv-empty { color: #7885a3; } /* Синеватый цвет для пустых слотов */
+        /* --- ОКНО ПРЕДМЕТА И СПИСКА --- */
+        .item-info-card {
+            display: flex;
+            gap: 15px;
+            background: #dfc699;
+            border: 2px solid #8c6b42;
+            padding: 10px;
+            margin-bottom: 15px;
+        }
+        .item-img-box {
+            width: 80px;
+            height: 80px;
+            border: 2px solid #5c3010;
+            background: #3d2210;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 30px;
+        }
+        .item-desc-box {
+            font-size: 13px;
+            color: #2b1506;
+            line-height: 1.4;
+        }
+        .item-desc-name {
+            color: #7a2200;
+            font-size: 15px;
+            font-weight: bold;
+            display: block;
+            margin-bottom: 5px;
+            border-bottom: 1px solid #bda377;
+            padding-bottom: 3px;
+        }
+        .equipped-label {
+            color: #006400;
+            font-weight: bold;
+            font-size: 12px;
+            float: right;
+        }
     </style>
 </head>
 <body>
@@ -998,8 +1038,7 @@
         <!-- Список вещей -->
    <!-- Список вещей -->
         <div class="inv-list">
-            <div class="inv-item">🗡️ <b>[1]</b> Устаттын канжары</div>
-            <div class="inv-item">🛡️ <b>[1]</b> Устаттын калканы</div>
+<div class="inv-item" onclick="switchScreen('equip-list-screen'); document.getElementById('equipCategoryTitle').innerText = 'Куралдар (Оружие)';">🗡️ <b>[1]</b> Устаттын канжары</div>            <div class="inv-item">🛡️ <b>[1]</b> Устаттын калканы</div>
             <div class="inv-item">🪖 <b>[1]</b> Устаттын баш кийими</div>
             <div class="inv-item">👕 <b>[1]</b> Устаттын чапаны</div>
             <div class="inv-item">🧤 <b>[1]</b> Устаттын мээлейи</div>
@@ -1019,6 +1058,56 @@
         <div class="rpg-bottom-bar" style="z-index: 1001;">
             <span class="rpg-bottom-link" onclick="switchScreen('main-menu-screen')">◀ Артка</span>
             <span style="color: #ffd97d;">Жабдыктар</span>
+            <span class="rpg-bottom-link" onclick="switchScreen('main-menu-screen')">Жабуу ✖</span>
+        </div>
+    </div>
+    <!-- 12. СПИСОК СНАРЯЖЕНИЯ (ОДИН ВИД) -->
+    <div id="equip-list-screen" class="screen" style="padding: 15px 15px 50px 15px; background-color: #d1b482;">
+        <div class="inv-header">
+            <div id="equipCategoryTitle">Куралдар (Оружие)</div>
+        </div>
+        
+        <div class="inv-list" id="equipListContainer">
+            <!-- Хардкод пример для Канжара (позже можно сделать динамическим) -->
+            <div class="inv-item" onclick="openItemInfo('ustat_weapon')">
+                <span style="flex-grow: 1;">🗡️ Устаттын канжары</span>
+                <span class="equipped-label">[Кийилүү]</span>
+            </div>
+            <div class="inv-item inv-empty">
+                <span style="flex-grow: 1;">🗡️ Дат баскан кылыч</span>
+            </div>
+        </div>
+
+        <div class="rpg-bottom-bar" style="z-index: 1001;">
+            <span class="rpg-bottom-link" onclick="switchScreen('inventory-screen')">◀ Артка</span>
+            <span style="color: #ffd97d;">Тандоо</span>
+            <span class="rpg-bottom-link" onclick="switchScreen('main-menu-screen')">Жабуу ✖</span>
+        </div>
+    </div>
+
+    <!-- 13. ИНФОРМАЦИЯ О ПРЕДМЕТЕ -->
+    <div id="item-info-screen" class="screen" style="padding: 15px 15px 50px 15px; background-color: #d1b482;">
+        
+        <!-- Карточка предмета: картинка слева, текст справа -->
+        <div class="item-info-card">
+            <div class="item-img-box" id="infoItemImg">🗡️</div>
+            <div class="item-desc-box">
+                <span class="item-desc-name" id="infoItemName">Устаттын канжары</span>
+                <span id="infoItemDesc">Устаттын колунан түшпөгөн, курчтугу менен таң калтырган эски курал.</span>
+            </div>
+        </div>
+
+        <!-- Блок характеристик -->
+        <div class="hero-stats-box">
+            <div style="font-weight: bold; margin-bottom: 5px; color: #2b1506;">Мүнөздөмө берет:</div>
+            <div id="infoItemStats">
+                <!-- Сюда JS будет вставлять статы -->
+            </div>
+        </div>
+
+        <div class="rpg-bottom-bar" style="z-index: 1001;">
+            <span class="rpg-bottom-link" onclick="switchScreen('equip-list-screen')">◀ Артка</span>
+            <span style="color: #ffd97d;">Буюм</span>
             <span class="rpg-bottom-link" onclick="switchScreen('main-menu-screen')">Жабуу ✖</span>
         </div>
     </div>
@@ -1675,6 +1764,72 @@
                 stunned: isStunned,
                 message: logMessage
             };
+        }
+      // --- БАЗА ДАННЫХ СНАРЯЖЕНИЯ ---
+        const itemsDatabase = {
+            "ustat_weapon": {
+                name: "Устаттын канжары",
+                icon: "🗡️",
+                desc: "Устаттын колунан түшпөгөн, курчтугу менен таң калтырган эски курал. Терини эле эмес, соотту да тешип өтүүгө жөндөмдүү.",
+                stats: [
+                    { name: "Сокку (Урон)", val: "+5" },
+                    { name: "Тактык (Точность)", val: "+2" }
+                ]
+            },
+            "ustat_armor": {
+                name: "Устаттын чапаны",
+                icon: "👕",
+                desc: "Көптөгөн салгылашууларды көргөн, бышык кездемеден тигилген чапан. Ээсине кошумча өмүр берет.",
+                stats: [
+                    { name: "Жан (HP)", val: "+50" },
+                    { name: "Чыдамкайлык (Броня)", val: "+1" }
+                ]
+            },
+            "ustat_shield": {
+                name: "Устаттын жыгач тосмосу",
+                icon: "🛡️",
+                desc: "Жөнөкөй, бирок бышык жыгачтан жасалган калкан. Кыймылды бир аз жайлатат, бирок соккуну жакшы тосот.",
+                stats: [
+                    { name: "Блок (Калкан)", val: "+8" },
+                    { name: "Шамдагайлык (Уворот)", val: "-2", negative: true }
+                ]
+            },
+            "ustat_gloves": {
+                name: "Устаттын мээлейи",
+                icon: "🧤",
+                desc: "Колду бекем коргогон, куралды ишенимдүү кармоого жана таамай урууга жардам берген мээлей.",
+                stats: [
+                    { name: "Жан (HP)", val: "+21" },
+                    { name: "Сокку (Урон)", val: "+2" },
+                    { name: "Тактык (Точность)", val: "+2" }
+                ]
+            }
+        };
+
+        // Функция открытия детальной информации о предмете
+        function openItemInfo(itemId) {
+            let item = itemsDatabase[itemId];
+            if(!item) return;
+
+            // Заполняем карточку
+            document.getElementById("infoItemName").innerText = item.name;
+            document.getElementById("infoItemDesc").innerText = item.desc;
+            document.getElementById("infoItemImg").innerText = item.icon; // Заглушка вместо картинки
+            
+            // Генерируем статы
+            let statsHtml = "";
+            item.stats.forEach(s => {
+                // Если стат отрицательный (как уворот у щита), делаем красным, иначе зеленым
+                let color = s.negative ? '#b30000' : '#006400';
+                statsHtml += `<div class="hero-stat-row">
+                                <span>${s.name}</span> 
+                                <span style="color: ${color}; font-weight: bold;">${s.val}</span>
+                              </div>`;
+            });
+            document.getElementById("infoItemStats").innerHTML = statsHtml;
+
+            // Переключаем экран
+            switchScreen("item-info-screen");
         }
     </script>
 </body>
