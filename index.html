@@ -1808,7 +1808,7 @@
         };
 
         // Функция открытия детальной информации о предмете
-        function openItemInfo(itemId) {
+        window.openItemInfo = function(itemId) {
             let item = itemsDatabase[itemId];
             if(!item) return;
 
