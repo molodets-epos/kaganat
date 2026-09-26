@@ -1061,9 +1061,9 @@
             <span class="rpg-bottom-link" onclick="switchScreen('main-menu-screen')">Жабуу ✖</span>
         </div>
     </div>
-    <!-- 12. СПИСОК СНАРЯЖЕНИЯ (ОДИН ВИД) -->
-<div id="equip-list-screen" class="screen" style="display: none; padding: 15px 15px 50px 15px; background-color: #d1b482;">       
-    <div class="inv-header">
+  <!-- 12. СПИСОК СНАРЯЖЕНИЯ (ОДИН ВИД) -->
+    <div id="equip-list-screen" class="screen" style="display: none; padding: 15px 15px 50px 15px; background-color: #d1b482;">        
+        <div class="inv-header">
             <div id="equipCategoryTitle">Куралдар (Оружие)</div>
         </div>
         
@@ -1086,7 +1086,7 @@
     </div>
 
     <!-- 13. ИНФОРМАЦИЯ О ПРЕДМЕТЕ -->
-<div id="item-info-screen" class="screen" style="display: none; padding: 15px 15px 50px 15px; background-color: #d1b482;">        
+    <div id="item-info-screen" class="screen" style="display: none; padding: 15px 15px 50px 15px; background-color: #d1b482;">        
         <!-- Карточка предмета: картинка слева, текст справа -->
         <div class="item-info-card">
             <div class="item-img-box" id="infoItemImg">🗡️</div>
@@ -1096,22 +1096,6 @@
             </div>
         </div>
 
-        <!-- Блок характеристик (Именно его искал скрипт!) -->
-        <div class="hero-stats-box">
-            <div style="font-weight: bold; margin-bottom: 5px; color: #2b1506;">Мүнөздөмө берет:</div>
-            <div id="infoItemStats">
-                <!-- Сюда JS будет вставлять статы -->
-            </div>
-        </div>
-
-        <!-- Нижняя навигация -->
-        <div class="rpg-bottom-bar" style="z-index: 1001;">
-            <span class="rpg-bottom-link" onclick="switchScreen('equip-list-screen')">◀ Артка</span>
-            <span style="color: #ffd97d;">Буюм</span>
-            <span class="rpg-bottom-link" onclick="switchScreen('main-menu-screen')">Жабуу ✖</span>
-        </div>
-    </div>
-
         <!-- Блок характеристик -->
         <div class="hero-stats-box">
             <div style="font-weight: bold; margin-bottom: 5px; color: #2b1506;">Мүнөздөмө берет:</div>
@@ -1120,6 +1104,7 @@
             </div>
         </div>
 
+        <!-- Нижняя навигация -->
         <div class="rpg-bottom-bar" style="z-index: 1001;">
             <span class="rpg-bottom-link" onclick="switchScreen('equip-list-screen')">◀ Артка</span>
             <span style="color: #ffd97d;">Буюм</span>
