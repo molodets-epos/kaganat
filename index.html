@@ -1881,70 +1881,68 @@ document.getElementById('equipItemBtn')?.addEventListener('click', async () => {
         console.error("Ката кийүү/чечүү учурунда:", e);
     }
 });
-        // Функция динамической отрисовки надетых слотов экипировки
-window.renderEquippedSlots = async function() {
-    const container = document.getElementById('equippedSlotsList');
-    if (!container || !currentActiveUser) return;
+     // Функция динамической отрисовки надетых слотов экипировки
+        window.renderEquippedSlots = async function() {
+            const container = document.getElementById('equippedSlotsList');
+            if (!container || !currentActiveUser) return;
 
-    try {
-        const userRef = doc(db, "nicknames", currentActiveUser);
-        const userSnap = await getDoc(userRef);
-        const userData = userSnap.data() || {};
-        const equipped = userData.equipped || {};
+            try {
+                const userRef = doc(db, "nicknames", currentActiveUser);
+                const userSnap = await getDoc(userRef);
+                const userData = userSnap.data() || {};
+                const equipped = userData.equipped || {};
 
-        // Список всех доступных слотов экипировки
-        const slotDefinitions = [
-            { key: 'weapon', name: 'Курал', icon: '🗡️' },
-            { key: 'shield', name: 'Калкан', icon: '🛡️' },
-            { key: 'helm', name: 'Туулга', icon: '🪖' },
-            { key: 'armor', name: 'Соот (Чапан)', icon: '🥼' },
-            { key: 'gloves', name: 'Колкап', icon: '🧤' },
-            { key: 'pants', name: 'Чалбар', icon: '👖' },
-            { key: 'boots', name: 'Бут кийим', icon: '🥾' },
-            { key: 'amulet', name: 'Тумар', icon: '📿' },
-            { key: 'jewelry_1', name: 'Шакек / Билерик 1', icon: '💍' },
-            { key: 'jewelry_2', name: 'Шакек / Билерик 2', icon: '💍' },
-            { key: 'bag', name: 'Куржун (Дары-дармек)', icon: '🎒' }
-        ];
+                // Список всех доступных слотов экипировки
+                const slotDefinitions = [
+                    { key: 'weapon', name: 'Курал', icon: '🗡️' },
+                    { key: 'shield', name: 'Калкан', icon: '🛡️' },
+                    { key: 'helm', name: 'Туулга', icon: '🪖' },
+                    { key: 'armor', name: 'Соот (Чапан)', icon: '🥼' },
+                    { key: 'gloves', name: 'Колкап', icon: '🧤' },
+                    { key: 'pants', name: 'Чалбар', icon: '👖' },
+                    { key: 'boots', name: 'Бут кийим', icon: '🥾' },
+                    { key: 'amulet', name: 'Тумар', icon: '📿' },
+                    { key: 'jewelry_1', name: 'Шакек / Билерик 1', icon: '💍' },
+                    { key: 'jewelry_2', name: 'Шакек / Билерик 2', icon: '💍' },
+                    { key: 'bag', name: 'Куржун (Дары-дармек)', icon: '🎒' }
+                ];
 
-        let html = '';
+                let html = '';
 
-        for (const slot of slotDefinitions) {
-            const itemId = equipped[slot.key];
+                for (const slot of slotDefinitions) {
+                    const itemId = equipped[slot.key];
 
-            if (itemId) {
-                // Если в слоте надета вещь — достаем ее данные из базы
-                const itemSnap = await getDoc(doc(db, "items", itemId));
-                if (itemSnap.exists()) {
-                    const item = itemSnap.data();
-                    html += `
-                        <div class="inv-item" onclick="openItemInfo('${itemId}')" style="cursor: pointer;">
-                            ${item.icon || slot.icon} <b>[1]</b> ${item.name}
-                        </div>
-                    `;
-                } else {
-                    html += `
-                        <div class="inv-item" style="color: #7a6e5d; font-style: italic;">
-                            ${slot.icon} [Бош] ${slot.name}
-                        </div>
-                    `;
+                    if (itemId) {
+                        const itemSnap = await getDoc(doc(db, "items", itemId));
+                        if (itemSnap.exists()) {
+                            const item = itemSnap.data();
+                            html += `
+                                <div class="inv-item" onclick="openItemInfo('${itemId}')" style="cursor: pointer;">
+                                    ${item.icon || slot.icon} <b>[1]</b> ${item.name}
+                                </div>
+                            `;
+                        } else {
+                            html += `
+                                <div class="inv-item" onclick="switchScreen('equip-list-screen')" style="color: #7a6e5d; font-style: italic; cursor: pointer;">
+                                    ${slot.icon} [Бош] ${slot.name}
+                                </div>
+                            `;
+                        }
+                    } else {
+                        html += `
+                            <div class="inv-item" onclick="switchScreen('equip-list-screen')" style="color: #7a6e5d; font-style: italic; cursor: pointer;">
+                                ${slot.icon} [Бош] ${slot.name}
+                            </div>
+                        `;
+                    }
                 }
-            } else {
-                // Если слот пустой — выводим только название ячейки
-                html += `
-                    <div class="inv-item" style="color: #7a6e5d; font-style: italic;">
-                        ${slot.icon} [Бош] ${slot.name}
-                    </div>
-                `;
+
+                container.innerHTML = html;
+
+            } catch (error) {
+                console.error("Ката слототорду жүктөөдө:", error);
             }
-        }
-
-        container.innerHTML = html;
-
-    } catch (error) {
-        console.error("Ката слототорду жүктөөдө:", error);
-    }
-};
+        };
         // Функция открытия/закрытия бокового меню
         window.toggleSideMenu = function() {
             const menu = document.getElementById('sideMenu');
