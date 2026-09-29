@@ -898,7 +898,7 @@
             
             <button class="btn" id="nextStoryBtn">Кийинки</button>
             <button class="btn" id="acceptQuestBtn" style="display: none; background: linear-gradient(180deg, #d32f2f, #9a1919); color: white; border: 1px solid #ff7b7b;">Чабуул коюу</button>
-
+            <button class="btn" id="uploadItemsBtn" style="background-color: #d32f2f; margin: 10px;">БАЗАНЫ ЖҮКТӨӨ</button>
             <div style="display: flex; justify-content: space-between; margin-top: 30px; font-size: 15px; font-weight: bold; text-transform: uppercase; letter-spacing: 1px;">
                 <div onclick="showModal('Маалымат', 'Меню бөлүмү жакында кошулат!', 'success')" style="color: #8c735a; cursor: pointer; transition: color 0.2s;" onmouseover="this.style.color='#cfb395'" onmouseout="this.style.color='#8c735a'">
                     &lt; Меню
@@ -1723,6 +1723,32 @@ document.getElementById('loginBtn').addEventListener('click', async () => {
             currentSessionId = null;
             switchScreen('login-screen');
         });
+        // Одноразовая кнопка: загрузка справочника предметов в Firebase
+document.getElementById('uploadItemsBtn')?.addEventListener('click', async () => {
+    const items = [
+        { id: "ustat_weapon", name: "Устаттын канжары", icon: "🗡️", desc: "Устаттын колунан түшпөгөн, курчтугу менен таң калтырган эски курал.", type: "weapon", stats: { zhan: 0, sokku: 3, taktyk: 1, chydamkailyk: 0, shamdagailyk: 0, esTanduruu: 0, kalkan: 0 } },
+        { id: "ustat_armor", name: "Устаттын чапаны", icon: "👘", desc: "Жылуу жана соккуну жумшартуучу калың чапан.", type: "armor", stats: { zhan: 26, sokku: 0, taktyk: 0, chydamkailyk: 1, shamdagailyk: 1, esTanduruu: 0, kalkan: 0 } },
+        { id: "ustat_shield", name: "Устаттын жыгач тосмосу", icon: "🛡️", desc: "Устаттын машыгуу үчүн колдонгон жөнөкөй жыгач тосмосу.", type: "shield", stats: { zhan: 17, sokku: 0, taktyk: 0, chydamkailyk: 0, shamdagailyk: 0, esTanduruu: 0, kalkan: 8 } },
+        { id: "ustat_gloves", name: "Устаттын мээлейи", icon: "🧤", desc: "Куралды бекем кармоого жардам берген мээлей.", type: "gloves", stats: { zhan: 13, sokku: 2, taktyk: 1, chydamkailyk: 0, shamdagailyk: 0, esTanduruu: 0, kalkan: 0 } },
+        { id: "ustat_helm", name: "Устаттын баш кийими", icon: "🪖", desc: "Башты соккудан коргоочу эски, бирок бекем кийим.", type: "helm", stats: { zhan: 10, sokku: 0, taktyk: 0, chydamkailyk: 1, shamdagailyk: 0, esTanduruu: 0, kalkan: 0 } },
+        { id: "ustat_pants", name: "Устаттын чалбары", icon: "👖", desc: "Кыймылга тоскоол болбогон бышык чалбар.", type: "pants", stats: { zhan: 15, sokku: 0, taktyk: 0, chydamkailyk: 1, shamdagailyk: 1, esTanduruu: 0, kalkan: 0 } },
+        { id: "ustat_boots", name: "Устаттын өтүгү", icon: "🥾", desc: "Узак жолго жана тоого чыдамдуу өтүк.", type: "boots", stats: { zhan: 10, sokku: 0, taktyk: 0, chydamkailyk: 1, shamdagailyk: 2, esTanduruu: 0, kalkan: 0 } },
+        { id: "ustat_amulet", name: "Устаттын тумары", icon: "📿", desc: "Күч-кубат берген эски тумар.", type: "amulet", stats: { zhan: 0, sokku: 1, taktyk: 0, chydamkailyk: 0, shamdagailyk: 1, esTanduruu: 0, kalkan: 0 } },
+        { id: "ustat_ring", name: "Устаттын шакеги", icon: "💍", desc: "Устаттын эски шакеги.", type: "jewelry", stats: { zhan: 0, sokku: 1, taktyk: 1, chydamkailyk: 0, shamdagailyk: 0, esTanduruu: 0, kalkan: 0 } },
+        { id: "ustat_bracelet", name: "Устаттын билериги", icon: "🧿", desc: "Колду бекемдеген билерик.", type: "jewelry", stats: { zhan: 15, sokku: 0, taktyk: 0, chydamkailyk: 0, shamdagailyk: 1, esTanduruu: 0, kalkan: 0 } },
+        { id: "simple_herb", name: "Жөнөкөй дары чөп", icon: "🌿", desc: "Жаракатты тез айыктыруучу кадимки чөп.", type: "consumable", stats: { zhan: 20, sokku: 0, taktyk: 0, chydamkailyk: 0, shamdagailyk: 0, esTanduruu: 0, kalkan: 0 } }
+    ];
+
+    try {
+        for (const item of items) {
+            await setDoc(doc(db, "items", item.id), item);
+        }
+        alert("ОГОНЬ! Все шмотки успешно загружены в Firebase!");
+    } catch (error) {
+        console.error("Ошибка загрузки:", error);
+        alert("Ошибка! Смотри консоль (F12).");
+    }
+});
         // Функция открытия/закрытия бокового меню
         window.toggleSideMenu = function() {
             const menu = document.getElementById('sideMenu');
