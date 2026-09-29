@@ -1723,7 +1723,72 @@ document.getElementById('loginBtn').addEventListener('click', async () => {
             currentSessionId = null;
             switchScreen('login-screen');
         });
-      
+      // Переменная для хранения вещи, которую игрок сейчас осматривает
+let currentOpenItem = null;
+
+// Функция открытия карточки предмета из инвентаря
+window.openItemInfo = async function(itemId) {
+    try {
+        // 1. Достаем вещь из коллекции items в Firebase
+        const itemRef = doc(db, "items", itemId);
+        const itemSnap = await getDoc(itemRef);
+
+        if (!itemSnap.exists()) {
+            console.error("Бундай буюм базада табылган жок:", itemId);
+            return;
+        }
+
+        const item = itemSnap.data();
+        currentOpenItem = item; // Запомнили для будущей кнопки "Кийүү"
+
+        // 2. Ищем элементы карточки (название, описание, иконка)
+        const nameEl = document.getElementById('infoItemName') || document.getElementById('itemInfoName');
+        const descEl = document.getElementById('infoItemDesc') || document.getElementById('itemInfoDesc');
+        const iconEl = document.getElementById('infoItemIcon') || document.getElementById('itemInfoIcon');
+        const statsEl = document.getElementById('infoItemStats'); // Твой контейнер со строки 1102
+
+        if (nameEl) nameEl.innerText = item.name;
+        if (descEl) descEl.innerText = item.desc;
+        if (iconEl) iconEl.innerText = item.icon;
+
+        // 3. Динамически выводим только те характеристики, которые есть у шмотки
+        if (statsEl) {
+            let statsHtml = '';
+            const s = item.stats || {};
+
+            if (s.zhan) {
+                statsHtml += `<div>❤️ <b>Жан (XP):</b> +${s.zhan}</div>`;
+            }
+            if (s.sokku) {
+                statsHtml += `<div>⚔️ <b>Сокку (Урон):</b> +${s.sokku}</div>`;
+            }
+            if (s.taktyk) {
+                statsHtml += `<div>🎯 <b>Тактык (Точность):</b> +${s.taktyk}</div>`;
+            }
+            if (s.chydamkailyk) {
+                statsHtml += `<div>🛡️ <b>Чыдамкайлык (Броня):</b> +${s.chydamkailyk}</div>`;
+            }
+            if (s.shamdagailyk) {
+                const sign = s.shamdagailyk > 0 ? '+' : '';
+                statsHtml += `<div>💨 <b>Шамдагайлык (Уворот):</b> ${sign}${s.shamdagailyk}</div>`;
+            }
+            if (s.esTanduruu) {
+                statsHtml += `<div>⚡ <b>Эс тандыруу (Оглушение):</b> +${s.esTanduruu}</div>`;
+            }
+            if (s.kalkan) {
+                statsHtml += `<div>🔰 <b>Калкан (Блок):</b> +${s.kalkan}</div>`;
+            }
+
+            statsEl.innerHTML = statsHtml || '<div style="color: #666;">Кошумча касиети жок</div>';
+        }
+
+        // 4. Открываем экран осмотра предмета
+        switchScreen('item-info-screen');
+
+    } catch (error) {
+        console.error("Ката буюмду ачууда:", error);
+    }
+};
         // Функция открытия/закрытия бокового меню
         window.toggleSideMenu = function() {
             const menu = document.getElementById('sideMenu');
