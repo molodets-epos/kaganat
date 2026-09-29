@@ -1940,11 +1940,18 @@ function getBaseStatsByLevel(level = 1) {
                 const userRef = doc(db, "nicknames", currentActiveUser);
                 const userSnap = await getDoc(userRef);
                 const userData = userSnap.data() || {};
-                let inventory = userData.inventory || [];
                 const equipped = userData.equipped || {};
+                
+                // Если у игрока в базе вообще нет поля inventory, создаем его автоматически прямо в базе
+                let inventory = userData.inventory;
+                if (!inventory) {
+                    inventory = []; // Пустой инвентарь для честной игры
+                    await updateDoc(userRef, { inventory: inventory });
+                }
 
                 if (inventory.length === 0) {
-                    inventory = ['ustat_weapon']; 
+                    container.innerHTML = '<div style="padding: 20px; text-align: center; color: #7a6e5d; font-style: italic;">Сиздин инвентарыңызда буюмдар жок</div>';
+                    return;
                 }
 
                 let html = '';
@@ -1976,7 +1983,7 @@ function getBaseStatsByLevel(level = 1) {
                 }
 
                 if (html === '') {
-                    html = '<div style="padding: 20px; text-align: center; color: #7a6e5d; font-style: italic;">Сиздин инвентарыңызда бул слотко ылайыктуу буюмдар жок</div>';
+                    html = '<div style="padding: 20px; text-align: center; color: #7a6e5d; font-style: italic;">Бул слотко ылайыктуу буюмдар жок</div>';
                 }
 
                 container.innerHTML = html;
