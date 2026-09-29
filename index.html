@@ -1052,14 +1052,7 @@
         </div>
         
         <div class="inv-list" id="equipListContainer">
-            <!-- Хардкод пример для Канжара (позже можно сделать динамическим) -->
-            <div class="inv-item" onclick="openItemInfo('ustat_weapon')">
-                <span style="flex-grow: 1;">🗡️ Устаттын канжары</span>
-                <span class="equipped-label">[Кийилүү]</span>
-            </div>
-            <div class="inv-item inv-empty">
-                <span style="flex-grow: 1;">🗡️ Дат баскан кылыч</span>
-            </div>
+        
         </div>
 
         <div class="rpg-bottom-bar" style="z-index: 1001;">
@@ -1922,15 +1915,15 @@ document.getElementById('equipItemBtn')?.addEventListener('click', async () => {
                                 </div>
                             `;
                         } else {
-                            html += `
-                                <div class="inv-item" onclick="switchScreen('equip-list-screen')" style="color: #7a6e5d; font-style: italic; cursor: pointer;">
-                                    ${slot.icon} [Бош] ${slot.name}
-                                </div>
-                            `;
+                          html += `
+                            <div class="inv-item" onclick="openEquipCategory('${slot.key}', '${slot.name}')" style="color: #7a6e5d; font-style: italic; cursor: pointer;">
+                                ${slot.icon} [Бош] ${slot.name}
+                            </div>
+                        `;
                         }
                     } else {
-                        html += `
-                            <div class="inv-item" onclick="switchScreen('equip-list-screen')" style="color: #7a6e5d; font-style: italic; cursor: pointer;">
+                      html += `
+                            <div class="inv-item" onclick="openEquipCategory('${slot.key}', '${slot.name}')" style="color: #7a6e5d; font-style: italic; cursor: pointer;">
                                 ${slot.icon} [Бош] ${slot.name}
                             </div>
                         `;
@@ -1942,6 +1935,11 @@ document.getElementById('equipItemBtn')?.addEventListener('click', async () => {
             } catch (error) {
                 console.error("Ката слототорду жүктөөдө:", error);
             }
+        };
+        window.openEquipCategory = async function(slotKey, slotName) {
+            document.getElementById('equipCategoryTitle').innerText = slotName;
+            switchScreen('equip-list-screen');
+            document.getElementById('equipListContainer').innerHTML = '<div style="padding: 20px; text-align: center; color: #4a250b; font-weight: bold;">Буюмдар изделүүдө... (Загрузка)</div>';
         };
         // Функция открытия/закрытия бокового меню
         window.toggleSideMenu = function() {
