@@ -1725,7 +1725,7 @@ document.getElementById('loginBtn').addEventListener('click', async () => {
         });
       // Переменная для хранения вещи, которую игрок сейчас осматривает
 let currentOpenItem = null;
-
+let isCurrentItemEquipped = false;
 // Функция открытия карточки предмета из инвентаря
 window.openItemInfo = async function(itemId) {
     try {
@@ -1781,7 +1781,25 @@ window.openItemInfo = async function(itemId) {
 
             statsEl.innerHTML = statsHtml || '<div style="color: #666;">Кошумча касиети жок</div>';
         }
+// Проверяем: надета ли вещь на персонаже прямо сейчас
+        const userRef = doc(db, "users", currentActiveUser);
+        const userSnap = await getDoc(userRef);
+        const userData = userSnap.data() || {};
+        const equipped = userData.equipped || {};
 
+        // Ищем, есть ли ID открытой шмотки среди надетых слотов
+        isCurrentItemEquipped = Object.values(equipped).includes(itemId);
+
+        const btn = document.getElementById('equipItemBtn');
+        if (btn) {
+            if (isCurrentItemEquipped) {
+                btn.innerText = "Чечүү (Снять)";
+                btn.style.background = "linear-gradient(180deg, #d32f2f, #8b0000)";
+            } else {
+                btn.innerText = "Кийүү (Надеть)";
+                btn.style.background = "linear-gradient(180deg, #4CAF50, #2E7D32)";
+            }
+        }
         // 4. Открываем экран осмотра предмета
         switchScreen('item-info-screen');
 
@@ -1789,6 +1807,88 @@ window.openItemInfo = async function(itemId) {
         console.error("Ката буюмду ачууда:", error);
     }
 };
+        // Расчет базовых (голых) характеристик персонажа от уровня
+function getBaseStatsByLevel(level = 1) {
+    return {
+        zhan: level * 15,          // 1 ур = 15, 2 ур = 30
+        sokku: level * 2,          // 1 ур = 2,  2 ур = 4
+        taktyk: level * 1,         // 1 ур = 1,  2 ур = 2
+        chydamkailyk: level * 1,   // 1 ур = 1,  2 ур = 2
+        shamdagailyk: level * 1,   // 1 ур = 1,  2 ур = 2
+        esTanduruu: level * 1,     // 1 ур = 1,  2 ур = 2
+        kalkan: level * 1          // 1 ур = 1,  2 ур = 2
+    };
+}
+        // Обработчик кнопки надевания / снятия предмета (Кийүү / Чечүү)
+document.getElementById('equipItemBtn')?.addEventListener('click', async () => {
+    if (!currentOpenItem || !currentActiveUser) return;
+
+    try {
+        const userRef = doc(db, "users", currentActiveUser);
+        const userSnap = await getDoc(userRef);
+        const userData = userSnap.data() || {};
+        const equipped = userData.equipped || {};
+        const playerLevel = userData.level || 1;
+
+        if (isCurrentItemEquipped) {
+            // --- ЛОГИКА "ЧЕЧҮҮ" (СНЯТЬ) ---
+            for (let slot in equipped) {
+                if (equipped[slot] === currentOpenItem.id) {
+                    equipped[slot] = null; // Освобождаем занятый слот
+                }
+            }
+        } else {
+            // --- ЛОГИКА "КИЙҮҮ" (НАДЕТЬ) ---
+            const type = currentOpenItem.type;
+
+            if (type === "jewelry") {
+                // Кольца и браслеты делят два общих слота
+                if (!equipped.jewelry_1) {
+                    equipped.jewelry_1 = currentOpenItem.id;
+                } else {
+                    equipped.jewelry_2 = currentOpenItem.id;
+                }
+            } else if (type !== "consumable") {
+                // Обычная экипировка (курал, чапан, калкан, баш кийим ж.б.)
+                equipped[type] = currentOpenItem.id;
+            }
+        }
+
+        // --- ПЕРЕСЧЕТ СТАТОВ С УЧЕТОМ УРОВНЯ ---
+        // 1. Стартуем с голых статов текущего уровня персонажа
+        let totalStats = getBaseStatsByLevel(playerLevel);
+
+        // 2. Складываем бонусы от всех реально надетых предметов
+        for (let slot in equipped) {
+            const equippedId = equipped[slot];
+            if (equippedId) {
+                const itemSnap = await getDoc(doc(db, "items", equippedId));
+                if (itemSnap.exists()) {
+                    const iStats = itemSnap.data().stats || {};
+                    totalStats.zhan += (iStats.zhan || 0);
+                    totalStats.sokku += (iStats.sokku || 0);
+                    totalStats.taktyk += (iStats.taktyk || 0);
+                    totalStats.chydamkailyk += (iStats.chydamkailyk || 0);
+                    totalStats.shamdagailyk += (iStats.shamdagailyk || 0);
+                    totalStats.esTanduruu += (iStats.esTanduruu || 0);
+                    totalStats.kalkan += (iStats.kalkan || 0);
+                }
+            }
+        }
+
+        // 3. Сохраняем обновленные слоты и пересчитанные статы в Firebase
+        await setDoc(userRef, {
+            equipped: equipped,
+            currentStats: totalStats
+        }, { merge: true });
+
+        // Возвращаем игрока в инвентарь
+        switchScreen('inventory-screen');
+
+    } catch (e) {
+        console.error("Ката кийүү/чечүү учурунда:", e);
+    }
+});
         // Функция открытия/закрытия бокового меню
         window.toggleSideMenu = function() {
             const menu = document.getElementById('sideMenu');
