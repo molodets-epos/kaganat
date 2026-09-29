@@ -1936,10 +1936,63 @@ document.getElementById('equipItemBtn')?.addEventListener('click', async () => {
                 console.error("Ката слототорду жүктөөдө:", error);
             }
         };
-        window.openEquipCategory = async function(slotKey, slotName) {
+       window.openEquipCategory = async function(slotKey, slotName) {
             document.getElementById('equipCategoryTitle').innerText = slotName;
             switchScreen('equip-list-screen');
-            document.getElementById('equipListContainer').innerHTML = '<div style="padding: 20px; text-align: center; color: #4a250b; font-weight: bold;">Буюмдар изделүүдө... (Загрузка)</div>';
+            
+            const container = document.getElementById('equipListContainer');
+            container.innerHTML = '<div style="padding: 20px; text-align: center; color: #4a250b; font-weight: bold;">Буюмдар изделүүдө... (Загрузка)</div>';
+
+            try {
+                const userRef = doc(db, "nicknames", currentActiveUser);
+                const userSnap = await getDoc(userRef);
+                const userData = userSnap.data() || {};
+                const inventory = userData.inventory || [];
+                const equipped = userData.equipped || {};
+
+                if (inventory.length === 0) {
+                    container.innerHTML = '<div style="padding: 20px; text-align: center; color: #7a6e5d; font-style: italic;">Инвентарь бош</div>';
+                    return;
+                }
+
+                let html = '';
+
+                for (const itemId of inventory) {
+                    const itemSnap = await getDoc(doc(db, "items", itemId));
+                    if (itemSnap.exists()) {
+                        const item = itemSnap.data();
+
+                        let isMatch = (item.slot === slotKey);
+                        if (slotKey === 'jewelry_1' || slotKey === 'jewelry_2') {
+                            if (item.slot === 'jewelry' || item.slot === 'ring' || item.slot === 'amulet') {
+                                isMatch = true;
+                            }
+                        }
+
+                        if (isMatch) {
+                            const isEquippedHere = (equipped[slotKey] === itemId);
+                            const labelHtml = isEquippedHere ? '<span class="equipped-label" style="color: #27ae60; font-weight: bold;">[Кийилүү]</span>' : '';
+
+                            html += `
+                                <div class="inv-item" onclick="openItemInfo('${itemId}')" style="cursor: pointer; display: flex; justify-content: space-between; align-items: center;">
+                                    <span style="flex-grow: 1;">${item.icon || '📦'} ${item.name}</span>
+                                    ${labelHtml}
+                                </div>
+                            `;
+                        }
+                    }
+                }
+
+                if (html === '') {
+                    html = '<div style="padding: 20px; text-align: center; color: #7a6e5d; font-style: italic;">Бул слотко ылайыктуу буюмдар жок</div>';
+                }
+
+                container.innerHTML = html;
+
+            } catch (error) {
+                console.error("Ката буюмдарды жүктөөдө:", error);
+                container.innerHTML = '<div style="padding: 20px; text-align: center; color: red;">Ката кетти</div>';
+            }
         };
         // Функция открытия/закрытия бокового меню
         window.toggleSideMenu = function() {
