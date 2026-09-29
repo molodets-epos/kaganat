@@ -1773,7 +1773,7 @@ window.openItemInfo = async function(itemId) {
             statsEl.innerHTML = statsHtml || '<div style="color: #666;">Кошумча касиети жок</div>';
         }
 // Проверяем: надета ли вещь на персонаже прямо сейчас
-        const userRef = doc(db, "users", currentActiveUser);
+        const userRef = doc(db, "nicknames", currentActiveUser);
         const userSnap = await getDoc(userRef);
         const userData = userSnap.data() || {};
         const equipped = userData.equipped || {};
@@ -1815,7 +1815,7 @@ document.getElementById('equipItemBtn')?.addEventListener('click', async () => {
     if (!currentOpenItem || !currentActiveUser) return;
 
     try {
-        const userRef = doc(db, "users", currentActiveUser);
+        const userRef = doc(db, "nicknames", currentActiveUser);
         const userSnap = await getDoc(userRef);
         const userData = userSnap.data() || {};
         const equipped = userData.equipped || {};
@@ -1887,7 +1887,7 @@ window.renderEquippedSlots = async function() {
     if (!container || !currentActiveUser) return;
 
     try {
-        const userRef = doc(db, "users", currentActiveUser);
+        const userRef = doc(db, "nicknames", currentActiveUser);
         const userSnap = await getDoc(userRef);
         const userData = userSnap.data() || {};
         const equipped = userData.equipped || {};
