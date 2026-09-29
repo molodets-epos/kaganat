@@ -1218,12 +1218,13 @@
             const inv = document.getElementById('inventory-screen');
             if (inv) inv.style.display = 'none';
 
-            // Если запрашивают именно инвентарь — открываем его
-            if (screenId === 'inventory-screen') {
-                if (inv) inv.style.display = 'block';
-                clearErrors();
-                return;
-            }
+           // Если запрашивают именно инвентарь — открываем его
+        if (screenId === 'inventory-screen') {
+            if (inv) inv.style.display = 'block';
+            clearErrors();
+            renderEquippedSlots();
+            return;
+        }
 
             const target = document.getElementById(screenId);
             if (target) {
