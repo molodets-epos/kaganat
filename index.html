@@ -1804,76 +1804,69 @@ function getBaseStatsByLevel(level = 1) {
     };
 }
         // Обработчик кнопки надевания / снятия предмета (Кийүү / Чечүү)
-document.getElementById('equipItemBtn')?.addEventListener('click', async () => {
-    if (!currentOpenItem || !currentActiveUser) return;
+        document.getElementById('equipItemBtn')?.addEventListener('click', async () => {
+            if (!currentOpenItem || !currentActiveUser) return;
 
-    try {
-        const userRef = doc(db, "nicknames", currentActiveUser);
-        const userSnap = await getDoc(userRef);
-        const userData = userSnap.data() || {};
-        const equipped = userData.equipped || {};
-        const playerLevel = userData.level || 1;
+            try {
+                const userRef = doc(db, "nicknames", currentActiveUser);
+                const userSnap = await getDoc(userRef);
+                const userData = userSnap.data() || {};
+                const equipped = userData.equipped || {};
+                const inventory = userData.inventory || [];
 
-        if (isCurrentItemEquipped) {
-            // --- ЛОГИКА "ЧЕЧҮҮ" (СНЯТЬ) ---
-            for (let slot in equipped) {
-                if (equipped[slot] === currentOpenItem.id) {
-                    equipped[slot] = null; // Освобождаем занятый слот
-                }
-            }
-        } else {
-            // --- ЛОГИКА "КИЙҮҮ" (НАДЕТЬ) ---
-            const type = currentOpenItem.type;
+                if (isCurrentItemEquipped) {
+                    // --- ЛОГИКА "ЧЕЧҮҮ" (СНЯТЬ) ---
+                    let targetSlot = null;
+                    for (let slot in equipped) {
+                        if (equipped[slot] === currentOpenItem.id) {
+                            targetSlot = slot;
+                            equipped[slot] = null;
+                        }
+                    }
 
-            if (type === "jewelry") {
-                // Кольца и браслеты делят два общих слота
-                if (!equipped.jewelry_1) {
-                    equipped.jewelry_1 = currentOpenItem.id;
+                    if (!inventory.includes(currentOpenItem.id)) {
+                        inventory.push(currentOpenItem.id);
+                    }
+
+                    await updateDoc(userRef, {
+                        equipped: equipped,
+                        inventory: inventory
+                    });
+
                 } else {
-                    equipped.jewelry_2 = currentOpenItem.id;
+                    // --- ЛОГИКА "КИЙҮҮ" (НАДЕТЬ) ---
+                    const itemSlot = currentOpenItem.slot; 
+                    
+                    if (!itemSlot) {
+                        console.error("У предмета не указан слот!");
+                        return;
+                    }
+
+                    const oldItemId = equipped[itemSlot];
+                    if (oldItemId && !inventory.includes(oldItemId)) {
+                        inventory.push(oldItemId);
+                    }
+
+                    equipped[itemSlot] = currentOpenItem.id;
+
+                    const invIndex = inventory.indexOf(currentOpenItem.id);
+                    if (invIndex > -1) {
+                        inventory.splice(invIndex, 1);
+                    }
+
+                    await updateDoc(userRef, {
+                        equipped: equipped,
+                        inventory: inventory
+                    });
                 }
-            } else if (type !== "consumable") {
-                // Обычная экипировка (курал, чапан, калкан, баш кийим ж.б.)
-                equipped[type] = currentOpenItem.id;
+
+                await window.renderEquippedSlots();
+                switchScreen('inventory-screen');
+
+            } catch (e) {
+                console.error("Ката кийүү/чечүү учурунда:", e);
             }
-        }
-
-        // --- ПЕРЕСЧЕТ СТАТОВ С УЧЕТОМ УРОВНЯ ---
-        // 1. Стартуем с голых статов текущего уровня персонажа
-        let totalStats = getBaseStatsByLevel(playerLevel);
-
-        // 2. Складываем бонусы от всех реально надетых предметов
-        for (let slot in equipped) {
-            const equippedId = equipped[slot];
-            if (equippedId) {
-                const itemSnap = await getDoc(doc(db, "items", equippedId));
-                if (itemSnap.exists()) {
-                    const iStats = itemSnap.data().stats || {};
-                    totalStats.zhan += (iStats.zhan || 0);
-                    totalStats.sokku += (iStats.sokku || 0);
-                    totalStats.taktyk += (iStats.taktyk || 0);
-                    totalStats.chydamkailyk += (iStats.chydamkailyk || 0);
-                    totalStats.shamdagailyk += (iStats.shamdagailyk || 0);
-                    totalStats.esTanduruu += (iStats.esTanduruu || 0);
-                    totalStats.kalkan += (iStats.kalkan || 0);
-                }
-            }
-        }
-
-        // 3. Сохраняем обновленные слоты и пересчитанные статы в Firebase
-        await setDoc(userRef, {
-            equipped: equipped,
-            currentStats: totalStats
-        }, { merge: true });
-
-        // Возвращаем игрока в инвентарь
-        await renderEquippedSlots();
-        switchScreen('inventory-screen');
-
-    } catch (e) {
-        console.error("Ката кийүү/чечүү учурунда:", e);
-    }
-});
+        });
      // Функция динамической отрисовки надетых слотов экипировки
         window.renderEquippedSlots = async function() {
             const container = document.getElementById('equippedSlotsList');
