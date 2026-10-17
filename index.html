@@ -1027,7 +1027,7 @@
             <button class="rpg-side-menu-btn" onclick="toggleSideMenu()">Достор</button>
             <button class="rpg-side-menu-btn" onclick="toggleSideMenu()">Маектешүү</button>
             <button class="rpg-side-menu-btn" onclick="toggleSideMenu(); switchScreen('inventory-screen');">Жабдыктар</button>           
-            <button class="rpg-side-menu-btn" onclick="toggleSideMenu()">Каарман</button>
+            <button class="rpg-side-menu-btn" onclick="toggleSideMenu(); openCharacter()">Каарман</button>
             <button class="rpg-side-menu-btn" onclick="toggleSideMenu()">Жардам</button>
         </div>
 
@@ -1058,11 +1058,7 @@
             </div>
         </div>
 
-        <!-- Список вещей -->
-        <div class="equipment-stats">
-            <b>Каармандын мүнөздөмөлөрү (экипировка менен)</b>
-            <div class="equipment-stats-grid" id="characterStatsList" style="margin-top: 8px;"></div>
-        </div>
+        <!-- Экипировка жана сумка -->
         <div style="font-weight: bold; margin: 12px 0 6px; color: #2b1506;">Экипировка</div>
         <div class="inv-list" id="equippedSlotsList"></div>
         <div style="font-weight: bold; margin: 12px 0 6px; color: #2b1506;">Сумкадагы буюмдар</div>
@@ -1075,6 +1071,24 @@
             <span class="rpg-bottom-link" onclick="switchScreen('main-menu-screen')">Жабуу ✖</span>
         </div>
        </div>
+    <!-- 11. КААРМАН -->
+    <div id="character-screen" class="screen" style="padding: 15px 15px 50px 15px; background-color: #d1b482;">
+        <div class="rpg-top-bar" style="display:flex; justify-content:center;">
+            <span>🪙 <span id="characterGold">0</span></span>
+            <span>🥈 <span id="characterSilver">0</span></span>
+            <span>🥉 <span id="characterBronze">0</span></span>
+        </div>
+        <div class="inv-header"><div id="characterName">Каарман</div><div id="characterLevel">1-деңгээл</div></div>
+        <div class="equipment-stats">
+            <b>Каармандын мүнөздөмөлөрү</b>
+            <div class="equipment-stats-grid" id="characterStatsList" style="margin-top: 8px;"></div>
+        </div>
+        <div class="rpg-bottom-bar" style="z-index:1001;">
+            <span class="rpg-bottom-link" onclick="switchScreen('main-menu-screen')">◀ Артка</span>
+            <span style="color:#ffd97d;">Каарман</span>
+            <span class="rpg-bottom-link" onclick="switchScreen('main-menu-screen')">Жабуу ✖</span>
+        </div>
+    </div>
   <!-- 12. СПИСОК СНАРЯЖЕНИЯ (ОДИН ВИД) -->
 <div id="equip-list-screen" class="screen" style="padding: 15px 15px 50px 15px; background-color: #d1b482;">       
     <div class="inv-header">
@@ -1340,6 +1354,12 @@
                 await setDoc(userRef, { currentSessionId: currentSessionId }, { merge: true });
             } catch (err) { console.error("Сессия сактоо катасы:", err); }
 
+            try {
+                userData = await ensureStarterEquipment(nicknameKey);
+            } catch (err) {
+                console.error('Баштапкы жабдыкты берүү катасы:', err);
+            }
+
             listenForRemoteSession(nicknameKey);
 
             if (userData.fraction) {
@@ -1515,7 +1535,7 @@ document.getElementById('loginBtn').addEventListener('click', async () => {
 
                 if (nickSnap.exists()) { showModal('Ката', 'Бул ысым буга чейин алынган!', 'error', {'regNickname': 'Бул ысым бош эмес'}); return; }
 
-                const newUserData = { nickname: nick, password: pass1, fraction: null, storyStep: 0, stamina: 200, moneyBronze: 0, currentSessionId: null, googleEmail: tempGoogleEmail };
+                const newUserData = { nickname: nick, password: pass1, fraction: null, storyStep: 0, stamina: 200, moneyBronze: 0, moneySilver: 0, moneyGold: 0, level: 1, inventory: [], equipped: getStarterEquipmentLoadout(), startingEquipmentGranted: true, currentSessionId: null, googleEmail: tempGoogleEmail };
                 await setDoc(nickRef, newUserData);
                 showModal('Ийгиликтүү', 'Катталуу аяктады!', 'success', {}, () => { proceedUserEntry(newUserData, nicknameKey); });
             } catch (error) { console.error(error); showModal('Ката', 'Каттоо учурунда ката кетти!', 'error'); }
@@ -1789,6 +1809,35 @@ const equipmentSlots = [
     { key: 'jewelry_2', name: 'Шакек / Билерик 2', icon: '💍' },
     { key: 'bag', name: 'Куржун (Дары-дармек)', icon: '🎒' }
 ];
+const starterEquipment = [
+    ['weapon', 'ustat_weapon'], ['shield', 'ustat_shield'], ['helm', 'ustat_helm'],
+    ['armor', 'ustat_armor'], ['gloves', 'ustat_gloves'], ['pants', 'ustat_pants'],
+    ['boots', 'ustat_boots'], ['amulet', 'ustat_amulet']
+];
+
+function getStarterEquipmentLoadout() {
+    return Object.fromEntries(starterEquipment);
+}
+
+async function ensureStarterEquipment(nicknameKey) {
+    const userRef = doc(db, 'nicknames', nicknameKey);
+    return await runTransaction(db, async transaction => {
+        const snap = await transaction.get(userRef);
+        if (!snap.exists()) throw new Error('Оюнчу табылган жок');
+        const player = snap.data();
+        if (player.startingEquipmentGranted) return player;
+        const equipped = { ...(player.equipped || {}) };
+        const inventory = [...(player.inventory || [])];
+        for (const [slot, definitionId] of starterEquipment) {
+            if (equipped[slot]) continue;
+            const inventoryIndex = inventory.findIndex(itemRef => itemDefinitionId(itemRef) === definitionId);
+            if (inventoryIndex >= 0) equipped[slot] = inventory.splice(inventoryIndex, 1)[0];
+            else equipped[slot] = definitionId;
+        }
+        transaction.update(userRef, { equipped, inventory, startingEquipmentGranted: true });
+        return { ...player, equipped, inventory, startingEquipmentGranted: true };
+    });
+}
 
 function itemDefinitionId(itemRef) { return String(itemRef || '').split('@')[0]; }
 function normalizeItemStats(stats) {
@@ -1843,7 +1892,7 @@ function getSellPrice(price = {}) {
 function updateCurrencyDisplays(userData) {
     const balances = { Gold: Number(userData.moneyGold) || 0, Silver: Number(userData.moneySilver) || 0, Bronze: Number(userData.moneyBronze) || 0 };
     for (const [name, amount] of Object.entries(balances)) {
-        for (const id of [`ui${name}`, `inv${name}`, `market${name}`]) {
+        for (const id of [`ui${name}`, `inv${name}`, `market${name}`, `character${name}`]) {
             const el = document.getElementById(id);
             if (el) el.textContent = amount;
         }
@@ -2022,6 +2071,23 @@ window.openMarket = async function() {
     }).join('');
     const playerSnap = await getDoc(doc(db, 'nicknames', currentActiveUser));
     if (playerSnap.exists()) updateCurrencyDisplays(playerSnap.data());
+};
+
+window.openCharacter = async function() {
+    if (!currentActiveUser) return;
+    try {
+        const snap = await getDoc(doc(db, 'nicknames', currentActiveUser));
+        if (!snap.exists()) throw new Error('Каарман табылган жок');
+        const player = snap.data();
+        document.getElementById('characterName').textContent = player.nickname || currentActiveUser;
+        document.getElementById('characterLevel').textContent = `${Number(player.level) || 1}-деңгээл`;
+        updateCurrencyDisplays(player);
+        await renderCharacterStats(player);
+        switchScreen('character-screen');
+    } catch (error) {
+        console.error('Каарманды ачуу катасы:', error);
+        showModal('Ката', 'Каармандын маалыматын жүктөө ишке ашкан жок.', 'error');
+    }
 };
 
 window.buyEquipment = async function(itemId) {
