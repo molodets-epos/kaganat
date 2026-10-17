@@ -780,6 +780,29 @@
             font-size: 12px;
             float: right;
         }
+        .equipment-stats {
+            background: #e8d3aa;
+            border: 2px solid #8c6b42;
+            padding: 10px;
+            margin: 10px 0;
+            color: #2b1506;
+            font-size: 13px;
+        }
+        .equipment-stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 6px 12px;
+        }
+        .market-item { align-items: center; justify-content: space-between; gap: 10px; }
+        .market-item-copy { flex: 1; min-width: 0; }
+        .market-item-stats { color: #68461f; font-size: 11px; margin-top: 4px; }
+        .inv-item-actions { display: flex; gap: 6px; align-items: center; }
+        .inv-action-btn { border: 1px solid #5c3010; border-radius: 3px; padding: 5px 8px; color: #2b1506; background: #ffb32c; cursor: pointer; font-weight: bold; }
+        .inv-action-btn.sell { background: #d8c095; }
+        @media (max-width: 520px) {
+            .equipment-stats-grid { grid-template-columns: 1fr 1fr; }
+            .market-item { align-items: flex-start; }
+        }
     </style>
 </head>
 <body>
@@ -997,7 +1020,7 @@
             <button class="rpg-side-menu-btn" onclick="toggleSideMenu()">Топ</button>
             <button class="rpg-side-menu-btn" onclick="toggleSideMenu()">Уруулар</button>
             <button class="rpg-side-menu-btn" onclick="toggleSideMenu()">Аукцион</button>
-            <button class="rpg-side-menu-btn" onclick="toggleSideMenu()">Базар</button>
+            <button class="rpg-side-menu-btn" onclick="toggleSideMenu(); openMarket()">Базар</button>
             <button class="rpg-side-menu-btn" onclick="toggleSideMenu()">Банк</button>
             <button class="rpg-side-menu-btn" onclick="toggleSideMenu()">Онлайн</button>
             <button class="rpg-side-menu-btn" onclick="toggleSideMenu()">Почта</button>
@@ -1036,7 +1059,14 @@
         </div>
 
         <!-- Список вещей -->
-   <div class="inv-list" id="equippedSlotsList"></div>
+        <div class="equipment-stats">
+            <b>Каармандын мүнөздөмөлөрү (экипировка менен)</b>
+            <div class="equipment-stats-grid" id="characterStatsList" style="margin-top: 8px;"></div>
+        </div>
+        <div style="font-weight: bold; margin: 12px 0 6px; color: #2b1506;">Экипировка</div>
+        <div class="inv-list" id="equippedSlotsList"></div>
+        <div style="font-weight: bold; margin: 12px 0 6px; color: #2b1506;">Сумкадагы буюмдар</div>
+        <div class="inv-list" id="inventoryItemsList"></div>
 
         <!-- Фиксированный подвал для возврата назад -->
         <div class="rpg-bottom-bar" style="z-index: 1001;">
@@ -1058,6 +1088,21 @@
         <div class="rpg-bottom-bar" style="z-index: 1001;">
             <span class="rpg-bottom-link" onclick="switchScreen('inventory-screen')">◀ Артка</span>
             <span style="color: #ffd97d;">Тандоо</span>
+            <span class="rpg-bottom-link" onclick="switchScreen('main-menu-screen')">Жабуу ✖</span>
+        </div>
+    </div>
+    <!-- Рынок экипировки -->
+    <div id="market-screen" class="screen" style="padding: 15px 15px 50px 15px; background-color: #d1b482;">
+        <div class="rpg-top-bar" style="display:flex; justify-content:center;">
+            <span>🪙 <span id="marketGold">0</span></span>
+            <span>🥈 <span id="marketSilver">0</span></span>
+            <span>🥉 <span id="marketBronze">0</span></span>
+        </div>
+        <h2>Базар — жабдыктар</h2>
+        <div id="marketItemsList" class="inv-list"></div>
+        <div class="rpg-bottom-bar" style="z-index: 1001;">
+            <span class="rpg-bottom-link" onclick="switchScreen('main-menu-screen')">◀ Артка</span>
+            <span style="color: #ffd97d;">Базар</span>
             <span class="rpg-bottom-link" onclick="switchScreen('main-menu-screen')">Жабуу ✖</span>
         </div>
     </div>
@@ -1089,6 +1134,7 @@
         
         <!-- Кнопка "Надеть" (Сразу добавим на будущее) -->
         <button class="btn" id="equipItemBtn" style="margin-top: 20px; width: 100%; font-size: 16px; padding: 12px; background: linear-gradient(180deg, #4CAF50, #2E7D32); color: white; border: 1px solid #1B5E20; border-radius: 5px;">Кийүү (Надеть)</button>
+        <button class="btn" id="sellItemBtn" style="margin-top: 10px; width: 100%; background: linear-gradient(180deg, #8c5730, #5c3010);">Дүкөнгө сатуу</button>
 
         <!-- Нижняя навигация -->
         <div class="rpg-bottom-bar" style="z-index: 1001;">
@@ -1180,7 +1226,7 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
         import { getAuth, signInWithPopup, GoogleAuthProvider } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-        import { getFirestore, doc, getDoc, setDoc, onSnapshot, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+        import { getFirestore, doc, getDoc, setDoc, onSnapshot, collection, query, where, getDocs, runTransaction } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
         
         const firebaseConfig = {
             apiKey: "AIzaSyBRkzoUhINimIQ69kBdelZhyoMmCUlDUNQ",
@@ -1498,13 +1544,28 @@ document.getElementById('loginBtn').addEventListener('click', async () => {
         // ==========================================
         // БОЕВАЯ СИСТЕМА
         // ==========================================
-        let heroStats = { maxHp: 210, hp: 210, damageMin: 23, damageMax: 31, blockMin: 17, blockMax: 22, armor: 24, accuracy: 28, potions: 3, totalDamage: 0 };
+        const baseHeroStats = { maxHp: 210, damageMin: 23, damageMax: 31, blockMin: 17, blockMax: 22, armor: 24, accuracy: 28 };
+        let heroStats = { ...baseHeroStats, hp: 210, potions: 3, totalDamage: 0 };
         let wolfStats = { maxHp: 120, hp: 120, damageMin: 15, damageMax: 22, accuracy: 20, armor: 8, totalDamage: 0 };
         let isBattleTurnLocked = false;
         let idleInterval = null;
         let idleToggle = false;
 
-        function startBattleSystem(nickname) {
+        async function startBattleSystem(nickname) {
+            try {
+                const playerSnap = await getDoc(doc(db, 'nicknames', currentActiveUser || nickname));
+                const bonuses = playerSnap.exists() ? await getEquipmentBonuses(playerSnap.data()) : {};
+                heroStats.maxHp = baseHeroStats.maxHp + (bonuses.zhan || 0);
+                heroStats.damageMin = baseHeroStats.damageMin + (bonuses.sokku || 0);
+                heroStats.damageMax = baseHeroStats.damageMax + (bonuses.sokku || 0);
+                heroStats.armor = baseHeroStats.armor + (bonuses.chydamkailyk || 0);
+                heroStats.accuracy = baseHeroStats.accuracy + (bonuses.taktyk || 0);
+                heroStats.blockMin = baseHeroStats.blockMin + (bonuses.kalkan || 0);
+                heroStats.blockMax = baseHeroStats.blockMax + (bonuses.kalkan || 0);
+            } catch (error) {
+                console.error('Жабдыктын мүнөздөмөлөрүн жүктөө катасы:', error);
+                heroStats = { ...baseHeroStats, hp: baseHeroStats.maxHp, potions: 3, totalDamage: 0 };
+            }
             switchScreen('battle-screen');
             document.getElementById('playerBattleNick').innerText = nickname;
 
@@ -1707,292 +1768,288 @@ document.getElementById('loginBtn').addEventListener('click', async () => {
             currentSessionId = null;
             switchScreen('login-screen');
         });
-      // Переменная для хранения вещи, которую игрок сейчас осматривает
+      // Инвентарь хранит уникальные экземпляры предметов. Старые ID из Firestore
+      // тоже поддерживаются, чтобы не потерять уже выданную игрокам экипировку.
 let currentOpenItem = null;
 let isCurrentItemEquipped = false;
-// Функция открытия карточки предмета из инвентаря
-window.openItemInfo = async function(itemId) {
+let currentItemSourceScreen = 'inventory-screen';
+const inventoryCapacity = 50;
+const statLabels = {
+    zhan: ['❤️', 'Жан (Здоровье)'], sokku: ['⚔️', 'Сокку (Урон)'],
+    taktyk: ['🎯', 'Тактык (Точность)'], chydamkailyk: ['🛡️', 'Чыдамкайлык (Броня)'],
+    shamdagailyk: ['💨', 'Шамдагайлык (Уворот)'], esTanduruu: ['⚡', 'Эс тандыруу (Оглушение)'],
+    kalkan: ['🔰', 'Калкан (Блок)']
+};
+const equipmentSlots = [
+    { key: 'weapon', name: 'Курал', icon: '🗡️' }, { key: 'shield', name: 'Калкан', icon: '🛡️' },
+    { key: 'helm', name: 'Туулга', icon: '🪖' }, { key: 'armor', name: 'Соот (Чапан)', icon: '🥼' },
+    { key: 'gloves', name: 'Колкап', icon: '🧤' }, { key: 'pants', name: 'Чалбар', icon: '👖' },
+    { key: 'boots', name: 'Бут кийим', icon: '🥾' }, { key: 'amulet', name: 'Тумар', icon: '📿' },
+    { key: 'jewelry_1', name: 'Шакек / Билерик 1', icon: '💍' },
+    { key: 'jewelry_2', name: 'Шакек / Билерик 2', icon: '💍' },
+    { key: 'bag', name: 'Куржун (Дары-дармек)', icon: '🎒' }
+];
+
+function itemDefinitionId(itemRef) { return String(itemRef || '').split('@')[0]; }
+function normalizeItemStats(stats) {
+    const normalized = Object.fromEntries(Object.keys(statLabels).map(key => [key, 0]));
+    if (Array.isArray(stats)) {
+        const nameMap = [
+            [/жан|hp|өмүр/i, 'zhan'], [/урон|сокку|damage/i, 'sokku'], [/точност|тактык|accuracy/i, 'taktyk'],
+            [/брон|чыдам|armor/i, 'chydamkailyk'], [/уворот|шамдагай|dodge/i, 'shamdagailyk'],
+            [/оглуш|тандыру|stun/i, 'esTanduruu'], [/блок|калкан|block/i, 'kalkan']
+        ];
+        for (const entry of stats) {
+            const key = nameMap.find(([pattern]) => pattern.test(entry.name || ''))?.[1];
+            if (key) normalized[key] += Number.parseFloat(String(entry.val || '').replace(',', '.')) || 0;
+        }
+    } else if (stats && typeof stats === 'object') {
+        for (const key of Object.keys(normalized)) normalized[key] = Number(stats[key]) || 0;
+    }
+    return normalized;
+}
+
+async function getItemDefinition(itemRef) {
+    const definitionId = itemDefinitionId(itemRef);
+    if (itemsDatabase[definitionId]) return { ...itemsDatabase[definitionId], id: itemRef, definitionId, stats: normalizeItemStats(itemsDatabase[definitionId].stats) };
+    const itemSnap = await getDoc(doc(db, 'items', definitionId));
+    if (!itemSnap.exists()) return null;
+    const item = itemSnap.data();
+    return { ...item, id: itemRef, definitionId, stats: normalizeItemStats(item.stats), price: item.price || { bronze: 10 } };
+}
+
+async function getEquipmentBonuses(userData) {
+    const total = Object.fromEntries(Object.keys(statLabels).map(key => [key, 0]));
+    const equipped = userData.equipped || {};
+    for (const itemRef of Object.values(equipped)) {
+        if (!itemRef) continue;
+        const item = await getItemDefinition(itemRef);
+        if (!item) continue;
+        for (const key of Object.keys(total)) total[key] += item.stats[key] || 0;
+    }
+    return total;
+}
+
+function currencyText(price = {}) {
+    const labels = { gold: '🪙', silver: '🥈', bronze: '🥉' };
+    return Object.entries(labels).filter(([key]) => Number(price[key]) > 0).map(([key, icon]) => `${icon} ${price[key]}`).join(' ') || 'акысыз';
+}
+
+function getSellPrice(price = {}) {
+    return Object.fromEntries(Object.keys(price).filter(key => Number(price[key]) > 0)
+        .map(key => [key, Math.max(1, Math.floor(Number(price[key]) / 2))]));
+}
+
+function updateCurrencyDisplays(userData) {
+    const balances = { Gold: Number(userData.moneyGold) || 0, Silver: Number(userData.moneySilver) || 0, Bronze: Number(userData.moneyBronze) || 0 };
+    for (const [name, amount] of Object.entries(balances)) {
+        for (const id of [`ui${name}`, `inv${name}`, `market${name}`]) {
+            const el = document.getElementById(id);
+            if (el) el.textContent = amount;
+        }
+    }
+}
+
+function getBaseStatsByLevel(level = 1) {
+    return { zhan: level * 15, sokku: level * 2, taktyk: level, chydamkailyk: level, shamdagailyk: level, esTanduruu: level, kalkan: level };
+}
+
+async function renderCharacterStats(userData) {
+    const container = document.getElementById('characterStatsList');
+    if (!container) return;
+    const base = getBaseStatsByLevel(Number(userData.level) || 1);
+    const bonuses = await getEquipmentBonuses(userData);
+    container.innerHTML = Object.keys(statLabels).map(key => {
+        const [icon, label] = statLabels[key];
+        const total = base[key] + bonuses[key];
+        const bonus = bonuses[key] ? ` <span style="color:#26723a">(${bonuses[key] > 0 ? '+' : ''}${bonuses[key]} жабдык)</span>` : '';
+        return `<div>${icon} <b>${label}:</b> ${total}${bonus}</div>`;
+    }).join('');
+}
+
+window.openItemInfo = async function(itemRef, sourceScreen = 'inventory-screen') {
     try {
-        // 1. Достаем вещь из коллекции items в Firebase
-        const itemRef = doc(db, "items", itemId);
-        const itemSnap = await getDoc(itemRef);
-
-        if (!itemSnap.exists()) {
-            console.error("Бундай буюм базада табылган жок:", itemId);
-            return;
-        }
-
-        const item = itemSnap.data();
-        currentOpenItem = item; // Запомнили для будущей кнопки "Кийүү"
-
-        // 2. Ищем элементы карточки (название, описание, иконка)
-        const nameEl = document.getElementById('infoItemName') || document.getElementById('itemInfoName');
-        const descEl = document.getElementById('infoItemDesc') || document.getElementById('itemInfoDesc');
-        const iconEl = document.getElementById('infoItemIcon') || document.getElementById('itemInfoIcon');
-        const statsEl = document.getElementById('infoItemStats'); // Твой контейнер со строки 1102
-
-        if (nameEl) nameEl.innerText = item.name;
-        if (descEl) descEl.innerText = item.desc;
-        if (iconEl) iconEl.innerText = item.icon;
-
-        // 3. Динамически выводим только те характеристики, которые есть у шмотки
-        if (statsEl) {
-            let statsHtml = '';
-            const s = item.stats || {};
-
-            if (s.zhan) {
-                statsHtml += `<div>❤️ <b>Жан (XP):</b> +${s.zhan}</div>`;
-            }
-            if (s.sokku) {
-                statsHtml += `<div>⚔️ <b>Сокку (Урон):</b> +${s.sokku}</div>`;
-            }
-            if (s.taktyk) {
-                statsHtml += `<div>🎯 <b>Тактык (Точность):</b> +${s.taktyk}</div>`;
-            }
-            if (s.chydamkailyk) {
-                statsHtml += `<div>🛡️ <b>Чыдамкайлык (Броня):</b> +${s.chydamkailyk}</div>`;
-            }
-            if (s.shamdagailyk) {
-                const sign = s.shamdagailyk > 0 ? '+' : '';
-                statsHtml += `<div>💨 <b>Шамдагайлык (Уворот):</b> ${sign}${s.shamdagailyk}</div>`;
-            }
-            if (s.esTanduruu) {
-                statsHtml += `<div>⚡ <b>Эс тандыруу (Оглушение):</b> +${s.esTanduruu}</div>`;
-            }
-            if (s.kalkan) {
-                statsHtml += `<div>🔰 <b>Калкан (Блок):</b> +${s.kalkan}</div>`;
-            }
-
-            statsEl.innerHTML = statsHtml || '<div style="color: #666;">Кошумча касиети жок</div>';
-        }
-// Проверяем: надета ли вещь на персонаже прямо сейчас
-        const userRef = doc(db, "nicknames", currentActiveUser);
-        const userSnap = await getDoc(userRef);
-        const userData = userSnap.data() || {};
-        const equipped = userData.equipped || {};
-
-        // Ищем, есть ли ID открытой шмотки среди надетых слотов
-        isCurrentItemEquipped = Object.values(equipped).includes(itemId);
-
-        const btn = document.getElementById('equipItemBtn');
-        if (btn) {
-            if (isCurrentItemEquipped) {
-                btn.innerText = "Чечүү (Снять)";
-                btn.style.background = "linear-gradient(180deg, #d32f2f, #8b0000)";
-            } else {
-                btn.innerText = "Кийүү (Надеть)";
-                btn.style.background = "linear-gradient(180deg, #4CAF50, #2E7D32)";
-            }
-        }
-        // 4. Открываем экран осмотра предмета
+        const item = await getItemDefinition(itemRef);
+        if (!item) { showModal('Ката', 'Бул буюм табылган жок.', 'error'); return; }
+        currentOpenItem = item;
+        currentItemSourceScreen = sourceScreen;
+        document.getElementById('infoItemName').textContent = item.name || 'Буюм';
+        document.getElementById('infoItemDesc').textContent = item.desc || '';
+        document.getElementById('infoItemImg').textContent = item.icon || '📦';
+        document.getElementById('infoItemStats').innerHTML = Object.keys(statLabels).filter(key => item.stats[key] !== 0).map(key => {
+            const [icon, label] = statLabels[key];
+            const value = item.stats[key];
+            return `<div>${icon} <b>${label}:</b> ${value > 0 ? '+' : ''}${value}</div>`;
+        }).join('') || '<div style="color:#666">Кошумча касиети жок</div>';
+        const playerSnap = await getDoc(doc(db, 'nicknames', currentActiveUser));
+        const player = playerSnap.data() || {};
+        isCurrentItemEquipped = Object.values(player.equipped || {}).includes(itemRef);
+        const equipBtn = document.getElementById('equipItemBtn');
+        equipBtn.style.display = item.slot ? 'block' : 'none';
+        equipBtn.textContent = isCurrentItemEquipped ? 'Чечүү (Снять)' : 'Кийүү (Надеть)';
+        equipBtn.style.background = isCurrentItemEquipped ? 'linear-gradient(180deg, #d32f2f, #8b0000)' : 'linear-gradient(180deg, #4CAF50, #2E7D32)';
+        const sellBtn = document.getElementById('sellItemBtn');
+        sellBtn.style.display = isCurrentItemEquipped || !(player.inventory || []).includes(itemRef) ? 'none' : 'block';
+        sellBtn.textContent = `Дүкөнгө сатуу — ${currencyText(getSellPrice(item.price))}`;
         switchScreen('item-info-screen');
+    } catch (error) { console.error('Буюмду ачуу катасы:', error); showModal('Ката', 'Буюмду жүктөө ишке ашкан жок.', 'error'); }
+};
 
+document.getElementById('equipItemBtn')?.addEventListener('click', async () => {
+    if (!currentOpenItem || !currentActiveUser) return;
+    const userRef = doc(db, 'nicknames', currentActiveUser);
+    try {
+        await runTransaction(db, async transaction => {
+            const snap = await transaction.get(userRef);
+            if (!snap.exists()) throw new Error('Оюнчу табылган жок');
+            const player = snap.data();
+            const inventory = [...(player.inventory || [])];
+            const equipped = { ...(player.equipped || {}) };
+            const existingSlot = Object.keys(equipped).find(slot => equipped[slot] === currentOpenItem.id);
+            if (existingSlot) {
+                equipped[existingSlot] = null;
+                inventory.push(currentOpenItem.id);
+            } else {
+                if (!inventory.includes(currentOpenItem.id)) throw new Error('Бул буюм сумкада жок');
+                const targetSlot = currentOpenItem.slot;
+                if (!targetSlot) throw new Error('Бул буюмду кийүүгө болбойт');
+                const previousItem = equipped[targetSlot];
+                if (previousItem) inventory.push(previousItem);
+                equipped[targetSlot] = currentOpenItem.id;
+                inventory.splice(inventory.indexOf(currentOpenItem.id), 1);
+            }
+            transaction.update(userRef, { inventory, equipped });
+        });
+        isCurrentItemEquipped = !isCurrentItemEquipped;
+        await window.renderEquippedSlots();
+        if (isCurrentItemEquipped) {
+            showModal('Даяр!', 'Буюм кийилди. Каармандын мүнөздөмөлөрү жаңыртылды.', 'success', {}, () => switchScreen('inventory-screen'));
+        } else switchScreen('inventory-screen');
     } catch (error) {
-        console.error("Ката буюмду ачууда:", error);
+        console.error('Экипировканы өзгөртүү катасы:', error);
+        showModal('Ката', error.message || 'Буюмду кийүү же чечүү ишке ашкан жок.', 'error');
+    }
+});
+
+document.getElementById('sellItemBtn')?.addEventListener('click', async () => {
+    if (!currentOpenItem || !currentActiveUser || isCurrentItemEquipped) return;
+    const price = currentOpenItem.price || { bronze: 10 };
+    const payout = getSellPrice(price);
+    const userRef = doc(db, 'nicknames', currentActiveUser);
+    try {
+        await runTransaction(db, async transaction => {
+            const snap = await transaction.get(userRef);
+            if (!snap.exists()) throw new Error('Оюнчу табылган жок');
+            const player = snap.data();
+            const inventory = [...(player.inventory || [])];
+            if (!inventory.includes(currentOpenItem.id) || Object.values(player.equipped || {}).includes(currentOpenItem.id)) throw new Error('Кийилген же сакталбаган буюм сатылбайт');
+            inventory.splice(inventory.indexOf(currentOpenItem.id), 1);
+            const update = { inventory };
+            for (const [currency, amount] of Object.entries(payout)) {
+                const field = `money${currency[0].toUpperCase()}${currency.slice(1)}`;
+                update[field] = (Number(player[field]) || 0) + amount;
+            }
+            transaction.update(userRef, update);
+        });
+        showModal('Сатылды', `Буюм сатылды. Сиз ${currencyText(payout)} алдыңыз.`, 'success', {}, async () => {
+            await window.renderEquippedSlots();
+            switchScreen(currentItemSourceScreen);
+        });
+    } catch (error) {
+        console.error('Буюм сатуу катасы:', error);
+        showModal('Ката', error.message || 'Буюмду сатуу ишке ашкан жок.', 'error');
+    }
+});
+
+window.renderEquippedSlots = async function() {
+    if (!currentActiveUser) return;
+    try {
+        const snap = await getDoc(doc(db, 'nicknames', currentActiveUser));
+        const player = snap.data() || {};
+        const equipped = player.equipped || {};
+        updateCurrencyDisplays(player);
+        await renderCharacterStats(player);
+        const equippedHtml = [];
+        for (const slot of equipmentSlots) {
+            const itemRef = equipped[slot.key];
+            const item = itemRef ? await getItemDefinition(itemRef) : null;
+            equippedHtml.push(item
+                ? `<div class="inv-item" onclick="openItemInfo('${itemRef}', 'inventory-screen')">${slot.icon} <b>[1]</b> ${item.name}</div>`
+                : `<div class="inv-item" onclick="openEquipCategory('${slot.key}', '${slot.name}')" style="color:#7a6e5d;font-style:italic">${slot.icon} [Бош] ${slot.name}</div>`);
+        }
+        document.getElementById('equippedSlotsList').innerHTML = equippedHtml.join('');
+        const inventory = player.inventory || [];
+        const cap = document.querySelector('.inv-cap');
+        if (cap) cap.textContent = `${inventory.length}/${inventoryCapacity}`;
+        const inventoryList = document.getElementById('inventoryItemsList');
+        const rows = [];
+        for (const itemRef of inventory) {
+            const item = await getItemDefinition(itemRef);
+            if (!item) continue;
+            rows.push(`<div class="inv-item" onclick="openItemInfo('${itemRef}', 'inventory-screen')"><span style="flex:1">${item.icon || '📦'} ${item.name}</span><span>${currencyText(item.price)}</span></div>`);
+        }
+        inventoryList.innerHTML = rows.join('') || '<div class="inv-item" style="color:#7a6e5d;font-style:italic">Сумка бош</div>';
+    } catch (error) { console.error('Инвентарды жүктөө катасы:', error); }
+};
+
+window.openEquipCategory = async function(slotKey, slotName) {
+    document.getElementById('equipCategoryTitle').textContent = slotName;
+    switchScreen('equip-list-screen');
+    const container = document.getElementById('equipListContainer');
+    container.innerHTML = '<div class="inv-item">Буюмдар изделүүдө...</div>';
+    try {
+        const snap = await getDoc(doc(db, 'nicknames', currentActiveUser));
+        const inventory = snap.data()?.inventory || [];
+        const rows = [];
+        for (const itemRef of inventory) {
+            const item = await getItemDefinition(itemRef);
+            if (!item) continue;
+            const isJewelrySlot = slotKey === 'jewelry_1' || slotKey === 'jewelry_2';
+            const matches = item.slot === slotKey || (isJewelrySlot && ['jewelry', 'ring'].includes(item.slot));
+            if (matches) rows.push(`<div class="inv-item" onclick="openItemInfo('${itemRef}', 'equip-list-screen')">${item.icon || '📦'} ${item.name}</div>`);
+        }
+        container.innerHTML = rows.join('') || '<div class="inv-item" style="color:#7a6e5d;font-style:italic">Бул слотко ылайыктуу буюм жок</div>';
+    } catch (error) { console.error('Экипировканы издөө катасы:', error); container.innerHTML = '<div class="inv-item">Ката кетти</div>'; }
+};
+
+window.openMarket = async function() {
+    if (!currentActiveUser) return;
+    switchScreen('market-screen');
+    const container = document.getElementById('marketItemsList');
+    container.innerHTML = Object.entries(itemsDatabase).filter(([, item]) => item.slot).map(([id, item]) => {
+        const stats = Object.keys(statLabels).filter(key => item.stats[key]).map(key => `${statLabels[key][0]} ${item.stats[key] > 0 ? '+' : ''}${item.stats[key]}`).join(' · ');
+        return `<div class="inv-item market-item"><div class="market-item-copy"><b>${item.icon} ${item.name}</b><div class="market-item-stats">${stats}</div><div class="market-item-stats">Баасы: ${currencyText(item.price)}</div></div><button class="inv-action-btn" onclick="buyEquipment('${id}')">Сатып алуу</button></div>`;
+    }).join('');
+    const playerSnap = await getDoc(doc(db, 'nicknames', currentActiveUser));
+    if (playerSnap.exists()) updateCurrencyDisplays(playerSnap.data());
+};
+
+window.buyEquipment = async function(itemId) {
+    if (!currentActiveUser || !itemsDatabase[itemId]) return;
+    const item = itemsDatabase[itemId];
+    const price = item.price || {};
+    const userRef = doc(db, 'nicknames', currentActiveUser);
+    const instanceId = `${itemId}@${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+    try {
+        await runTransaction(db, async transaction => {
+            const snap = await transaction.get(userRef);
+            if (!snap.exists()) throw new Error('Оюнчу табылган жок');
+            const player = snap.data();
+            const inventory = [...(player.inventory || [])];
+            if (inventory.length >= inventoryCapacity) throw new Error('Сумка толуп калды (50/50)');
+            const priceKey = Object.keys(price).find(key => Number(price[key]) > 0);
+            if (!priceKey) throw new Error('Буюмдун баасы көрсөтүлгөн эмес');
+            const balanceField = `money${priceKey[0].toUpperCase()}${priceKey.slice(1)}`;
+            if ((Number(player[balanceField]) || 0) < price[priceKey]) throw new Error('Бул сатып алууга акча жетишсиз');
+            inventory.push(instanceId);
+            transaction.update(userRef, { inventory, [balanceField]: Number(player[balanceField] || 0) - Number(price[priceKey]) });
+        });
+        await window.renderEquippedSlots();
+        showModal('Сатып алынды', `${item.name} сумкага кошулду.`, 'success');
+    } catch (error) {
+        showModal('Сатып алуу ишке ашкан жок', error.message || 'Базар убактылуу жеткиликсиз.', 'error');
     }
 };
-        // Расчет базовых (голых) характеристик персонажа от уровня
-function getBaseStatsByLevel(level = 1) {
-    return {
-        zhan: level * 15,          // 1 ур = 15, 2 ур = 30
-        sokku: level * 2,          // 1 ур = 2,  2 ур = 4
-        taktyk: level * 1,         // 1 ур = 1,  2 ур = 2
-        chydamkailyk: level * 1,   // 1 ур = 1,  2 ур = 2
-        shamdagailyk: level * 1,   // 1 ур = 1,  2 ур = 2
-        esTanduruu: level * 1,     // 1 ур = 1,  2 ур = 2
-        kalkan: level * 1          // 1 ур = 1,  2 ур = 2
-    };
-}
-        // Обработчик кнопки надевания / снятия предмета (Кийүү / Чечүү)
-        document.getElementById('equipItemBtn')?.addEventListener('click', async () => {
-            if (!currentOpenItem || !currentActiveUser) return;
-
-            try {
-                const userRef = doc(db, "nicknames", currentActiveUser);
-                const userSnap = await getDoc(userRef);
-                const userData = userSnap.data() || {};
-                const equipped = userData.equipped || {};
-                const inventory = userData.inventory || [];
-
-                if (isCurrentItemEquipped) {
-                    // --- ЛОГИКА "ЧЕЧҮҮ" (СНЯТЬ) ---
-                    let targetSlot = null;
-                    for (let slot in equipped) {
-                        if (equipped[slot] === currentOpenItem.id) {
-                            targetSlot = slot;
-                            equipped[slot] = null;
-                        }
-                    }
-
-                    if (!inventory.includes(currentOpenItem.id)) {
-                        inventory.push(currentOpenItem.id);
-                    }
-
-                    await updateDoc(userRef, {
-                        equipped: equipped,
-                        inventory: inventory
-                    });
-
-                } else {
-                    // --- ЛОГИКА "КИЙҮҮ" (НАДЕТЬ) ---
-                    const itemSlot = currentOpenItem.slot; 
-                    
-                    if (!itemSlot) {
-                        console.error("У предмета не указан слот!");
-                        return;
-                    }
-
-                    const oldItemId = equipped[itemSlot];
-                    if (oldItemId && !inventory.includes(oldItemId)) {
-                        inventory.push(oldItemId);
-                    }
-
-                    equipped[itemSlot] = currentOpenItem.id;
-
-                    const invIndex = inventory.indexOf(currentOpenItem.id);
-                    if (invIndex > -1) {
-                        inventory.splice(invIndex, 1);
-                    }
-
-                    await updateDoc(userRef, {
-                        equipped: equipped,
-                        inventory: inventory
-                    });
-                }
-
-                await window.renderEquippedSlots();
-                switchScreen('inventory-screen');
-
-            } catch (e) {
-                console.error("Ката кийүү/чечүү учурунда:", e);
-            }
-        });
-     // Функция динамической отрисовки надетых слотов экипировки
-        window.renderEquippedSlots = async function() {
-            const container = document.getElementById('equippedSlotsList');
-            if (!container || !currentActiveUser) return;
-
-            try {
-                const userRef = doc(db, "nicknames", currentActiveUser);
-                const userSnap = await getDoc(userRef);
-                const userData = userSnap.data() || {};
-                const equipped = userData.equipped || {};
-
-                // Список всех доступных слотов экипировки
-                const slotDefinitions = [
-                    { key: 'weapon', name: 'Курал', icon: '🗡️' },
-                    { key: 'shield', name: 'Калкан', icon: '🛡️' },
-                    { key: 'helm', name: 'Туулга', icon: '🪖' },
-                    { key: 'armor', name: 'Соот (Чапан)', icon: '🥼' },
-                    { key: 'gloves', name: 'Колкап', icon: '🧤' },
-                    { key: 'pants', name: 'Чалбар', icon: '👖' },
-                    { key: 'boots', name: 'Бут кийим', icon: '🥾' },
-                    { key: 'amulet', name: 'Тумар', icon: '📿' },
-                    { key: 'jewelry_1', name: 'Шакек / Билерик 1', icon: '💍' },
-                    { key: 'jewelry_2', name: 'Шакек / Билерик 2', icon: '💍' },
-                    { key: 'bag', name: 'Куржун (Дары-дармек)', icon: '🎒' }
-                ];
-
-                let html = '';
-
-                for (const slot of slotDefinitions) {
-                    const itemId = equipped[slot.key];
-
-                    if (itemId) {
-                        const itemSnap = await getDoc(doc(db, "items", itemId));
-                        if (itemSnap.exists()) {
-                            const item = itemSnap.data();
-                            html += `
-                                <div class="inv-item" onclick="openItemInfo('${itemId}')" style="cursor: pointer;">
-                                    ${item.icon || slot.icon} <b>[1]</b> ${item.name}
-                                </div>
-                            `;
-                        } else {
-                          html += `
-                            <div class="inv-item" onclick="openEquipCategory('${slot.key}', '${slot.name}')" style="color: #7a6e5d; font-style: italic; cursor: pointer;">
-                                ${slot.icon} [Бош] ${slot.name}
-                            </div>
-                        `;
-                        }
-                    } else {
-                      html += `
-                            <div class="inv-item" onclick="openEquipCategory('${slot.key}', '${slot.name}')" style="color: #7a6e5d; font-style: italic; cursor: pointer;">
-                                ${slot.icon} [Бош] ${slot.name}
-                            </div>
-                        `;
-                    }
-                }
-
-                container.innerHTML = html;
-
-            } catch (error) {
-                console.error("Ката слототорду жүктөөдө:", error);
-            }
-        };
-       window.openEquipCategory = async function(slotKey, slotName) {
-            document.getElementById('equipCategoryTitle').innerText = slotName;
-            switchScreen('equip-list-screen');
-            
-            const container = document.getElementById('equipListContainer');
-            container.innerHTML = '<div style="padding: 20px; text-align: center; color: #4a250b; font-weight: bold;">Буюмдар изделүүдө... (Загрузка)</div>';
-
-            try {
-                const userRef = doc(db, "nicknames", currentActiveUser);
-                const userSnap = await getDoc(userRef);
-                const userData = userSnap.data() || {};
-                const equipped = userData.equipped || {};
-                
-                // Если у игрока в базе вообще нет поля inventory, создаем его автоматически прямо в базе
-                let inventory = userData.inventory;
-                if (!inventory) {
-                    inventory = []; // Пустой инвентарь для честной игры
-                    await updateDoc(userRef, { inventory: inventory });
-                }
-
-                if (inventory.length === 0) {
-                    container.innerHTML = '<div style="padding: 20px; text-align: center; color: #7a6e5d; font-style: italic;">Сиздин инвентарыңызда буюмдар жок</div>';
-                    return;
-                }
-
-                let html = '';
-
-                for (const itemId of inventory) {
-                    const itemSnap = await getDoc(doc(db, "items", itemId));
-                    if (itemSnap.exists()) {
-                        const item = itemSnap.data();
-
-                        let isMatch = (item.slot === slotKey);
-                        if (slotKey === 'jewelry_1' || slotKey === 'jewelry_2') {
-                            if (item.slot === 'jewelry' || item.slot === 'ring' || item.slot === 'amulet') {
-                                isMatch = true;
-                            }
-                        }
-
-                        if (isMatch) {
-                            const isEquippedHere = (equipped[slotKey] === itemId);
-                            const labelHtml = isEquippedHere ? '<span class="equipped-label" style="color: #27ae60; font-weight: bold;">[Кийилүү]</span>' : '';
-
-                            html += `
-                                <div class="inv-item" onclick="openItemInfo('${itemId}')" style="cursor: pointer; display: flex; justify-content: space-between; align-items: center;">
-                                    <span style="flex-grow: 1;">${item.icon || '📦'} ${item.name}</span>
-                                    ${labelHtml}
-                                </div>
-                            `;
-                        }
-                    }
-                }
-
-                if (html === '') {
-                    html = '<div style="padding: 20px; text-align: center; color: #7a6e5d; font-style: italic;">Бул слотко ылайыктуу буюмдар жок</div>';
-                }
-
-                container.innerHTML = html;
-
-            } catch (error) {
-                console.error("Ката буюмдарды жүктөөдө:", error);
-                container.innerHTML = '<div style="padding: 20px; text-align: center; color: red;">Ката кетти</div>';
-            }
-        };
         // Функция открытия/закрытия бокового меню
         window.toggleSideMenu = function() {
             const menu = document.getElementById('sideMenu');
@@ -2084,93 +2141,16 @@ function getBaseStatsByLevel(level = 1) {
         }
       // --- БАЗА ДАННЫХ СНАРЯЖЕНИЯ ---
        const itemsDatabase = {
-            "ustat_weapon": {
-                name: "Устаттын канжары",
-                icon: "🗡️",
-                count: 1,
-                desc: "Устаттын колунан түшпөгөн, курчтугу менен таң калтырган эски курал. Терини эле эмес, соотту да тешип өтүүгө жөндөмдүү.",
-                stats: [
-                    { name: "Сокку (Урон)", val: "+5" },
-                    { name: "Тактык (Точность)", val: "+2" }
-                ]
-            },
-            "ustat_shield": {
-                name: "Устаттын жыгач тосмосу",
-                icon: "🛡️",
-                count: 1,
-                desc: "Жөнөкөй, бирок бышык жыгачтан жасалган калкан. Кыймылды бир аз жайлатат, бирок соккуну жакшы тосот.",
-                stats: [
-                    { name: "Блок (Калкан)", val: "+8" },
-                    { name: "Шамдагайлык (Уворот)", val: "-2", negative: true }
-                ]
-            },
-            "ustat_helm": {
-                name: "Устаттын баш кийими",
-                icon: "🪖",
-                count: 1,
-                desc: "Башты коргоо үчүн жасалган катуу териден жана темир кесиндилеринен тигилген баш кийим.",
-                stats: [
-                    { name: "Чыдамкайлык (Броня)", val: "+3" },
-                    { name: "Жан (HP)", val: "+15" }
-                ]
-            },
-            "ustat_armor": {
-                name: "Устаттын чапаны",
-                icon: "👕",
-                count: 1,
-                desc: "Көптөгөн салгылашууларды көргөн, бышык кездемеден тигилген чапан. Ээсине кошумча өмүр берет.",
-                stats: [
-                    { name: "Жан (HP)", val: "+50" },
-                    { name: "Чыдамкайлык (Броня)", val: "+1" }
-                ]
-            },
-            "ustat_gloves": {
-                name: "Устаттын мээлейи",
-                icon: "🧤",
-                count: 1,
-                desc: "Колду бекем коргогон, куралды ишенимдүү кармоого жана таамай урууга жардам берген мээлей.",
-                stats: [
-                    { name: "Жан (HP)", val: "+21" },
-                    { name: "Сокку (Урон)", val: "+2" },
-                    { name: "Тактык (Точность)", val: "+2" }
-                ]
-            },
-            "ustat_pants": {
-                name: "Устаттын чалбары",
-                icon: "👖",
-                count: 1,
-                desc: "Узак жолго жана чабышка ылайыкталып тигилген чыдамкай чалбар.",
-                stats: [
-                    { name: "Чыдамкайлык (Броня)", val: "+2" }
-                ]
-            },
-            "ustat_boots": {
-                name: "Устаттын өтүгү",
-                icon: "🥾",
-                count: 1,
-                desc: "Калың териден жасалган бекем өтүк.",
-                stats: [
-                    { name: "Шамдагайлык (Уворот)", val: "+3" }
-                ]
-            },
-            "ustat_amulet": {
-                name: "Устаттын тумары",
-                icon: "📿",
-                count: 1,
-                desc: "Ээсин жаман көздөн жана кооптуу учурлардан сактаган сырдуу тумар.",
-                stats: [
-                    { name: "Ийгилик", val: "+5" }
-                ]
-            },
-            "simple_herb": {
-                name: "Жөнөкөй дары чөп",
-                icon: "🧪",
-                count: 3,
-                desc: "Жараатты тез айыктыруучу касиетке ээ тоо чөбү.",
-                stats: [
-                    { name: "Калыбына келтирүү", val: "+30 HP" }
-                ]
-            }
+            ustat_weapon: { name: 'Устаттын канжары', icon: '🗡️', slot: 'weapon', price: { silver: 2 }, desc: 'Устаттын колунан түшпөгөн курч канжар.', stats: { sokku: 5, taktyk: 2 } },
+            ustat_shield: { name: 'Устаттын жыгач тосмосу', icon: '🛡️', slot: 'shield', price: { bronze: 8 }, desc: 'Жөнөкөй, бирок бышык жыгач калкан.', stats: { kalkan: 8, shamdagailyk: -2 } },
+            ustat_helm: { name: 'Устаттын баш кийими', icon: '🪖', slot: 'helm', price: { silver: 1 }, desc: 'Катуу териден жана темирден жасалган баш кийим.', stats: { chydamkailyk: 3, zhan: 15 } },
+            ustat_armor: { name: 'Устаттын чапаны', icon: '🥼', slot: 'armor', price: { gold: 2 }, desc: 'Бышык кездемеден тигилген, өмүрдү жана коргонууну арттырган чапан.', stats: { zhan: 50, chydamkailyk: 1 } },
+            ustat_gloves: { name: 'Устаттын мээлейи', icon: '🧤', slot: 'gloves', price: { silver: 1 }, desc: 'Куралды бекем кармап, соккуну таамай кылган мээлей.', stats: { zhan: 21, sokku: 2, taktyk: 2 } },
+            ustat_pants: { name: 'Устаттын чалбары', icon: '👖', slot: 'pants', price: { bronze: 6 }, desc: 'Узак жолго жана чабышка ылайыкталган чыдамкай чалбар.', stats: { chydamkailyk: 2 } },
+            ustat_boots: { name: 'Устаттын өтүгү', icon: '🥾', slot: 'boots', price: { bronze: 5 }, desc: 'Калың териден жасалган бекем өтүк.', stats: { shamdagailyk: 3 } },
+            ustat_amulet: { name: 'Устаттын тумары', icon: '📿', slot: 'amulet', price: { silver: 1 }, desc: 'Ээсин жаман көздөн жана кооптуу учурлардан сактаган сырдуу тумар.', stats: { esTanduruu: 2 } },
+            ring_wolf: { name: 'Карышкырдын азуусу', icon: '💍', slot: 'jewelry', price: { bronze: 10 }, desc: 'Карышкырдын азуусунан жасалган шакек. Ээсине шамдагайлык берет.', stats: { shamdagailyk: 2, sokku: 1 } },
+            travel_bag: { name: 'Жол баштыгы', icon: '🎒', slot: 'bag', price: { silver: 2 }, desc: 'Узак сапарга керектүү буюмдарды салуучу бекем куржун.', stats: { zhan: 10, kalkan: 2 } }
       };
 </script>
 </body>
